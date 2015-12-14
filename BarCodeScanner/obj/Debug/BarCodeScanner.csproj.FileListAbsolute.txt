@@ -1,0 +1,11 @@
+D:\WORK\CASIO\BarCodeScanner\BarCodeScanner\obj\Debug\ResolveAssemblyReference.cache
+D:\WORK\CASIO\BarCodeScanner\BarCodeScanner\obj\Debug\BarCodeScanner.Form1.resources
+D:\WORK\CASIO\BarCodeScanner\BarCodeScanner\obj\Debug\BarCodeScanner.Properties.Resources.resources
+D:\WORK\CASIO\BarCodeScanner\BarCodeScanner\obj\Debug\BarCodeScanner.csproj.GenerateResource.Cache
+D:\WORK\CASIO\BarCodeScanner\BarCodeScanner\bin\Debug\BarCodeScanner.exe
+D:\WORK\CASIO\BarCodeScanner\BarCodeScanner\bin\Debug\BarCodeScanner.pdb
+D:\WORK\CASIO\BarCodeScanner\BarCodeScanner\obj\Debug\BarCodeScanner.exe
+D:\WORK\CASIO\BarCodeScanner\BarCodeScanner\obj\Debug\BarCodeScanner.pdb
+D:\WORK\CASIO\BarCodeScanner\BarCodeScanner\bin\Debug\OpenNETCF.dll
+D:\WORK\CASIO\BarCodeScanner\BarCodeScanner\bin\Debug\OpenNETCF.Configuration.dll
+D:\WORK\CASIO\BarCodeScanner\BarCodeScanner\bin\Debug\System.SR.dll
