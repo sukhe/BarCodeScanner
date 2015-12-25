@@ -1,6 +1,6 @@
 ﻿namespace BarCodeScanner
 {
-    partial class Form1
+    partial class MainForm
     {
         /// <summary>
         /// Требуется переменная конструктора.
@@ -36,6 +36,8 @@
             this.statusBar1 = new System.Windows.Forms.StatusBar();
             this.listBox1 = new System.Windows.Forms.ListBox();
             this.textBox1 = new System.Windows.Forms.TextBox();
+            this.button5 = new System.Windows.Forms.Button();
+            this.timer1 = new System.Windows.Forms.Timer();
             this.SuspendLayout();
             // 
             // button1
@@ -95,17 +97,32 @@
             // 
             // textBox1
             // 
-            this.textBox1.Location = new System.Drawing.Point(71, 71);
+            this.textBox1.Location = new System.Drawing.Point(3, 72);
             this.textBox1.Name = "textBox1";
             this.textBox1.Size = new System.Drawing.Size(100, 21);
             this.textBox1.TabIndex = 6;
             // 
-            // Form1
+            // button5
+            // 
+            this.button5.Location = new System.Drawing.Point(131, 73);
+            this.button5.Name = "button5";
+            this.button5.Size = new System.Drawing.Size(72, 20);
+            this.button5.TabIndex = 8;
+            this.button5.Text = "button5";
+            this.button5.Click += new System.EventHandler(this.button5_Click);
+            // 
+            // timer1
+            // 
+            this.timer1.Interval = 10000;
+            this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
+            // 
+            // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.AutoScroll = true;
             this.ClientSize = new System.Drawing.Size(240, 294);
+            this.Controls.Add(this.button5);
             this.Controls.Add(this.textBox1);
             this.Controls.Add(this.listBox1);
             this.Controls.Add(this.statusBar1);
@@ -115,7 +132,7 @@
             this.Controls.Add(this.button1);
             this.KeyPreview = true;
             this.MinimizeBox = false;
-            this.Name = "Form1";
+            this.Name = "MainForm";
             this.Text = "Сканирование штрихкодов";
             this.Load += new System.EventHandler(this.Form1_Load);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Form1_KeyDown);
@@ -133,6 +150,8 @@
         private System.Windows.Forms.StatusBar statusBar1;
         private System.Windows.Forms.ListBox listBox1;
         private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.Button button5;
+        private System.Windows.Forms.Timer timer1;
     }
 }
 

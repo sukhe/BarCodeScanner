@@ -9,20 +9,30 @@ using System.Windows.Forms;
 using Microsoft.WindowsCE.Forms;
 using System.Net;
 using System.IO;
+using Microsoft.WindowsMobile;
+using Microsoft.WindowsMobile.Status;
+using System.Xml;
+
 //using System.Runtime.Serialization;
 
 namespace BarCodeScanner
 {
-    public partial class Form1 : Form
+    public partial class MainForm : Form
     {
+
+        public static List<CargoDoc> cargodocs = new List<CargoDoc>();
+//        static CargoDoc CargoDocDB;
 
 //        private HardwareButton hwb1, hwb3, hwb2, hwb4;
         Stream ReceiveStream = null;
         StreamReader sr = null;
+        string CurrentPath;
 
-        public Form1()
+        public MainForm()
         {
             InitializeComponent();
+            CurrentPath = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().GetName().CodeBase);
+
 /*            this.KeyPreview = true;
             this.KeyUp += new KeyEventHandler(this.OnKeyUp);
             HBConfig();*/
@@ -38,9 +48,10 @@ namespace BarCodeScanner
             //string s = StringGetWebPage("http://192.168.10.213/CargoDocService.svc/CargoDoc/2401");
 
             // string s = StringGetWebPage("http://192.168.10.213");
-            listBox1.Items.Clear();
-            string s = textBox1.Text;
-            GetHTTP("http://192.168.10.12:8888/CargoDocService.svc/CargoDoc/"+s);
+            //listBox1.Items.Clear();
+            string s = "9237_20151118_02"; 
+                // textBox1.Text;
+            GetHTTP("http://192.168.10.213/CargoDocService.svc/CargoDoc/"+s);
             //GetHTTP("http://192.168.10.213");
         }
 
@@ -52,7 +63,8 @@ namespace BarCodeScanner
 
         private void button3_Click(object sender, EventArgs e)
         {
-            MessageBox.Show("Нажата F3");
+            //MessageBox.Show("Нажата F3");
+            LoadXml(@"2419.xml");
         }
 
         private void button4_Click(object sender, EventArgs e)
@@ -136,7 +148,12 @@ namespace BarCodeScanner
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            this.statusBar1.Text = "Сканер1 / Штирлиц М.";
+//            CargoDoc CargoDocDB = new CargoDoc();
+/*            if (LoginForm.Dialog() == DialogResult.Abort) Close();
+            else
+            {
+                this.statusBar1.Text = "Сканер1 / Штирлиц М.";
+            } */
         }
 
         private void textBox1_TextChanged(object sender, EventArgs e)
@@ -323,7 +340,7 @@ namespace BarCodeScanner
             // You can skip this step for anonymous web services
 //            req.Credentials = new System.Net.NetworkCredential("username", "password");
             // You can replace it with POST, PUT, DELETE
-            req.Method = "PUT";
+            req.Method = "POST";
             // Actually the content is empty but just for coherence...
             req.ContentType = "text/xml;charset=utf-8";
             // Tells the web service you want XML and not JSON
@@ -350,12 +367,6 @@ namespace BarCodeScanner
             req.BeginGetResponse(new AsyncCallback(RespCallback), req);
         }
 
-/*        public void Serialize(Stream output, object input)
-        {
-            var ser = new DataContractSerializer(input.GetType());
-            ser.WriteObject(output, input);
-        } */
-
         private static void RespCallback(IAsyncResult asynchronousResult)
         {
 /*            public Form1 f;
@@ -381,11 +392,46 @@ namespace BarCodeScanner
 
         }
 
-/*        private void AddText(String text)
-        {
-            this.listBox1.Text += text + "\r\n";
-        } */
+        private void button5_Click(object sender, EventArgs e)
+        { 
+/*            string p = CurrentPath + @"\2419.xml";
+            if ( CargoDoc.LoadFromFile(p , out CargoDocDB ) == true)
+            {  */
+                DocListForm d = new DocListForm();
+                d.Show();
+//            }
+//            d.Close();
+//            Close();
+        }
 
+        private void timer1_Tick(object sender, EventArgs e)
+        {
+
+            if (SystemState.PowerBatteryState == BatteryState.Critical)
+            {
+//                MessageBox.Show("Низкий заряд батареи. Поставьте сканер на подзарядку.", "Внимание!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button1);
+            };
+
+
+        }
+
+        private void LoadXml(string filename)
+        {
+            string sb;
+            CargoDoc cargo = new CargoDoc();
+
+            try
+            {
+                cargo = CargoDoc.LoadFromFile(CurrentPath + "\\" +filename);
+                listBox1.Items.Add(cargo.Partner);
+                listBox1.Items.Add(cargo.Number);
+                cargodocs.Add(cargo);
+            }
+            catch (Exception ex)
+            {
+                sb = ex.Message.ToString();
+            }
+        }
 
     }
 }
