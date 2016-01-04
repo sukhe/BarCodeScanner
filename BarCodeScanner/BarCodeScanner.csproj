@@ -49,6 +49,10 @@
     <Reference Include="Microsoft.WindowsMobile, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
     <Reference Include="Microsoft.WindowsMobile.Status, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
     <Reference Include="mscorlib" />
+    <Reference Include="OBReadLibNet, Version=2.0.5.6336, Culture=neutral, PublicKeyToken=4079e79a5891f674">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\Program Files\CASIO\MBSys\WindowsCE\OBReadLibNet.dll</HintPath>
+    </Reference>
     <Reference Include="OpenNETCF, Version=2.3.12317.0, Culture=neutral, PublicKeyToken=e60dbea84bb431b7, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>C:\Program Files\CASIO\OpenNETCF\OpenNETCF.dll</HintPath>
@@ -68,6 +72,10 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
+    <Reference Include="SystemLibnet, Version=2.0.6.6336, Culture=neutral, PublicKeyToken=4079e79a5891f674">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\Program Files\CASIO\MBSys\WindowsCE\SystemLibnet.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CargoDocs.Designer.cs">
@@ -75,6 +83,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>CargoDocs.xsd</DependentUpon>
     </Compile>
+    <Compile Include="CasioScanner.cs" />
     <Compile Include="Config.cs" />
     <Compile Include="DocListForm.cs">
       <SubType>Form</SubType>
@@ -123,6 +132,8 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="ScannedDataEventArgs.cs" />
+    <Compile Include="ScannerStatus.cs" />
     <Compile Include="settings.Designer.cs">
       <DependentUpon>settings.xsd</DependentUpon>
       <DesignTime>True</DesignTime>

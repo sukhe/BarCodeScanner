@@ -24,6 +24,12 @@ namespace BarCodeScanner
         Stream ReceiveStream = null;
         StreamReader sr = null;
         string CurrentPath;
+//        public static Config 
+
+        CasioScanner cs;
+        public delegate void AddScan(string s);
+        public AddScan addItem;
+
 
         /// <summary>
         /// Проверяем наличие файла настроек и каталогов. При отсутствии - загружаем/создаём.
@@ -32,24 +38,32 @@ namespace BarCodeScanner
         /// <returns>Истина если всё хорошо; ложь, если что-то не в порядке</returns>
         private Boolean TestFilesAndDirs()
         {
-            CurrentPath = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().GetName().CodeBase);
+            CurrentPath = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().GetName().CodeBase)+@"\";
 
-            if (!File.Exists(CurrentPath+@"\settings.xml"))
+            if (!File.Exists(CurrentPath + "settings.xml"))
+            {
                 if (!DownloadSettings())
                 {
                     MessageBox.Show("Файл настроек не найден!");
                     return false;
                 }
+            }
+            else
+            {
+                settings = Settings.LoadFromFile(CurrentPath + "settings.xml");
+            }
 
             /*            if (!Directory.Exists(CurrentPath+@"\log")
                             Directory.CreateDirectory(CurrentPath+@"\log"); */
 
-            if (!Directory.Exists(CurrentPath+@"\doc"))
-                Directory.CreateDirectory(CurrentPath+@"\doc");
+            if (!Directory.Exists(CurrentPath+"doc"))
+                Directory.CreateDirectory(CurrentPath+"doc");
 
-            doclist = Directory.GetFiles(CurrentPath + @"\doc", "*_*_*.xml");
+            doclist = Directory.GetFiles(CurrentPath + "doc", "*_*_*.xml");
 // Сделать загрузку данных из файлов, чтобы в списке были даты, контрагенты и т.п.
 // Вообще, это надо в отдельную функцию засунуть, чтобы суперюзер мог перечитать список
+
+            Config.scannerNumber = "02";
             return true;
         }
 
@@ -76,20 +90,18 @@ namespace BarCodeScanner
                     }
                     if (settings.Users.Length > 0)
                     {
-                        settings.SaveToFile(CurrentPath + @"settings.xml");
+                        settings.SaveToFile(CurrentPath + "settings.xml");
                         result = true;
                     }
                     repeat -= 1;
                 }
                 catch (Exception ex)
                 {
-                    s = ex.Message;
-                    if (ex.InnerException != null)
-                    {
-                        s = s + " " + ex.InnerException.Message;
-                        MessageBox.Show(s);
-                    }
-                    result = false;
+                    if (ex.InnerException == null)
+                        MessageBox.Show(@"[MF02] " + ex.Message);
+                    else
+                        MessageBox.Show(@"[MF02] " + ex.Message + " " + ex.InnerException.Message);
+                    return false; 
                 }
             }
             return result;
@@ -98,6 +110,7 @@ namespace BarCodeScanner
         private Boolean LoadAllDataFromXml()
         {
             Boolean result = false;
+            cargodocs.Clear();
             try
             {
                 foreach (string s in doclist)
@@ -108,12 +121,11 @@ namespace BarCodeScanner
             }
             catch (Exception ex)
             {
-                string err = ex.Message;
-                if (ex.InnerException != null)
-                {
-                    err += " " + ex.InnerException.Message;
-                }
-                MessageBox.Show(err);
+                if (ex.InnerException == null)
+                    MessageBox.Show(@"[MF03] " + ex.Message);
+                else
+                    MessageBox.Show(@"[MF03] " + ex.Message + " " + ex.InnerException.Message);
+                return false;
             }
             return result;
         }
@@ -123,27 +135,72 @@ namespace BarCodeScanner
             InitializeComponent();
             TestFilesAndDirs();
             CargoDoc cargodoc = new CargoDoc();
-/*            this.KeyPreview = true;
-            this.KeyUp += new KeyEventHandler(this.OnKeyUp);
-            HBConfig();*/
+
+            cs = new CasioScanner();
+            cs.Scanned += OnScan;
+            cs.Open();
+//            addItem = new AddScan(ListItemAdd); // назначение делегата для потокобезопасного вызова процедуры
+            addItem = new AddScan(GetXML);
+        }
+
+        void GetXML(string barcod)
+        {
+            DownloadXML(barcod);
+        }
+
+/*        void ListItemAdd(string text)
+        {
+            listBox1.Items.Add(text);
+        } */
+
+        private void OnScan(object sender, ScannedDataEventArgs e)
+        {
+            this.Invoke(addItem, (e.Data).ToString());
+//            listBox1.Invoke(GetXML, (e.Data).ToString());
+        }
+
+        public Boolean DownloadXML(string barcod)
+        {
+            try
+            {
+                string s = sRestAPI("http://192.168.10.213/CargoDocService.svc/CargoDoc/" + barcod.Replace(" ","_")+"_"+Config.scannerNumber);
+                s = DeleteNameSpace(s);
+                s = DeleteNil(s);
+                listBox1.Items.Add("Получено " + s.Length.ToString() + " байт данных");
+
+                XmlSerializer serializer = new XmlSerializer(typeof(CargoDoc));
+                CargoDoc cd = new CargoDoc();
+                using (var reader = new StringReader(s))
+                {
+                    cd = (CargoDoc)serializer.Deserialize(reader);
+                }
+                cd.SaveToFile(CurrentPath + @"doc\" + barcod.Replace(" ","_") + @".xml");
+                return true;
+            }
+            catch (Exception ex)
+            {
+                if (ex.InnerException == null)
+                    MessageBox.Show(@"[MF01] "+ex.Message);
+                else
+                    MessageBox.Show(@"[MF01] "+ex.Message + " " + ex.InnerException.Message);
+                return false;
+            }
+
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
-            string ndoc = "9237_20151118_02";
-
-//            GetHTTP("http://192.168.10.213/CargoDocService.svc/CargoDoc/"+s);
-            //GetHTTP("http://192.168.10.213");
-
-            string s = sRestAPI("http://192.168.10.213/CargoDocService.svc/CargoDoc/" + ndoc);
+            DownloadXML("9237_20151118_02");
+/*            string ndoc = "9237_20151118_02";
+            string s = sRestAPI("http://192.168.10.213/CargoDocService.svc/CargoDoc/" + ndoc); */
 
 //            s = "<CargoDoc><Data>2015-11-18T10:56:52+02:00</Data><DocId i:nil=\"true\"/><Error i:nil=\"true\"/><Number>9237     </Number><Partner>ТОВ \"БИТТЕХ";
 
-            s = DeleteNameSpace(s);
+/*            s = DeleteNameSpace(s);
             s = DeleteNil(s);
 
             listBox1.Items.Clear();
-            listBox1.Items.Add("Получено " + s.Length.ToString() + " байт данных");
+            listBox1.Items.Add("Получено " + s.Length.ToString() + " байт данных"); */
 
 /*            using (FileStream fs = File.OpenWrite(CurrentPath + ndoc + ".xml"))
             {
@@ -151,34 +208,13 @@ namespace BarCodeScanner
                 fs.Write(info, 0, info.Length);
             }*/
 
-            XmlSerializer serializer = new XmlSerializer(typeof(CargoDoc));
-
+/*            XmlSerializer serializer = new XmlSerializer(typeof(CargoDoc));
             CargoDoc cd = new CargoDoc();
-
             using (var reader = new StringReader(s))
             {
-
                 cd = (CargoDoc)serializer.Deserialize(reader);
             }
-
-            cd.SaveToFile(CurrentPath + @"\doc\"+ndoc+@".xml");
-//            cargodoc = cd;
-
-/*            listBox1.Items.Clear();
-
-            listBox1.Items.Add(cd.Data);
-            listBox1.Items.Add(cd.DocID);
-            listBox1.Items.Add(cd.Partner);
-
-            foreach (Product p in cd.TotalProducts)
-            {
-                listBox1.Items.Add(p.PName + " - " + p.Quantity);
-            }
-
-            foreach (XCode x in cd.XCodes)
-            {
-                listBox1.Items.Add(x.ScanCode + " - " + x.Fio);
-            }   */
+            cd.SaveToFile(CurrentPath + @"\doc\"+ndoc+@".xml"); */
 
         }
 
@@ -241,8 +277,6 @@ namespace BarCodeScanner
             }
             
 
-
-
 //            Settings set = Settings.Deserialize(s);
             //MessageBox.Show("Нажата F2");
 //            GetHTTP("http://192.168.10.213/CargoDocService.svc/Settings");
@@ -261,54 +295,6 @@ namespace BarCodeScanner
             //MessageBox.Show("Нажата F4");
             Close();
         }
-
-/*        private void HBConfig()
-        {
-            try
-            {
-                hwb1 = new HardwareButton();
-                hwb2 = new HardwareButton();
-                hwb3 = new HardwareButton();
-                hwb4 = new HardwareButton();
-                hwb1.AssociatedControl = this;
-                hwb2.AssociatedControl = this;
-                hwb3.AssociatedControl = this;
-                hwb4.AssociatedControl = this;
-                hwb1.HardwareKey = HardwareKeys.ApplicationKey1;
-                hwb4.HardwareKey = HardwareKeys.ApplicationKey4;
-                hwb2.HardwareKey = HardwareKeys.ApplicationKey2;
-                hwb3.HardwareKey = HardwareKeys.ApplicationKey3;
-            }
-            catch (Exception exc)
-            {
-                MessageBox.Show(exc.Message + " Check if the hardware button is physically available on this device.");
-            }
-        } 
-
-        private void OnKeyUp(object sender, KeyEventArgs e)
-        {
-            switch ((HardwareKeys)e.KeyCode)
-            {
-                case HardwareKeys.ApplicationKey1:
-                    statusBar1.Text = "Button 1 pressed.";
-                    break;
-
-                case HardwareKeys.ApplicationKey2:
-                    statusBar1.Text = "Button 2 pressed.";
-                    break;
-
-                case HardwareKeys.ApplicationKey3:
-                    statusBar1.Text = "Button 3 pressed.";
-                    break;
-
-                case HardwareKeys.ApplicationKey4:
-                    statusBar1.Text = "Button 4 pressed.";
-                    break;
-
-                default:
-                    break;
-            }
-        } */
 
         private void Form1_KeyDown(object sender, KeyEventArgs e)
         {
@@ -337,15 +323,15 @@ namespace BarCodeScanner
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            if (LoginForm.Dialog() == DialogResult.Abort) Close();
+/*            if (LoginForm.Dialog() == DialogResult.Abort) Close();
             else
-            {
+            { */
                 this.statusBar1.Text = "Сканер №" + Config.scannerNumber + " / " + Config.userName;
-            }
+/*            }
             if (Config.superuser)
             {
                 this.BackColor = Color.Coral;
-            }
+            } */
         }
 
         #region HTTP
@@ -424,55 +410,13 @@ namespace BarCodeScanner
                 XmlSerializer serializer = new XmlSerializer(typeof(CargoDoc));
                 CargoDoc cd = new CargoDoc();
 
-                using (FileStream fs = File.OpenWrite(CurrentPath + "\\cargon.xml"))
+                using (FileStream fs = File.OpenWrite(CurrentPath + "cargon.xml"))
                 {
                     Byte[] info = new UTF8Encoding(true).GetBytes(sr.ToString());
                     fs.Write(info, 0, info.Length);
                     listBox1.Items.Add("Получено "+info.Length.ToString()+" байт данных");
                 }
             
-/*                using (var stream = File.OpenRead(CurrentPath + "\\cargon.xml"))
-                {
-                    cd = (CargoDoc)serializer.Deserialize(stream);
-                } 
-
-
-                using (var reader = new StringReader(DeleteNameSpace(cd.ToString())))
-                {
-
-                    cd = (CargoDoc)serializer.Deserialize(reader);
-                }*/
-
-                /*listBox1.Items.Clear();
-
-                listBox1.Items.Add(cd.Data);
-                listBox1.Items.Add(cd.DocID);
-                listBox1.Items.Add(cd.Partner);
-
-                foreach (Product p in cd.TotalProducts) {
-                    listBox1.Items.Add(p.PName + " - " + p.Quantity);
-                }
-
-                foreach (XCode x in cd.XCodes)
-                {
-                    listBox1.Items.Add(x.ScanCode + " - " + x.Fio);
-                } */  
-               
-
-                // Read the stream into arrays of 30 characters
-                // to add as items in the list box. Repeat until
-                // buffer is read.
-/*                Char[] read = new Char[30];
-                int count = sr.Read(read, 0, 30);
-                while (count > 0)
-                {
-                    String str = new String(read, 0, count);
-                    this.listBox1.Items.Add(str);
-                    count = sr.Read(read, 0, 30);
-                } */
-
-
-
             }
             catch (WebException ex)
             {
@@ -692,7 +636,7 @@ namespace BarCodeScanner
             };
         }
 
-        private string DeleteNameSpace(string s) // применять только один раз!
+        private string DeleteNameSpace(string s) // применять только один раз! иначе откусывает лишнее
         {
             string begin = s.Substring(0, s.IndexOf(" "));
             return begin + ">" + s.Substring(s.IndexOf(">") + 1);
@@ -701,6 +645,13 @@ namespace BarCodeScanner
         private string DeleteNil(string s)
         {
             return s.Replace(@" i:nil=""true""", "");
+        }
+
+        private void MainForm_Closing(object sender, CancelEventArgs e)
+        {
+            cs.Scanned -= OnScan;
+            cs.Dispose();
+            Dispose();
         }
 
 

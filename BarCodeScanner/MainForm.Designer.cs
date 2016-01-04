@@ -187,6 +187,7 @@
             this.Name = "MainForm";
             this.Text = "Сканирование штрихкодов";
             this.Load += new System.EventHandler(this.Form1_Load);
+            this.Closing += new System.ComponentModel.CancelEventHandler(this.MainForm_Closing);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Form1_KeyDown);
             this.ResumeLayout(false);
 

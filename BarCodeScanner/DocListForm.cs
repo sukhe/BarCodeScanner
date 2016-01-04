@@ -11,12 +11,15 @@ namespace BarCodeScanner
 {
     public partial class DocListForm : Form
     {
-/*        static DataTable cargodocTable;
-        static DataSet cargodocDataSet; */
 
         public DocListForm()
         {
             InitializeComponent();
+        }
+
+        private void DocListForm_Closing(object sender, CancelEventArgs e)
+        {
+            Tag = "Closing";
         }
 
         private void DocListForm_Load(object sender, EventArgs e)
@@ -30,7 +33,14 @@ namespace BarCodeScanner
 
             // а вот таперича пробуем загрузить ещё документов
 
+//            if (
 
+        }
+
+        private string colData(string s)
+        {
+
+            return s.Substring(8,2)+'.'+s.Substring(5,2)+'.'+s.Substring(2,2);
         }
 
         private DataTable GetCustomers(DataTable table, DataGrid datagrid)
@@ -45,7 +55,7 @@ namespace BarCodeScanner
 
             foreach (CargoDoc d in MainForm.cargodocs)
             {
-                table.Rows.Add(new object[] { d.Number, d.Data, d.Partner });
+                table.Rows.Add(new object[] { d.Number.Trim(), colData(d.Data), d.Partner });
             }
 
             // ширина колонок
@@ -60,7 +70,7 @@ namespace BarCodeScanner
             tableStyle.GridColumnStyles.Add(col1);
 
             DataGridTextBoxColumn col2 = new DataGridTextBoxColumn();
-            col2.Width = 100;
+            col2.Width = 90;
             col2.MappingName = table.Columns[1].ColumnName;
             col2.HeaderText = table.Columns[1].ColumnName;
             tableStyle.GridColumnStyles.Add(col2);
@@ -82,61 +92,30 @@ namespace BarCodeScanner
             return table;
         }
 
-        
-        private void dataGrid1_GotFocus(object sender, EventArgs e)
+        private void DocListForm_Closed(object sender, EventArgs e)
         {
-
-
-
-/*            cargodocDataSet = new DataSet();
-            cargodocTable = new DataTable();
-
-            DataColumn docidColumn = cargodocTable.Columns.Add("DocID", typeof(int));
-            DataColumn numberColumn = cargodocTable.Columns.Add("Number", typeof(string));
-            DataColumn dataColumn = cargodocTable.Columns.Add("Data", typeof(string));
-            DataColumn partnerColumn = cargodocTable.Columns.Add("Partner", typeof(string));
-
-            cargodocTable.PrimaryKey = new DataColumn[] { docidColumn };
-
-            cargodocTable.Columns.Add();
-
-            cargodocTable.Rows.Add(new object[] { 1, "1548", "18.02.2015", "ООО БББ" });
-            cargodocTable.Rows.Add(new object[] { 2, "1549", "19.02.2015", "Delta" });
-            cargodocTable.Rows.Add(new object[] { 3, "1550", "20.02.2015", "DLkj" });
-
-            cargodocTable.AcceptChanges();
-
-            cargodocDataSet.Tables.Add(cargodocTable);
-            dataGrid1.DataSource = cargodocDataSet; */
-
+            Tag = "Closed";
         }
 
-/*        private static DataTable GetCargoDoc()
+        private void DocListForm_GotFocus(object sender, EventArgs e)
         {
-//            DataTable table = new DataTable();
-
-            DataColumn docidColumn = cargodocTable.Columns.Add("DocID", typeof(int));
-            DataColumn numberColumn = cargodocTable.Columns.Add("Number", typeof(string));
-            DataColumn dataColumn = cargodocTable.Columns.Add("Data", typeof(string));
-            DataColumn partnerColumn = cargodocTable.Columns.Add("Partner", typeof(string));
-            cargodocTable.PrimaryKey = new DataColumn[] { docidColumn };
-
-            cargodocTable.Rows.Add(new object[] { 1, "1548", "18.02.2015", "ООО БББ" });
-            cargodocTable.Rows.Add(new object[] { 2, "1549", "19.02.2015", "Delta" });
-            cargodocTable.Rows.Add(new object[] { 3, "1550", "20.02.2015", "DLkj" });
-            cargodocTable.AcceptChanges();
-
-            cargodocTable.Columns.Add();
-            return cargodocTable;
+            Tag = "GotFocus";
         }
 
-        private static DataTableReader GetReader()
+        private void DocListForm_Activated(object sender, EventArgs e)
         {
-//            DataSet cargodocDataSet = new DataSet();
-            cargodocDataSet.Tables.Add(GetCargoDoc());
-            return cargodocDataSet.CreateDataReader();
+            Tag = "Activated";
         }
-        */
-       
+
+        private void DocListForm_Deactivate(object sender, EventArgs e)
+        {
+            Tag = "Deactivate";
+        }
+
+        private void DocListForm_LostFocus(object sender, EventArgs e)
+        {
+            Tag = "LostFocus";
+        }
+     
     }
 }

@@ -68,7 +68,7 @@ namespace BarCodeScanner
             if (textBox1.Text.Length >= 6)
             {
                 if (TestPassword(textBox1.Text))
-                {
+                { 
                     LoginResult = DialogResult.OK;
                     Close();
                 }
