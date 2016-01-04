@@ -1,0 +1,71 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema id="Settings" xmlns="" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+  <xs:element name="Settings">
+    <xs:complexType>
+       <xs:sequence>
+
+          <xs:element name="Users" minOccurs="0" maxOccurs="unbounded">
+             <xs:complexType>	
+                <xs:sequence>
+                   <xs:element name="User" minOccurs="0" maxOccurs="unbounded">
+                      <xs:complexType>
+                         <xs:sequence>
+                            <xs:element name="FIO" type="xs:string" minOccurs="0" />
+                            <xs:element name="Pwd" type="xs:string" minOccurs="0" />
+                         </xs:sequence>
+                      </xs:complexType>
+                   </xs:element>
+                </xs:sequence>
+             </xs:complexType>
+        </xs:element>
+
+        <xs:element name="Scanners"  minOccurs="0" maxOccurs="unbounded">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="Scanner" minOccurs="0" maxOccurs="unbounded">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="MAC" type="xs:string" minOccurs="0" />
+                    <xs:element name="Nomer" type="xs:string" minOccurs="0" />
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+
+        <xs:element name="Locations"  minOccurs="0" maxOccurs="unbounded">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="Location" minOccurs="0" maxOccurs="unbounded">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="LID" type="xs:string" minOccurs="0" />
+                    <xs:element name="Name" type="xs:string" minOccurs="0" />
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+
+        <xs:element name="Transfers"  minOccurs="0" maxOccurs="unbounded">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="Transfer" minOccurs="0" maxOccurs="unbounded">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="Name" type="xs:string" minOccurs="0" />
+                    <xs:element name="From" type="xs:string" minOccurs="0" />
+                    <xs:element name="To" type="xs:string" minOccurs="0" />
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+
+       </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

@@ -22,35 +22,21 @@ namespace BarCodeScanner
         private void DocListForm_Load(object sender, EventArgs e)
         {
 
-/*                cargodocTable = new DataTable();
-                cargodocDataSet = new DataSet();
-//                cargodocDataSet.Tables.Add(cargodocTable);
-
-                DataTableReader reader = GetReader();
-                cargodocDataSet.Load(reader, LoadOption.OverwriteChanges, cargodocTable);
-//                dataGrid1.DataSource = dataSet1;
-
-            //            PrintColumns(cargodocTable); */
-
-
+            // показываем таблицу со списком уже имеющихся у нас документов
             DataTable table = new DataTable();
-
             dataGrid1.DataSource = table;
-
-
-            DataTableReader reader = new DataTableReader(GetCustomers());
+            DataTableReader reader = new DataTableReader(GetCustomers(table,dataGrid1));
             table.Load(reader);
+
+            // а вот таперича пробуем загрузить ещё документов
+
 
         }
 
-        private DataTable GetCustomers()
+        private DataTable GetCustomers(DataTable table, DataGrid datagrid)
         {
-            // Create sample Customers table, in order 
-            // to demonstrate the behavior of the DataTableReader.
-            DataTable table = new DataTable();
 
-            // Create two columns, ID and Name.
-            DataColumn Number = table.Columns.Add("№ док-та", typeof(string));
+            DataColumn Number = table.Columns.Add("№ док.", typeof(string));
             table.Columns.Add("Дата", typeof(string));
             table.Columns.Add("Контрагент", typeof(string));
 
@@ -62,9 +48,36 @@ namespace BarCodeScanner
                 table.Rows.Add(new object[] { d.Number, d.Data, d.Partner });
             }
 
+            // ширина колонок
+            datagrid.TableStyles.Clear();
+            DataGridTableStyle tableStyle = new DataGridTableStyle();
+            tableStyle.MappingName = table.TableName;
+
+            DataGridTextBoxColumn col1 = new DataGridTextBoxColumn();
+            col1.Width = 80;
+            col1.MappingName = table.Columns[0].ColumnName;
+            col1.HeaderText = table.Columns[0].ColumnName;
+            tableStyle.GridColumnStyles.Add(col1);
+
+            DataGridTextBoxColumn col2 = new DataGridTextBoxColumn();
+            col2.Width = 100;
+            col2.MappingName = table.Columns[1].ColumnName;
+            col2.HeaderText = table.Columns[1].ColumnName;
+            tableStyle.GridColumnStyles.Add(col2);
+
+            DataGridTextBoxColumn col3 = new DataGridTextBoxColumn();
+            col3.Width = 280;
+            col3.MappingName = table.Columns[2].ColumnName;
+            col3.HeaderText = table.Columns[2].ColumnName;
+            tableStyle.GridColumnStyles.Add(col3);
+
+            datagrid.TableStyles.Add(tableStyle);
+
+
 /*            table.Rows.Add(new object[] { 0, "Mary" });
             table.Rows.Add(new object[] { 1, "Andy" });
             table.Rows.Add(new object[] { 2, "Peter" });*/
+
             table.AcceptChanges();
             return table;
         }

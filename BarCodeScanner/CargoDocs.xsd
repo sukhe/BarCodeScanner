@@ -4,9 +4,8 @@
     <xs:complexType>
       <xs:sequence>
         <xs:element name="Error" type="xs:string" minOccurs="0" />
-        <xs:element name="Message" type="xs:string" minOccurs="0" />
         <xs:element name="Data" type="xs:string" minOccurs="0" />
-        <xs:element name="DocID" type="xs:string" minOccurs="0" />
+        <xs:element name="UUID" type="xs:string" minOccurs="0" />
         <xs:element name="Number" type="xs:string" minOccurs="0" />
         <xs:element name="Partner" type="xs:string" minOccurs="0" />
         <xs:element name="Quantity" type="xs:string" minOccurs="0" />

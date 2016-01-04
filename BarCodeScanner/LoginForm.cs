@@ -50,13 +50,22 @@ namespace BarCodeScanner
         private Boolean TestPassword(string pwd)
         {
             Config.userName = "Вася";
-            if (pwd != "111111") return false;
-            else return true;
+
+            switch (pwd) {
+                case "111111":
+                    return true;
+                case ".1111.":
+                    Config.userName = "Олег";
+                    Config.superuser = true;
+                    return true;
+                default:
+                    return false;
+            }
         }
 
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
-            if (textBox1.Text.Length == 6)
+            if (textBox1.Text.Length >= 6)
             {
                 if (TestPassword(textBox1.Text))
                 {
@@ -90,6 +99,45 @@ namespace BarCodeScanner
         {
             LoginResult = DialogResult.Abort;
             Close();
+        }
+
+        private void LoginForm_KeyDown(object sender, KeyEventArgs e)
+        {
+/*            if ((e.KeyCode == System.Windows.Forms.Keys.F1))
+            {
+                //                MessageBox.Show("Нажата F1 аппаратно");
+                buttonRetry_Click(this, e);
+            }
+            if ((e.KeyCode == System.Windows.Forms.Keys.F2))
+            {
+                buttonRetry_Click(this, e);
+                //                MessageBox.Show("Нажата F2 аппаратно");
+            } */
+            if ((e.KeyCode == System.Windows.Forms.Keys.F3))
+            {
+                buttonClose_Click(this, e);
+                //                MessageBox.Show("Нажата F3 аппаратно");
+            }
+            if ((e.KeyCode == System.Windows.Forms.Keys.F4))
+            {
+                buttonClose_Click(this, e);
+                //                MessageBox.Show("Нажата F4 аппаратно");
+            }
+
+        }
+
+        private void textBox1_KeyDown(object sender, KeyEventArgs e)
+        {
+            if ((e.KeyCode == System.Windows.Forms.Keys.F3))
+            {
+                buttonClose_Click(this, e);
+                //                MessageBox.Show("Нажата F3 аппаратно");
+            }
+            if ((e.KeyCode == System.Windows.Forms.Keys.F4))
+            {
+                buttonClose_Click(this, e);
+                //                MessageBox.Show("Нажата F4 аппаратно");
+            }
         }
 
     }

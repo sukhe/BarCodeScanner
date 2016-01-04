@@ -123,20 +123,36 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="settings.Designer.cs">
+      <DependentUpon>settings.xsd</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <None Include="CargoDocs.xsc">
       <DependentUpon>CargoDocs.xsd</DependentUpon>
     </None>
     <None Include="CargoDocs.xsd">
-      <SubType>Designer</SubType>
       <Generator>MSDataSetGenerator</Generator>
       <LastGenOutput>CargoDocs.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </None>
     <None Include="CargoDocs.xss">
       <DependentUpon>CargoDocs.xsd</DependentUpon>
     </None>
     <None Include="Properties\DataSources\CargoDoc.datasource" />
+    <None Include="settings.xsc">
+      <DependentUpon>settings.xsd</DependentUpon>
+    </None>
+    <None Include="settings.xsd">
+      <SubType>Designer</SubType>
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>settings.Designer.cs</LastGenOutput>
+    </None>
+    <None Include="settings.xss">
+      <DependentUpon>settings.xsd</DependentUpon>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CompactFramework.CSharp.targets" />
   <ProjectExtensions>

@@ -7,8 +7,9 @@ namespace BarCodeScanner
 {
     public static class Config
     {
-        public static string scannerNumber;
-        public static string userName;
-        public static string batterylevel;
+        public static string scannerNumber = "";
+        public static string userName = "";
+        public static string batterylevel = "";
+        public static Boolean superuser = false;
     }
 }

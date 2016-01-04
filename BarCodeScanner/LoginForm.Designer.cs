@@ -31,6 +31,7 @@
             this.label1 = new System.Windows.Forms.Label();
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.buttonClose = new System.Windows.Forms.Button();
+            this.label2 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // label1
@@ -50,16 +51,31 @@
             this.textBox1.Size = new System.Drawing.Size(100, 21);
             this.textBox1.TabIndex = 1;
             this.textBox1.TextChanged += new System.EventHandler(this.textBox1_TextChanged);
-//            this.textBox1.GotFocus += new System.EventHandler(this.textBox1_GotFocus);
+            this.textBox1.KeyDown += new System.Windows.Forms.KeyEventHandler(this.textBox1_KeyDown);
             // 
             // buttonClose
             // 
-            this.buttonClose.Location = new System.Drawing.Point(0, 271);
+            this.buttonClose.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                        | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.buttonClose.Location = new System.Drawing.Point(0, 264);
             this.buttonClose.Name = "buttonClose";
-            this.buttonClose.Size = new System.Drawing.Size(240, 20);
+            this.buttonClose.Size = new System.Drawing.Size(240, 30);
             this.buttonClose.TabIndex = 2;
             this.buttonClose.Text = "Выход";
             this.buttonClose.Click += new System.EventHandler(this.buttonClose_Click);
+            // 
+            // label2
+            // 
+            this.label2.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.label2.BackColor = System.Drawing.Color.Yellow;
+            this.label2.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold);
+            this.label2.ForeColor = System.Drawing.Color.Black;
+            this.label2.Location = new System.Drawing.Point(4, 269);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(35, 20);
+            this.label2.Text = "F4";
+            this.label2.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             // 
             // LoginForm
             // 
@@ -67,12 +83,14 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.AutoScroll = true;
             this.ClientSize = new System.Drawing.Size(240, 294);
+            this.Controls.Add(this.label2);
             this.Controls.Add(this.buttonClose);
             this.Controls.Add(this.textBox1);
             this.Controls.Add(this.label1);
             this.MinimizeBox = false;
             this.Name = "LoginForm";
             this.Text = "Сканирование штрихкодов";
+            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.LoginForm_KeyDown);
             this.ResumeLayout(false);
 
         }
@@ -82,5 +100,6 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.TextBox textBox1;
         private System.Windows.Forms.Button buttonClose;
+        private System.Windows.Forms.Label label2;
     }
 }

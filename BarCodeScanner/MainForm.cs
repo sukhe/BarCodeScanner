@@ -12,27 +12,117 @@ using System.IO;
 using Microsoft.WindowsMobile;
 using Microsoft.WindowsMobile.Status;
 using System.Xml;
-
-//using System.Runtime.Serialization;
+using System.Xml.Serialization;
 
 namespace BarCodeScanner
 {
     public partial class MainForm : Form
     {
-
         public static List<CargoDoc> cargodocs = new List<CargoDoc>();
-//        static CargoDoc CargoDocDB;
-
-//        private HardwareButton hwb1, hwb3, hwb2, hwb4;
+        public static string[] doclist;
+        static Settings settings = new Settings();
         Stream ReceiveStream = null;
         StreamReader sr = null;
         string CurrentPath;
 
+        /// <summary>
+        /// Проверяем наличие файла настроек и каталогов. При отсутствии - загружаем/создаём.
+        /// Составляем список имеющихся на сканере документов.
+        /// </summary>
+        /// <returns>Истина если всё хорошо; ложь, если что-то не в порядке</returns>
+        private Boolean TestFilesAndDirs()
+        {
+            CurrentPath = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().GetName().CodeBase);
+
+            if (!File.Exists(CurrentPath+@"\settings.xml"))
+                if (!DownloadSettings())
+                {
+                    MessageBox.Show("Файл настроек не найден!");
+                    return false;
+                }
+
+            /*            if (!Directory.Exists(CurrentPath+@"\log")
+                            Directory.CreateDirectory(CurrentPath+@"\log"); */
+
+            if (!Directory.Exists(CurrentPath+@"\doc"))
+                Directory.CreateDirectory(CurrentPath+@"\doc");
+
+            doclist = Directory.GetFiles(CurrentPath + @"\doc", "*_*_*.xml");
+// Сделать загрузку данных из файлов, чтобы в списке были даты, контрагенты и т.п.
+// Вообще, это надо в отдельную функцию засунуть, чтобы суперюзер мог перечитать список
+            return true;
+        }
+
+        /// <summary>
+        /// Загрузка файла настроек с сервера. Делаем указанное количество попыток.
+        /// Критерий правильности загрузки - в полученном конфиге количество пользователей больше нуля
+        /// </summary>
+        /// <returns>Истина если загрузилось; ложь, если нет</returns>
+        private Boolean DownloadSettings()
+        {
+            Boolean result = false;
+            int repeat = 3;      // количество повторов для считывания настроек по сети
+
+            string s = sRestAPI("http://192.168.10.213/CargoDocService.svc/Settings");
+            s = DeleteNameSpace(s);
+            XmlSerializer serializer = new XmlSerializer(typeof(Settings));
+
+            while (repeat>0 && result == false) {
+                try
+                {
+                    using (var reader = new StringReader(s))
+                    {
+                        settings = (Settings)serializer.Deserialize(reader);
+                    }
+                    if (settings.Users.Length > 0)
+                    {
+                        settings.SaveToFile(CurrentPath + @"settings.xml");
+                        result = true;
+                    }
+                    repeat -= 1;
+                }
+                catch (Exception ex)
+                {
+                    s = ex.Message;
+                    if (ex.InnerException != null)
+                    {
+                        s = s + " " + ex.InnerException.Message;
+                        MessageBox.Show(s);
+                    }
+                    result = false;
+                }
+            }
+            return result;
+        }
+
+        private Boolean LoadAllDataFromXml()
+        {
+            Boolean result = false;
+            try
+            {
+                foreach (string s in doclist)
+                {
+                    cargodocs.Add(CargoDoc.LoadFromFile(s));
+                }
+                result = true;
+            }
+            catch (Exception ex)
+            {
+                string err = ex.Message;
+                if (ex.InnerException != null)
+                {
+                    err += " " + ex.InnerException.Message;
+                }
+                MessageBox.Show(err);
+            }
+            return result;
+        }
+
         public MainForm()
         {
             InitializeComponent();
-            CurrentPath = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().GetName().CodeBase);
-
+            TestFilesAndDirs();
+            CargoDoc cargodoc = new CargoDoc();
 /*            this.KeyPreview = true;
             this.KeyUp += new KeyEventHandler(this.OnKeyUp);
             HBConfig();*/
@@ -40,31 +130,130 @@ namespace BarCodeScanner
 
         private void button1_Click(object sender, EventArgs e)
         {
-            //MessageBox.Show("Нажата F1");
-            /* using(WebClient client = new WebClient()) {
-                byte[] bytes = client.DownloadData(uri);
-                // do your thing...
-            } */
-            //string s = StringGetWebPage("http://192.168.10.213/CargoDocService.svc/CargoDoc/2401");
+            string ndoc = "9237_20151118_02";
 
-            // string s = StringGetWebPage("http://192.168.10.213");
-            //listBox1.Items.Clear();
-            string s = "9237_20151118_02"; 
-                // textBox1.Text;
-            GetHTTP("http://192.168.10.213/CargoDocService.svc/CargoDoc/"+s);
+//            GetHTTP("http://192.168.10.213/CargoDocService.svc/CargoDoc/"+s);
             //GetHTTP("http://192.168.10.213");
+
+            string s = sRestAPI("http://192.168.10.213/CargoDocService.svc/CargoDoc/" + ndoc);
+
+//            s = "<CargoDoc><Data>2015-11-18T10:56:52+02:00</Data><DocId i:nil=\"true\"/><Error i:nil=\"true\"/><Number>9237     </Number><Partner>ТОВ \"БИТТЕХ";
+
+            s = DeleteNameSpace(s);
+            s = DeleteNil(s);
+
+            listBox1.Items.Clear();
+            listBox1.Items.Add("Получено " + s.Length.ToString() + " байт данных");
+
+/*            using (FileStream fs = File.OpenWrite(CurrentPath + ndoc + ".xml"))
+            {
+                Byte[] info = new UTF8Encoding(true).GetBytes(s);
+                fs.Write(info, 0, info.Length);
+            }*/
+
+            XmlSerializer serializer = new XmlSerializer(typeof(CargoDoc));
+
+            CargoDoc cd = new CargoDoc();
+
+            using (var reader = new StringReader(s))
+            {
+
+                cd = (CargoDoc)serializer.Deserialize(reader);
+            }
+
+            cd.SaveToFile(CurrentPath + @"\doc\"+ndoc+@".xml");
+//            cargodoc = cd;
+
+/*            listBox1.Items.Clear();
+
+            listBox1.Items.Add(cd.Data);
+            listBox1.Items.Add(cd.DocID);
+            listBox1.Items.Add(cd.Partner);
+
+            foreach (Product p in cd.TotalProducts)
+            {
+                listBox1.Items.Add(p.PName + " - " + p.Quantity);
+            }
+
+            foreach (XCode x in cd.XCodes)
+            {
+                listBox1.Items.Add(x.ScanCode + " - " + x.Fio);
+            }   */
+
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
+            string s = sRestAPI("http://192.168.10.213/CargoDocService.svc/Settings");
+
+            s = DeleteNameSpace(s);
+
+            XmlSerializer serializer = new XmlSerializer(typeof(Settings));
+
+//            Settings set = new Settings(); 
+
+/*            using (FileStream fs = File.OpenWrite(CurrentPath + "\\seti.xml"))
+            {
+                Byte[] info = new UTF8Encoding(true).GetBytes(s);
+                fs.Write(info, 0, info.Length);
+            }
+            */
+            try
+            {
+
+                using (var reader = new StringReader(s))
+                {
+
+                    settings = (Settings)serializer.Deserialize(reader);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                s = ex.Message;
+                if (ex.InnerException != null)
+                {
+                    s = s + " " + ex.InnerException.Message;
+                }
+            }
+
+            listBox1.Items.Add("Места погрузки/разгрузки");
+            foreach (Location l in settings.Locations) {
+                listBox1.Items.Add(l.LID + " - " + l.Name);
+            }
+
+            listBox1.Items.Add("Пользователи");
+            foreach (User u in settings.Users)
+            {
+                listBox1.Items.Add(u.FIO + " - " + u.Pwd);
+            }
+
+            listBox1.Items.Add("Сканеры");
+            foreach (Scanner c in settings.Scanners)
+            {
+                listBox1.Items.Add(c.MAC + " - " + c.Nomer);
+            }
+
+            listBox1.Items.Add("Перемещения");
+            foreach (Transfer t in settings.Transfers)
+            {
+                listBox1.Items.Add(t.Name + " - " + t.From + " - " + t.To);
+            }
+            
+
+
+
+//            Settings set = Settings.Deserialize(s);
             //MessageBox.Show("Нажата F2");
-            RestAPI("http://192.168.10.12:8888/CargoDocService.svc/CargoDoc/2408");
+//            GetHTTP("http://192.168.10.213/CargoDocService.svc/Settings");
+//            RestAPI("http://192.168.10.213/CargoDocService.svc/CargoDoc/" + s);
+
         }
 
         private void button3_Click(object sender, EventArgs e)
         {
             //MessageBox.Show("Нажата F3");
-            LoadXml(@"2419.xml");
+            //LoadXml(@"2419.xml");
         }
 
         private void button4_Click(object sender, EventArgs e)
@@ -148,18 +337,18 @@ namespace BarCodeScanner
 
         private void Form1_Load(object sender, EventArgs e)
         {
-//            CargoDoc CargoDocDB = new CargoDoc();
-/*            if (LoginForm.Dialog() == DialogResult.Abort) Close();
+            if (LoginForm.Dialog() == DialogResult.Abort) Close();
             else
             {
-                this.statusBar1.Text = "Сканер1 / Штирлиц М.";
-            } */
+                this.statusBar1.Text = "Сканер №" + Config.scannerNumber + " / " + Config.userName;
+            }
+            if (Config.superuser)
+            {
+                this.BackColor = Color.Coral;
+            }
         }
 
-        private void textBox1_TextChanged(object sender, EventArgs e)
-        {
-            
-        }
+        #region HTTP
 
         private string StringGetWebPage(String uri)
         {
@@ -207,64 +396,126 @@ namespace BarCodeScanner
          return sb.ToString();
          }
 
-
-        private void GetHTTP(string url) 
+        private void GetHTTP(string url)
         {
-//                string url = txtURL.Text;
-//                string proxy = txtProxy.Text;
+            //                string url = txtURL.Text;
+            //                string proxy = txtProxy.Text;
 
-    try 
-    {
-/*        if(!"".Equals(txtProxy.Text))
-        {
-            WebProxy proxyObject = new WebProxy(proxy, 80);
+            try
+            {
+                /*        if(!"".Equals(txtProxy.Text))
+                        {
+                            WebProxy proxyObject = new WebProxy(proxy, 80);
 
-            // Disable proxy use when the host is local.
-            proxyObject.BypassProxyOnLocal = true;
+                            // Disable proxy use when the host is local.
+                            proxyObject.BypassProxyOnLocal = true;
 
-            // HTTP requests use this proxy information.
-            GlobalProxySelection.Select = proxyObject;
+                            // HTTP requests use this proxy information.
+                            GlobalProxySelection.Select = proxyObject;
 
-        }*/
+                        }*/
 
-        WebRequest req = WebRequest.Create(url);
-        WebResponse result = req.GetResponse();
-        ReceiveStream = result.GetResponseStream();
-        Encoding encode = System.Text.Encoding.GetEncoding("utf-8");
-        sr = new StreamReader( ReceiveStream, encode );
+                WebRequest req = WebRequest.Create(url);
+                WebResponse result = req.GetResponse();
+                ReceiveStream = result.GetResponseStream();
+                Encoding encode = System.Text.Encoding.GetEncoding("utf-8");
+                var sr = new StreamReader(ReceiveStream, encode);
 
-        // Read the stream into arrays of 30 characters
-        // to add as items in the list box. Repeat until
-        // buffer is read.
-        Char[] read = new Char[30];
-        int count = sr.Read( read, 0, 30 );
-        while (count > 0) 
-        {
-            String str = new String(read, 0, count);
-            this.listBox1.Items.Add(str);
-            count = sr.Read(read, 0, 30);
+                XmlSerializer serializer = new XmlSerializer(typeof(CargoDoc));
+                CargoDoc cd = new CargoDoc();
+
+                using (FileStream fs = File.OpenWrite(CurrentPath + "\\cargon.xml"))
+                {
+                    Byte[] info = new UTF8Encoding(true).GetBytes(sr.ToString());
+                    fs.Write(info, 0, info.Length);
+                    listBox1.Items.Add("Получено "+info.Length.ToString()+" байт данных");
+                }
+            
+/*                using (var stream = File.OpenRead(CurrentPath + "\\cargon.xml"))
+                {
+                    cd = (CargoDoc)serializer.Deserialize(stream);
+                } 
+
+
+                using (var reader = new StringReader(DeleteNameSpace(cd.ToString())))
+                {
+
+                    cd = (CargoDoc)serializer.Deserialize(reader);
+                }*/
+
+                /*listBox1.Items.Clear();
+
+                listBox1.Items.Add(cd.Data);
+                listBox1.Items.Add(cd.DocID);
+                listBox1.Items.Add(cd.Partner);
+
+                foreach (Product p in cd.TotalProducts) {
+                    listBox1.Items.Add(p.PName + " - " + p.Quantity);
+                }
+
+                foreach (XCode x in cd.XCodes)
+                {
+                    listBox1.Items.Add(x.ScanCode + " - " + x.Fio);
+                } */  
+               
+
+                // Read the stream into arrays of 30 characters
+                // to add as items in the list box. Repeat until
+                // buffer is read.
+/*                Char[] read = new Char[30];
+                int count = sr.Read(read, 0, 30);
+                while (count > 0)
+                {
+                    String str = new String(read, 0, count);
+                    this.listBox1.Items.Add(str);
+                    count = sr.Read(read, 0, 30);
+                } */
+
+
+
+            }
+            catch (WebException ex)
+            {
+                string message = ex.Message;
+                HttpWebResponse response = (HttpWebResponse)ex.Response;
+                if (null != response)
+                {
+                    message = response.StatusDescription;
+                    response.Close();
+                }
+                this.listBox1.Items.Add(message);
+            }
+            catch (Exception ex)
+            {
+                this.listBox1.Items.Add(ex.Message);
+            }
+            finally
+            {
+                ReceiveStream.Close();
+                sr.Close();
+            }
         }
-    } 
-    catch(WebException ex)
-    {
-       string message = ex.Message;
-       HttpWebResponse response = (HttpWebResponse)ex.Response;
-       if(null != response)
-       {
-           message = response.StatusDescription;
-           response.Close();
-       }
-       this.listBox1.Items.Add(message);              
-    }
-    catch(Exception ex) 
-    {
-        this.listBox1.Items.Add(ex.Message);
-    }
-    finally
-    {
-        ReceiveStream.Close();
-        sr.Close();
-    }
+
+        private string sRestAPI(string url)
+        {
+            string sb;
+            try
+            {
+                HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
+                request.Method = "GET";
+                request.Timeout = 15000;
+                request.ContentType = "text/xml;charset=utf-8";
+
+                HttpWebResponse response = (HttpWebResponse)request.GetResponse();
+                StreamReader reader = new StreamReader(response.GetResponseStream(), Encoding.UTF8);
+
+                sb = reader.ReadToEnd().ToString();
+            }
+            catch (Exception ex)
+            {
+                sb = ex.Message.ToString();
+            }
+            return sb;
         }
 
         private void PutHTTP(string url)
@@ -392,30 +643,29 @@ namespace BarCodeScanner
 
         }
 
+        #endregion
+
         private void button5_Click(object sender, EventArgs e)
         { 
 /*            string p = CurrentPath + @"\2419.xml";
             if ( CargoDoc.LoadFromFile(p , out CargoDocDB ) == true)
             {  */
-                DocListForm d = new DocListForm();
-                d.Show();
+
 //            }
 //            d.Close();
 //            Close();
         }
 
-        private void timer1_Tick(object sender, EventArgs e)
+        private void button6_Click(object sender, EventArgs e)
         {
-
-            if (SystemState.PowerBatteryState == BatteryState.Critical)
+            if (LoadAllDataFromXml())
             {
-//                MessageBox.Show("Низкий заряд батареи. Поставьте сканер на подзарядку.", "Внимание!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button1);
-            };
-
-
+                DocListForm d = new DocListForm();
+                d.Show();
+            }
         }
 
-        private void LoadXml(string filename)
+/*        private void LoadXml(string filename)
         {
             string sb;
             CargoDoc cargo = new CargoDoc();
@@ -431,7 +681,28 @@ namespace BarCodeScanner
             {
                 sb = ex.Message.ToString();
             }
+        }*/
+
+        private void timer1_Tick(object sender, EventArgs e)
+        {
+
+            if (SystemState.PowerBatteryState == BatteryState.Critical)
+            {
+                //                MessageBox.Show("Низкий заряд батареи. Поставьте сканер на подзарядку.", "Внимание!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button1);
+            };
         }
+
+        private string DeleteNameSpace(string s) // применять только один раз!
+        {
+            string begin = s.Substring(0, s.IndexOf(" "));
+            return begin + ">" + s.Substring(s.IndexOf(">") + 1);
+        }
+
+        private string DeleteNil(string s)
+        {
+            return s.Replace(@" i:nil=""true""", "");
+        }
+
 
     }
 }
