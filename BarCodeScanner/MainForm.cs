@@ -16,6 +16,7 @@ using System.Xml.Serialization;
 
 namespace BarCodeScanner
 {
+
     public partial class MainForm : Form
     {
         public static List<CargoDoc> cargodocs = new List<CargoDoc>();
@@ -29,6 +30,12 @@ namespace BarCodeScanner
         CasioScanner cs;
         public delegate void AddScan(string s);
         public AddScan addItem;
+
+        public static ScanMode scanmode;
+
+        public static DocListForm doclistform;
+        public static DataTable doctable;
+        public static DataTableReader docreader;
 
 
         /// <summary>
@@ -111,6 +118,7 @@ namespace BarCodeScanner
         {
             Boolean result = false;
             cargodocs.Clear();
+            doclist = Directory.GetFiles(CurrentPath + "doc", "*_*_*.xml");
             try
             {
                 foreach (string s in doclist)
@@ -143,10 +151,41 @@ namespace BarCodeScanner
             addItem = new AddScan(GetXML);
         }
 
-        void GetXML(string barcod)
+        private Boolean existDoc(string s)
         {
-            DownloadXML(barcod);
+            return doclist.Contains(s);
         }
+
+        public void GetXML(string barcod)
+        {
+            switch (scanmode) 
+            {
+                case (ScanMode.Doc):
+                    if (existDoc(CurrentPath + @"doc\" + barcod.Replace(" ", "_") + "_" + Config.scannerNumber + ".xml"))
+                    {
+                        int space = barcod.IndexOf(" ");
+                        string data_raw = barcod.Remove(0, space);
+                        string data = data_raw.Substring(7, 2) + "." + data_raw.Substring(5, 2) + "." + data_raw.Substring(3, 2);
+                        MessageBox.Show("Документ № " + barcod.Substring(0,space) + " от " + data + " уже загружен!");
+                    }
+                    else
+                    {
+                        DownloadXML(barcod);
+                        LoadAllDataFromXml();
+                        doclistform.ReloadDocTable();
+                    }
+                    break;
+                case (ScanMode.BarCod):
+                    ScanBarCode();
+                    break;
+            }
+        }
+
+        public void ScanBarCode()
+        {
+            //
+        }
+
 
 /*        void ListItemAdd(string text)
         {
@@ -163,18 +202,29 @@ namespace BarCodeScanner
         {
             try
             {
-                string s = sRestAPI("http://192.168.10.213/CargoDocService.svc/CargoDoc/" + barcod.Replace(" ","_")+"_"+Config.scannerNumber);
+//                string s = sRestAPI("http://192.168.10.213/CargoDocService.svc/CargoDoc/" + barcod.Replace(" ","_")+"_"+Config.scannerNumber);
+                string s = GetHTTP("http://192.168.10.213/CargoDocService.svc/CargoDoc/" + barcod.Replace(" ", "_") + "_" + Config.scannerNumber);
                 s = DeleteNameSpace(s);
                 s = DeleteNil(s);
                 listBox1.Items.Add("Получено " + s.Length.ToString() + " байт данных");
 
                 XmlSerializer serializer = new XmlSerializer(typeof(CargoDoc));
                 CargoDoc cd = new CargoDoc();
-                using (var reader = new StringReader(s))
+
+/*                using (var reader = new StringReader(s))
                 {
                     cd = (CargoDoc)serializer.Deserialize(reader);
                 }
-                cd.SaveToFile(CurrentPath + @"doc\" + barcod.Replace(" ","_") + @".xml");
+                cd.SaveToFile(CurrentPath + @"doc\" + barcod.Replace(" ","_") + "_" +Config.scannerNumber+".xml");*/
+
+                using (FileStream fs = File.OpenWrite(CurrentPath + @"doc\" + barcod.Replace(" ", "_") + "_" + Config.scannerNumber + ".xml"))
+                {
+                    Byte[] info = new UTF8Encoding(true).GetBytes(s);
+                    fs.Write(info, 0, info.Length);
+                    listBox1.Items.Add("Получено " + info.Length.ToString() + " байт данных");
+                }
+
+
                 return true;
             }
             catch (Exception ex)
@@ -190,8 +240,20 @@ namespace BarCodeScanner
 
         private void button1_Click(object sender, EventArgs e)
         {
-            DownloadXML("9237_20151118_02");
-/*            string ndoc = "9237_20151118_02";
+            if (LoadAllDataFromXml())
+            {
+//                DocListForm d = new DocListForm();
+//                d.Show();
+//                if (doclistform == null) 
+                    doclistform = new DocListForm();
+                doclistform.Show();
+//                doclistform.Focus();
+            }
+
+
+/*            DownloadXML("9237_20151118_02");
+ * 
+            string ndoc = "9237_20151118_02";
             string s = sRestAPI("http://192.168.10.213/CargoDocService.svc/CargoDoc/" + ndoc); */
 
 //            s = "<CargoDoc><Data>2015-11-18T10:56:52+02:00</Data><DocId i:nil=\"true\"/><Error i:nil=\"true\"/><Number>9237     </Number><Partner>ТОВ \"БИТТЕХ";
@@ -220,11 +282,16 @@ namespace BarCodeScanner
 
         private void button2_Click(object sender, EventArgs e)
         {
+            //
+        }
+
+/*        private void button2_Click(object sender, EventArgs e)
+        {
             string s = sRestAPI("http://192.168.10.213/CargoDocService.svc/Settings");
 
             s = DeleteNameSpace(s);
 
-            XmlSerializer serializer = new XmlSerializer(typeof(Settings));
+            XmlSerializer serializer = new XmlSerializer(typeof(Settings)); */
 
 //            Settings set = new Settings(); 
 
@@ -234,7 +301,8 @@ namespace BarCodeScanner
                 fs.Write(info, 0, info.Length);
             }
             */
-            try
+
+/*            try
             {
 
                 using (var reader = new StringReader(s))
@@ -274,7 +342,7 @@ namespace BarCodeScanner
             foreach (Transfer t in settings.Transfers)
             {
                 listBox1.Items.Add(t.Name + " - " + t.From + " - " + t.To);
-            }
+            } */
             
 
 //            Settings set = Settings.Deserialize(s);
@@ -282,7 +350,7 @@ namespace BarCodeScanner
 //            GetHTTP("http://192.168.10.213/CargoDocService.svc/Settings");
 //            RestAPI("http://192.168.10.213/CargoDocService.svc/CargoDoc/" + s);
 
-        }
+//        }
 
         private void button3_Click(object sender, EventArgs e)
         {
@@ -296,7 +364,7 @@ namespace BarCodeScanner
             Close();
         }
 
-        private void Form1_KeyDown(object sender, KeyEventArgs e)
+        private void MainForm_KeyDown(object sender, KeyEventArgs e)
         {
             if ((e.KeyCode == System.Windows.Forms.Keys.F1))
             {
@@ -321,7 +389,7 @@ namespace BarCodeScanner
 
         }
 
-        private void Form1_Load(object sender, EventArgs e)
+        private void MainForm_Load(object sender, EventArgs e)
         {
 /*            if (LoginForm.Dialog() == DialogResult.Abort) Close();
             else
@@ -382,10 +450,11 @@ namespace BarCodeScanner
          return sb.ToString();
          }
 
-        private void GetHTTP(string url)
+        private string GetHTTP(string url)
         {
             //                string url = txtURL.Text;
             //                string proxy = txtProxy.Text;
+            string s = "";
 
             try
             {
@@ -405,9 +474,11 @@ namespace BarCodeScanner
                 WebResponse result = req.GetResponse();
                 ReceiveStream = result.GetResponseStream();
                 Encoding encode = System.Text.Encoding.GetEncoding("utf-8");
-                var sr = new StreamReader(ReceiveStream, encode);
 
-                XmlSerializer serializer = new XmlSerializer(typeof(CargoDoc));
+                var sr = new StreamReader(ReceiveStream, encode);
+                s = sr.ReadToEnd();
+
+/*                XmlSerializer serializer = new XmlSerializer(typeof(CargoDoc));
                 CargoDoc cd = new CargoDoc();
 
                 using (FileStream fs = File.OpenWrite(CurrentPath + "cargon.xml"))
@@ -415,8 +486,8 @@ namespace BarCodeScanner
                     Byte[] info = new UTF8Encoding(true).GetBytes(sr.ToString());
                     fs.Write(info, 0, info.Length);
                     listBox1.Items.Add("Получено "+info.Length.ToString()+" байт данных");
-                }
-            
+                } */
+                return s;
             }
             catch (WebException ex)
             {
@@ -435,9 +506,10 @@ namespace BarCodeScanner
             }
             finally
             {
-                ReceiveStream.Close();
-                sr.Close();
+                if (ReceiveStream != null) ReceiveStream.Close();
+                if (sr != null) sr.Close();
             }
+            return s;
         }
 
         private string sRestAPI(string url)
@@ -602,11 +674,15 @@ namespace BarCodeScanner
 
         private void button6_Click(object sender, EventArgs e)
         {
-            if (LoadAllDataFromXml())
+            foreach (string s in doclist)
+            {
+                listBox1.Items.Add(s);
+            }
+/*            if (LoadAllDataFromXml())
             {
                 DocListForm d = new DocListForm();
                 d.Show();
-            }
+            } */
         }
 
 /*        private void LoadXml(string filename)

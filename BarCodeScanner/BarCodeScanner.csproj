@@ -152,6 +152,7 @@
     <None Include="CargoDocs.xss">
       <DependentUpon>CargoDocs.xsd</DependentUpon>
     </None>
+    <None Include="ClassDiagram1.cd" />
     <None Include="Properties\DataSources\CargoDoc.datasource" />
     <None Include="settings.xsc">
       <DependentUpon>settings.xsd</DependentUpon>

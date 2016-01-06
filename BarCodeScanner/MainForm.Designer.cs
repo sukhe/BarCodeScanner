@@ -49,7 +49,7 @@
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(240, 30);
             this.button1.TabIndex = 0;
-            this.button1.Text = "Получить накладные";
+            this.button1.Text = "Приём/отправка";
             this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
             // button2
@@ -58,7 +58,7 @@
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(240, 30);
             this.button2.TabIndex = 1;
-            this.button2.Text = "Отослать накладные";
+            this.button2.Text = "---Сканировать---";
             this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
             // button3
@@ -67,7 +67,7 @@
             this.button3.Name = "button3";
             this.button3.Size = new System.Drawing.Size(240, 30);
             this.button3.TabIndex = 2;
-            this.button3.Text = "Сканировать товары";
+            this.button3.Text = "----";
             this.button3.Click += new System.EventHandler(this.button3_Click);
             // 
             // button4
@@ -162,7 +162,7 @@
             this.button6.Name = "button6";
             this.button6.Size = new System.Drawing.Size(240, 30);
             this.button6.TabIndex = 16;
-            this.button6.Text = "Список товаров";
+            this.button6.Text = "Список файлов";
             this.button6.Click += new System.EventHandler(this.button6_Click);
             // 
             // MainForm
@@ -186,9 +186,9 @@
             this.MinimizeBox = false;
             this.Name = "MainForm";
             this.Text = "Сканирование штрихкодов";
-            this.Load += new System.EventHandler(this.Form1_Load);
+            this.Load += new System.EventHandler(this.MainForm_Load);
             this.Closing += new System.ComponentModel.CancelEventHandler(this.MainForm_Closing);
-            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Form1_KeyDown);
+            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.MainForm_KeyDown);
             this.ResumeLayout(false);
 
         }
