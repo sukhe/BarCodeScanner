@@ -58,7 +58,9 @@
             this.dataGrid1.Size = new System.Drawing.Size(240, 182);
             this.dataGrid1.TabIndex = 1;
             this.dataGrid1.Paint += new System.Windows.Forms.PaintEventHandler(this.dataGrid1_Paint);
+            this.dataGrid1.CurrentCellChanged += new System.EventHandler(this.dataGrid1_CurrentCellChanged);
             this.dataGrid1.KeyDown += new System.Windows.Forms.KeyEventHandler(this.DocListForm_KeyDown);
+            this.dataGrid1.Click += new System.EventHandler(this.dataGrid1_Click);
             // 
             // panel1
             // 

@@ -36,6 +36,12 @@ namespace BarCodeScanner
         public static DocListForm doclistform;
         public static DataTable doctable;
         public static DataTableReader docreader;
+        public static int currentdocrow;
+        public static int currentdoccol;
+
+        public static ProductListForm productlistform;
+//        public static DataTable doctable;
+//        public static DataTableReader docreader;
 
 
         /// <summary>
@@ -245,7 +251,7 @@ namespace BarCodeScanner
 //                DocListForm d = new DocListForm();
 //                d.Show();
 //                if (doclistform == null) 
-                    doclistform = new DocListForm();
+                doclistform = new DocListForm();
                 doclistform.Show();
 //                doclistform.Focus();
             }
