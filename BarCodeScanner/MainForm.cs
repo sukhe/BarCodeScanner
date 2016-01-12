@@ -40,6 +40,9 @@ namespace BarCodeScanner
         public static int currentdoccol;
 
         public static ProductListForm productlistform;
+        public static DataTable producttable;
+        public static DataTableReader productreader;
+
 //        public static DataTable doctable;
 //        public static DataTableReader docreader;
 
@@ -735,7 +738,6 @@ namespace BarCodeScanner
             cs.Dispose();
             Dispose();
         }
-
 
     }
 }

@@ -30,6 +30,9 @@ namespace BarCodeScanner
             if (MainForm.doctable == null)
                 MainForm.doctable = new DataTable();
             dataGrid1.DataSource = MainForm.doctable;
+            GetCustomers();
+
+
 /*            if (MainForm.docreader == null)
                 MainForm.docreader = new DataTableReader(MainForm.doclistform.GetCustomers());*/
 
@@ -45,7 +48,7 @@ namespace BarCodeScanner
 
 //            if (
 
-            GetCustomers();
+
 
         }
 
@@ -135,12 +138,12 @@ namespace BarCodeScanner
 /*            vColumn.MappingName = "Name";
             vColumn.HeaderText = "Наименование";*/
 
-//            DataGridTextBoxColumnColored col1 = new DataGridTextBoxColumnColored();
-            DataGridTextBoxColumn col1 = new DataGridTextBoxColumn();
+            DataGridTextBoxColumnColored col1 = new DataGridTextBoxColumnColored();
+//            DataGridTextBoxColumn col1 = new DataGridTextBoxColumn();
             col1.Width = 80;
             col1.MappingName = MainForm.doctable.Columns[0].ColumnName;
             col1.HeaderText = MainForm.doctable.Columns[0].ColumnName;
-//            col1.NeedBackground += new DataGridTextBoxColumnColored.NeedBackgroundEventHandler(OnBackgroundEventHandler);
+            col1.NeedBackground += new DataGridTextBoxColumnColored.NeedBackgroundEventHandler(OnBackgroundEventHandler);
             tableStyle.GridColumnStyles.Add(col1);
 
             DataGridTextBoxColumnColored col2 = new DataGridTextBoxColumnColored();
@@ -153,7 +156,8 @@ namespace BarCodeScanner
 
             DataGridTextBoxColumnColored col3 = new DataGridTextBoxColumnColored();
 //            DataGridTextBoxColumn col3 = new DataGridTextBoxColumn();
-            col3.Width = 260;
+            if (MainForm.cargodocs.Count > 9) col3.Width = 236;
+            else col3.Width = 260;
             col3.MappingName = MainForm.doctable.Columns[2].ColumnName;
             col3.HeaderText = MainForm.doctable.Columns[2].ColumnName;
             col3.NeedBackground += new DataGridTextBoxColumnColored.NeedBackgroundEventHandler(OnBackgroundEventHandler);
@@ -170,6 +174,7 @@ namespace BarCodeScanner
 //            return MainForm.doctable;
         }
 
+        # region Buttons/Events
         private void DocListForm_Closed(object sender, EventArgs e)
         {
             Tag = "Closed";
@@ -258,6 +263,7 @@ namespace BarCodeScanner
       //      dataGrid1.
         }
 
+#endregion
         // разукрашивание ячеек в нужный цвет
         public class DataGridTextBoxColumnColored : DataGridTextBoxColumn
         {
@@ -267,22 +273,18 @@ namespace BarCodeScanner
             public class NeedBackgroundEventArgs : EventArgs
             {
                 private int FRowNum;
-//                private int FColNum;
                 private Brush FBackBrush;
                 private Brush FForeBrush;
                 private CurrencyManager FSource;
 
                 public int RowNum { get { return FRowNum; } }
-//                public int ColNum { get { return FColNum; } }
                 public Brush BackBrush { get { return FBackBrush; } set { FBackBrush = value; } }
                 public Brush ForeBrush { get { return FForeBrush; } set { FForeBrush = value; } }
                 public CurrencyManager Source { get { return FSource; } }
 
-//                public NeedBackgroundEventArgs(CurrencyManager source, int rowNum, int colNum, Brush backBrush, Brush foreBrush)
                 public NeedBackgroundEventArgs(CurrencyManager source, int rowNum, Brush backBrush, Brush foreBrush)
                 {
                     this.FRowNum = rowNum;
-//                    this.FColNum = colNum;
                     this.FBackBrush = BackBrush;
                     this.FForeBrush = foreBrush;
                     this.FSource = source;
@@ -298,7 +300,6 @@ namespace BarCodeScanner
             //используя при этом подставленный нами backBrush. 
             protected override void Paint(Graphics g, Rectangle bounds, CurrencyManager source, int rowNum, Brush backBrush, Brush foreBrush, bool alignToRight)
             {
-                int colNum = Convert.ToInt16(this.HeaderText);
                 NeedBackgroundEventArgs e = new NeedBackgroundEventArgs(source, rowNum, backBrush, foreBrush);
                 if (NeedBackground != null) NeedBackground(this, e);
                 base.Paint(g, bounds, source, rowNum, e.BackBrush, e.ForeBrush, alignToRight);
@@ -311,39 +312,35 @@ namespace BarCodeScanner
             Color fullColor = new Color();
             Color partialColor = new Color();
 
-            fullColor = Color.FromArgb(255, 255, 255);
-            partialColor = Color.FromArgb(0,0 , 0);
-
-            e.BackBrush = new SolidBrush(fullColor);
-            e.ForeBrush = new SolidBrush(partialColor);
-
-/*            fullColor = Color.FromArgb(255, 127, 127);
+            fullColor = Color.FromArgb(255, 127, 127);
             partialColor = Color.FromArgb(127, 255, 127);
 
-            if (e.RowNum == dataGrid1.CurrentRowIndex)
+/*            if (e.RowNum == dataGrid1.CurrentRowIndex)
             {
                 e.BackBrush = new SolidBrush(dataGrid1.SelectionBackColor);
                 e.ForeBrush = new SolidBrush(dataGrid1.SelectionForeColor);
             }
             else
-            {
-                int divVal = e.RowNum / 2;
+            {*/
+/*                int divVal = e.RowNum / 2;
                 if (divVal * 2 != e.RowNum) e.BackBrush = new SolidBrush(partialColor);
-                else e.BackBrush = new SolidBrush(fullColor);
+                else e.BackBrush = new SolidBrush(fullColor);*/
 
                 //e.ForeBrush = new SolidBrush(dataGrid1.ForeColor);
-                e.ForeBrush = new SolidBrush(Color.Black); */
+                e.ForeBrush = new SolidBrush(Color.Black); 
 
-/*                string val = MainForm.doctable.Rows[e.RowNum][0].ToString().Trim();
+                string val = MainForm.doctable.Rows[e.RowNum][0].ToString().Trim();
                 if (val == "337") 
-                    e.BackBrush = new SolidBrush(Color.LightGreen);
+//                    e.BackBrush = new SolidBrush(Color.LightGreen);
+                    e.BackBrush = new SolidBrush(fullColor);
                 else if (val == "336")
-                    e.BackBrush = new SolidBrush(Color.Pink);
+//                    e.BackBrush = new SolidBrush(Color.Pink);
+                    e.BackBrush = new SolidBrush(partialColor);
                 else 
                     e.BackBrush = new SolidBrush(dataGrid1.BackColor);
 
-                e.ForeBrush = new SolidBrush(dataGrid1.ForeColor); 
-            } */
+//                e.ForeBrush = new SolidBrush(dataGrid1.ForeColor); 
+//            } 
         }
 
         private void dataGrid1_Click(object sender, EventArgs e)

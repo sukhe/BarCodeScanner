@@ -31,8 +31,8 @@
         {
             this.mainMenu1 = new System.Windows.Forms.MainMenu();
             this.panel1 = new System.Windows.Forms.Panel();
-            this.panel2 = new System.Windows.Forms.Panel();
             this.label1 = new System.Windows.Forms.Label();
+            this.panel2 = new System.Windows.Forms.Panel();
             this.dataGrid1 = new System.Windows.Forms.DataGrid();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
@@ -46,6 +46,13 @@
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(240, 21);
             // 
+            // label1
+            // 
+            this.label1.Location = new System.Drawing.Point(3, 4);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(100, 20);
+            this.label1.Text = "label1";
+            // 
             // panel2
             // 
             this.panel2.Controls.Add(this.dataGrid1);
@@ -53,13 +60,6 @@
             this.panel2.Location = new System.Drawing.Point(0, 21);
             this.panel2.Name = "panel2";
             this.panel2.Size = new System.Drawing.Size(240, 166);
-            // 
-            // label1
-            // 
-            this.label1.Location = new System.Drawing.Point(3, 4);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(100, 20);
-            this.label1.Text = "label1";
             // 
             // dataGrid1
             // 
@@ -82,6 +82,7 @@
             this.MinimizeBox = false;
             this.Name = "ProductListForm";
             this.Text = "Продукция";
+            this.Load += new System.EventHandler(this.ProductListForm_Load);
             this.panel1.ResumeLayout(false);
             this.panel2.ResumeLayout(false);
             this.ResumeLayout(false);
