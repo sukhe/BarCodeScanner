@@ -15,7 +15,7 @@ namespace BarCodeScanner
         {
             InitializeComponent();
             label1.Text = MainForm.cargodocs[MainForm.currentdocrow].Partner.Trim() + " " + MainForm.cargodocs[MainForm.currentdocrow].Number.Trim();
-            MainForm.scanmode = ScanMode.Nothing;
+            MainForm.scanmode = ScanMode.BarCod;
             dataGrid1.Focus();
         }
 
@@ -35,9 +35,9 @@ namespace BarCodeScanner
             {
 
                 DataColumn PID = MainForm.producttable.Columns.Add("Код", typeof(string));
-                MainForm.producttable.Columns.Add("Название", typeof(string));
+/*                MainForm.producttable.Columns.Add("Название", typeof(string));
                 MainForm.producttable.Columns.Add("Надо", typeof(string));
-                MainForm.producttable.Columns.Add("Уже", typeof(string));
+                MainForm.producttable.Columns.Add("Уже", typeof(string));*/
 
                 // Set the ID column as the primary key column.
                 MainForm.producttable.PrimaryKey = new DataColumn[] { PID };
@@ -50,35 +50,38 @@ namespace BarCodeScanner
             DataGridTableStyle tableStyle = new DataGridTableStyle();
             DataGridTextBoxColumnColored col1 = new DataGridTextBoxColumnColored();
             //            DataGridTextBoxColumn col1 = new DataGridTextBoxColumn();
-            col1.Width = 90;
+            col1.Width = 80;
             col1.MappingName = MainForm.producttable.Columns[0].ColumnName;
             col1.HeaderText = MainForm.producttable.Columns[0].ColumnName;
-            col1.NeedBackground += new DataGridTextBoxColumnColored.NeedBackgroundEventHandler(OnBackgroundEventHandler);
+            col1.NeedBackground += new DataGridTextBoxColumnColored.NeedBackgroundEventHandlerProduct(OnBackgroundEventHandlerProduct);
             tableStyle.GridColumnStyles.Add(col1);
 
-            DataGridTextBoxColumnColored col2 = new DataGridTextBoxColumnColored();
-            //            DataGridTextBoxColumn col2 = new DataGridTextBoxColumn();
-            col2.Width = 180;
+            /*
+            //DataGridTextBoxColumnColored col2 = new DataGridTextBoxColumnColored();
+                        DataGridTextBoxColumn col2 = new DataGridTextBoxColumn();
+//            if (MainForm.producttable.Rows.Count > 9) col2.Width = 236;
+//            else col2.Width = 260;
+            col2.Width = 180; //204
             col2.MappingName = MainForm.producttable.Columns[1].ColumnName;
             col2.HeaderText = MainForm.producttable.Columns[1].ColumnName;
-            col2.NeedBackground += new DataGridTextBoxColumnColored.NeedBackgroundEventHandler(OnBackgroundEventHandler);
+            //col2.NeedBackground += new DataGridTextBoxColumnColored.NeedBackgroundEventHandler(OnBackgroundEventHandler);
             tableStyle.GridColumnStyles.Add(col2);
 
-            DataGridTextBoxColumnColored col3 = new DataGridTextBoxColumnColored();
-            //            DataGridTextBoxColumn col3 = new DataGridTextBoxColumn();
-            col3.Width = 80;
+            //DataGridTextBoxColumnColored col3 = new DataGridTextBoxColumnColored();
+                        DataGridTextBoxColumn col3 = new DataGridTextBoxColumn();
+            col3.Width = 71;
             col3.MappingName = MainForm.producttable.Columns[2].ColumnName;
             col3.HeaderText = MainForm.producttable.Columns[2].ColumnName;
-            col3.NeedBackground += new DataGridTextBoxColumnColored.NeedBackgroundEventHandler(OnBackgroundEventHandler);
+            //col3.NeedBackground += new DataGridTextBoxColumnColored.NeedBackgroundEventHandler(OnBackgroundEventHandler);
             tableStyle.GridColumnStyles.Add(col3);
 
-            DataGridTextBoxColumnColored col4 = new DataGridTextBoxColumnColored();
-            //            DataGridTextBoxColumn col3 = new DataGridTextBoxColumn();
-            col4.Width = 80;
+            //DataGridTextBoxColumnColored col4 = new DataGridTextBoxColumnColored();
+                        DataGridTextBoxColumn col4 = new DataGridTextBoxColumn();
+            col4.Width = 71;
             col4.MappingName = MainForm.producttable.Columns[3].ColumnName;
             col4.HeaderText = MainForm.producttable.Columns[3].ColumnName;
-            col4.NeedBackground += new DataGridTextBoxColumnColored.NeedBackgroundEventHandler(OnBackgroundEventHandler);
-            tableStyle.GridColumnStyles.Add(col4);
+            //col4.NeedBackground += new DataGridTextBoxColumnColored.NeedBackgroundEventHandler(OnBackgroundEventHandler);
+            tableStyle.GridColumnStyles.Add(col4);*/
 
             // учесть ширину вертикальной прокрутки в ширине колонок
 
@@ -92,7 +95,8 @@ namespace BarCodeScanner
             MainForm.producttable.Rows.Clear();
             foreach (Product p in MainForm.cargodocs[MainForm.currentdocrow].TotalProducts)
             {
-                MainForm.producttable.Rows.Add(new object[] { p.PID, p.PName, p.Quantity, p.ScannedBar });
+//                MainForm.producttable.Rows.Add(new object[] { p.PID, p.PName, p.Quantity, p.ScannedBar });
+                MainForm.producttable.Rows.Add(new object[] { p.PID });
             }
             MainForm.producttable.AcceptChanges();
         }
@@ -123,8 +127,8 @@ namespace BarCodeScanner
                     this.FSource = source;
                 }
             }
-            public delegate void NeedBackgroundEventHandler(object sender, NeedBackgroundEventArgs e);
-            public event NeedBackgroundEventHandler NeedBackground;
+            public delegate void NeedBackgroundEventHandlerProduct(object sender, NeedBackgroundEventArgs e);
+            public event NeedBackgroundEventHandlerProduct NeedBackground;
 
             //А вот и переопределенный метод DataGridTextBoxColumn.Paint(), 
             //запрашивающий при помощи события (аргументов) цвет и передающий его 
@@ -139,14 +143,14 @@ namespace BarCodeScanner
             }
         }
 
-        private void OnBackgroundEventHandler(object sender, DataGridTextBoxColumnColored.NeedBackgroundEventArgs e)
+        private void OnBackgroundEventHandlerProduct(object sender, DataGridTextBoxColumnColored.NeedBackgroundEventArgs e)
         {
 
             Color fullColor = new Color();
             Color partialColor = new Color();
 
-            fullColor = Color.FromArgb(255, 127, 127);
-            partialColor = Color.FromArgb(127, 255, 127);
+            partialColor = Color.FromArgb(255, 127, 127);
+            fullColor = Color.FromArgb(127, 255, 127);
 
             /*            if (e.RowNum == dataGrid1.CurrentRowIndex)
                         {
@@ -160,20 +164,39 @@ namespace BarCodeScanner
                             else e.BackBrush = new SolidBrush(fullColor);*/
 
             //e.ForeBrush = new SolidBrush(dataGrid1.ForeColor);
+
             e.ForeBrush = new SolidBrush(Color.Black);
 
             string val = MainForm.doctable.Rows[e.RowNum][0].ToString().Trim();
-            if (val == "337")
+/*            int q = Convert.ToInt16(MainForm.producttable.Rows[e.RowNum][2]);
+            int b = Convert.ToInt16(MainForm.producttable.Rows[e.RowNum][3]);*/
+            int q = 5;
+            int b = 5;
+
+            if ((b < q) && (b != 0))
+                e.BackBrush = new SolidBrush(partialColor);
+            else if (b >= q)
+                e.BackBrush = new SolidBrush(fullColor);
+            else
+                e.BackBrush = new SolidBrush(Color.White);
+
+
+/*            if (val == "337")
                 //                    e.BackBrush = new SolidBrush(Color.LightGreen);
                 e.BackBrush = new SolidBrush(fullColor);
             else if (val == "336")
                 //                    e.BackBrush = new SolidBrush(Color.Pink);
                 e.BackBrush = new SolidBrush(partialColor);
             else
-                e.BackBrush = new SolidBrush(dataGrid1.BackColor);
+                e.BackBrush = new SolidBrush(dataGrid1.BackColor);*/
 
             //                e.ForeBrush = new SolidBrush(dataGrid1.ForeColor); 
             //            } 
+        }
+
+        private void dataGrid1_CurrentCellChanged(object sender, EventArgs e)
+        {
+            dataGrid1.Update();
         }
 
     }

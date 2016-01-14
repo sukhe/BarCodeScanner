@@ -156,8 +156,9 @@ namespace BarCodeScanner
 
             DataGridTextBoxColumnColored col3 = new DataGridTextBoxColumnColored();
 //            DataGridTextBoxColumn col3 = new DataGridTextBoxColumn();
-            if (MainForm.cargodocs.Count > 9) col3.Width = 236;
-            else col3.Width = 260;
+//            if (MainForm.cargodocs.Count > 9) col3.Width = 236;
+//            else 
+            col3.Width = 260;
             col3.MappingName = MainForm.doctable.Columns[2].ColumnName;
             col3.HeaderText = MainForm.doctable.Columns[2].ColumnName;
             col3.NeedBackground += new DataGridTextBoxColumnColored.NeedBackgroundEventHandler(OnBackgroundEventHandler);
@@ -312,8 +313,8 @@ namespace BarCodeScanner
             Color fullColor = new Color();
             Color partialColor = new Color();
 
-            fullColor = Color.FromArgb(255, 127, 127);
-            partialColor = Color.FromArgb(127, 255, 127);
+            partialColor = Color.FromArgb(255, 127, 127);
+            fullColor = Color.FromArgb(127, 255, 127);
 
 /*            if (e.RowNum == dataGrid1.CurrentRowIndex)
             {

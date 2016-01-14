@@ -185,14 +185,52 @@ namespace BarCodeScanner
                     }
                     break;
                 case (ScanMode.BarCod):
-                    ScanBarCode();
+                    ScanBarCode(barcod);
                     break;
             }
         }
 
-        public void ScanBarCode()
+        public void ScanBarCode(string barcod)
         {
-            //
+            string bar = barcod.Substring(0,5);
+            Boolean find_product = false;
+            int i = 0;
+            try
+            {
+                foreach (Product p in MainForm.cargodocs[MainForm.currentdocrow].TotalProducts)
+                {
+                    if (p.PID == bar)
+                    {
+                        find_product = true;
+                        if (Convert.ToInt16(p.ScannedBar) > Convert.ToInt16(p.Quantity))
+                        {
+                            MessageBox.Show("Превышение количества продукции с кодом " + bar);
+                        }
+                        else
+                        {
+                            if (Convert.ToInt16(p.ScannedBar) == Convert.ToInt16(p.Quantity))
+                            {
+                                MessageBox.Show("Достигнуто нужное количество продукции с кодом " + bar);
+                            }
+                            MainForm.cargodocs[MainForm.currentdocrow].TotalProducts[i].ScannedBar = (Convert.ToInt16(p.ScannedBar) + 1).ToString();
+                            MainForm.producttable.Rows[MainForm.currentdocrow].ItemArray[3] = (Convert.ToInt16(p.ScannedBar) + 1).ToString();
+                            // добавить штрихкод в список штрихкодов
+                            MainForm.producttable.AcceptChanges();
+                            break;
+                        }
+                    }
+                    i++;
+                }
+            }
+            catch (Exception ex)
+            {
+                if (ex.InnerException == null)
+                    MessageBox.Show(@"[MF04] " + ex.Message);
+                else
+                    MessageBox.Show(@"[MF04] " + ex.Message + " " + ex.InnerException.Message);
+                
+            }
+            if (!find_product) MessageBox.Show("В этом заказе нет продукции с кодом " + bar);
         }
 
 
