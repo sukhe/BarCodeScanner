@@ -26,30 +26,10 @@ namespace BarCodeScanner
 
         private void DocListForm_Load(object sender, EventArgs e)
         {
-
             if (MainForm.doctable == null)
                 MainForm.doctable = new DataTable();
             dataGrid1.DataSource = MainForm.doctable;
             GetCustomers();
-
-
-/*            if (MainForm.docreader == null)
-                MainForm.docreader = new DataTableReader(MainForm.doclistform.GetCustomers());*/
-
-            // показываем таблицу со списком уже имеющихся у нас документов
-/*            DataTable table = new DataTable();
-            dataGrid1.DataSource = table;
-            DataTableReader reader = new DataTableReader(GetCustomers(table,dataGrid1));
-            table.Load(reader); */
-
-//            ReloadDocTable();
-
-            // а вот таперича пробуем загрузить ещё документов
-
-//            if (
-
-
-
         }
 
         public void ReloadDocTable()

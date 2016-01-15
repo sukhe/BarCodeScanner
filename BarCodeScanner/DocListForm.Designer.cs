@@ -6,7 +6,6 @@
         /// Требуется переменная конструктора.
         /// </summary>
         private System.ComponentModel.IContainer components = null;
-        private System.Windows.Forms.MainMenu mainMenu1;
 
         /// <summary>
         /// Освободить все используемые ресурсы.
@@ -29,7 +28,6 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.mainMenu1 = new System.Windows.Forms.MainMenu();
             this.dataGrid1 = new System.Windows.Forms.DataGrid();
             this.panel1 = new System.Windows.Forms.Panel();
             this.label7 = new System.Windows.Forms.Label();
@@ -55,7 +53,7 @@
             this.dataGrid1.Dock = System.Windows.Forms.DockStyle.Top;
             this.dataGrid1.Location = new System.Drawing.Point(0, 0);
             this.dataGrid1.Name = "dataGrid1";
-            this.dataGrid1.Size = new System.Drawing.Size(240, 183);
+            this.dataGrid1.Size = new System.Drawing.Size(240, 156);
             this.dataGrid1.TabIndex = 1;
             this.dataGrid1.Paint += new System.Windows.Forms.PaintEventHandler(this.dataGrid1_Paint);
             this.dataGrid1.CurrentCellChanged += new System.EventHandler(this.dataGrid1_CurrentCellChanged);
@@ -76,7 +74,7 @@
             this.panel1.Controls.Add(this.label2);
             this.panel1.Controls.Add(this.label1);
             this.panel1.Controls.Add(this.button4);
-            this.panel1.Location = new System.Drawing.Point(0, 182);
+            this.panel1.Location = new System.Drawing.Point(0, 208);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(240, 83);
             // 
@@ -206,10 +204,9 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.AutoScroll = true;
-            this.ClientSize = new System.Drawing.Size(240, 268);
+            this.ClientSize = new System.Drawing.Size(240, 294);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.dataGrid1);
-            this.Menu = this.mainMenu1;
             this.Name = "DocListForm";
             this.Text = "Накладные";
             this.Deactivate += new System.EventHandler(this.DocListForm_Deactivate);

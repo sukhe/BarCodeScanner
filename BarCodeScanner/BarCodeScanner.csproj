@@ -137,6 +137,9 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
     </EmbeddedResource>
+    <EmbeddedResource Include="XCodeListForm.resx">
+      <DependentUpon>XCodeListForm.cs</DependentUpon>
+    </EmbeddedResource>
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
@@ -147,6 +150,12 @@
       <DependentUpon>settings.xsd</DependentUpon>
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Include="XCodeListForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="XCodeListForm.Designer.cs">
+      <DependentUpon>XCodeListForm.cs</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>

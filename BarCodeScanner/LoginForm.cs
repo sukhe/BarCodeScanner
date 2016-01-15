@@ -74,7 +74,7 @@ namespace BarCodeScanner
                 }
                 else
                 {
-                    if (DialogForm.Dialog("Неверный пароль", "Ошибка!", "Повторить", "Выход") == DialogResult.Retry)
+                    if (DialogForm.Dialog("Неверный пароль", "", "Ошибка!", "    Повторить", "      Выход") == DialogResult.Retry)
                     {   
                         textBox1.Text = "";
                     }

@@ -21,3 +21,4 @@ D:\WORK\CASIO\BarCodeScanner\BarCodeScanner\obj\Debug\BarCodeScanner.pdb
 D:\WORK\CASIO\BarCodeScanner\BarCodeScanner\bin\Debug\OBReadLibNet.dll
 D:\WORK\CASIO\BarCodeScanner\BarCodeScanner\bin\Debug\SystemLibnet.dll
 D:\WORK\CASIO\BarCodeScanner\BarCodeScanner\obj\Debug\BarCodeScanner.ProductListForm.resources
+D:\WORK\CASIO\BarCodeScanner\BarCodeScanner\obj\Debug\BarCodeScanner.XCodeListForm.resources

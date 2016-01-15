@@ -24,7 +24,7 @@ namespace BarCodeScanner
         static Settings settings = new Settings();
         Stream ReceiveStream = null;
         StreamReader sr = null;
-        string CurrentPath;
+        public static string CurrentPath;
 //        public static Config 
 
         CasioScanner cs;
@@ -42,6 +42,10 @@ namespace BarCodeScanner
         public static ProductListForm productlistform;
         public static DataTable producttable;
         public static DataTableReader productreader;
+
+        public static XCodeListForm xcodelistform;
+        public static DataTable xcodetable;
+        public static DataTableReader xcodereader;
 
 //        public static DataTable doctable;
 //        public static DataTableReader docreader;
@@ -150,14 +154,18 @@ namespace BarCodeScanner
         public MainForm()
         {
             InitializeComponent();
+
             TestFilesAndDirs();
             CargoDoc cargodoc = new CargoDoc();
+            MainForm.scanmode = ScanMode.Doc;
 
             cs = new CasioScanner();
             cs.Scanned += OnScan;
             cs.Open();
 //            addItem = new AddScan(ListItemAdd); // назначение делегата для потокобезопасного вызова процедуры
             addItem = new AddScan(GetXML);
+
+            dataGrid1.Focus();
         }
 
         private Boolean existDoc(string s)
@@ -187,6 +195,8 @@ namespace BarCodeScanner
                 case (ScanMode.BarCod):
                     ScanBarCode(barcod);
                     break;
+                case (ScanMode.Nothing):
+                    break;
             }
         }
 
@@ -197,7 +207,7 @@ namespace BarCodeScanner
             int i = 0;
             try
             {
-                foreach (Product p in MainForm.cargodocs[MainForm.currentdocrow].TotalProducts)
+                foreach (Product p in cargodocs[currentdocrow].TotalProducts)
                 {
                     if (p.PID == bar)
                     {
@@ -212,10 +222,33 @@ namespace BarCodeScanner
                             {
                                 MessageBox.Show("Достигнуто нужное количество продукции с кодом " + bar);
                             }
-                            MainForm.cargodocs[MainForm.currentdocrow].TotalProducts[i].ScannedBar = (Convert.ToInt16(p.ScannedBar) + 1).ToString();
-                            MainForm.producttable.Rows[MainForm.currentdocrow].ItemArray[3] = (Convert.ToInt16(p.ScannedBar) + 1).ToString();
-                            // добавить штрихкод в список штрихкодов
-                            MainForm.producttable.AcceptChanges();
+                            cargodocs[currentdocrow].TotalProducts[i].ScannedBar = (Convert.ToInt16(p.ScannedBar) + 1).ToString();
+                            producttable.Rows[currentdocrow].ItemArray[3] = (Convert.ToInt16(p.ScannedBar) + 1).ToString();
+
+                            XCode x = new XCode();
+
+                            x.Data = nowcolData(System.DateTime.Now.ToString());
+                            x.Fio = Config.userName;
+                            x.DData = "";
+                            x.DFio = "";
+                            x.PID = p.PID;
+                            x.ScanCode = barcod;
+                            x.ScanFrom = "";
+                            x.ScanTo = "";
+                            x.ScannerID = Config.scannerNumber;
+
+                            var xl = new List<XCode>();
+                            xl.AddRange(cargodocs[currentdocrow].XCodes);
+                            xl.Add(x);
+                            cargodocs[currentdocrow].XCodes = xl.ToArray();
+
+                            if (xcodelistform != null && xcodelistform.Visible)
+                            {
+                                xcodetable.AcceptChanges();
+                                xcodelistform.ReloadXCodeTable();
+                            }
+                            else productlistform.ReloadProductTable();
+//                            xcodelistform.Refresh();
                             break;
                         }
                     }
@@ -253,7 +286,7 @@ namespace BarCodeScanner
                 string s = GetHTTP("http://192.168.10.213/CargoDocService.svc/CargoDoc/" + barcod.Replace(" ", "_") + "_" + Config.scannerNumber);
                 s = DeleteNameSpace(s);
                 s = DeleteNil(s);
-                listBox1.Items.Add("Получено " + s.Length.ToString() + " байт данных");
+//                listBox1.Items.Add("Получено " + s.Length.ToString() + " байт данных");
 
                 XmlSerializer serializer = new XmlSerializer(typeof(CargoDoc));
                 CargoDoc cd = new CargoDoc();
@@ -268,7 +301,7 @@ namespace BarCodeScanner
                 {
                     Byte[] info = new UTF8Encoding(true).GetBytes(s);
                     fs.Write(info, 0, info.Length);
-                    listBox1.Items.Add("Получено " + info.Length.ToString() + " байт данных");
+//                    listBox1.Items.Add("Получено " + info.Length.ToString() + " байт данных");
                 }
 
 
@@ -399,19 +432,7 @@ namespace BarCodeScanner
 
 //        }
 
-        private void button3_Click(object sender, EventArgs e)
-        {
-            //MessageBox.Show("Нажата F3");
-            //LoadXml(@"2419.xml");
-        }
-
-        private void button4_Click(object sender, EventArgs e)
-        {
-            //MessageBox.Show("Нажата F4");
-            Close();
-        }
-
-        private void MainForm_KeyDown(object sender, KeyEventArgs e)
+/*        private void MainForm_KeyDown(object sender, KeyEventArgs e)
         {
             if ((e.KeyCode == System.Windows.Forms.Keys.F1))
             {
@@ -434,14 +455,24 @@ namespace BarCodeScanner
 //                MessageBox.Show("Нажата F4 аппаратно");
             }
 
-        }
+        }*/
 
         private void MainForm_Load(object sender, EventArgs e)
         {
+
 /*            if (LoginForm.Dialog() == DialogResult.Abort) Close();
             else
             { */
-                this.statusBar1.Text = "Сканер №" + Config.scannerNumber + " / " + Config.userName;
+            Config.userName = "Бендер О.И.";
+            if (LoadAllDataFromXml())
+            {
+                if (doctable == null)
+                    doctable = new DataTable();
+                dataGrid1.DataSource = doctable;
+                GetCustomers();
+            }
+
+//                this.statusBar1.Text = "Сканер №" + Config.scannerNumber + " / " + Config.userName;
 /*            }
             if (Config.superuser)
             {
@@ -545,11 +576,12 @@ namespace BarCodeScanner
                     message = response.StatusDescription;
                     response.Close();
                 }
-                this.listBox1.Items.Add(message);
+//                this.listBox1.Items.Add(message);
             }
             catch (Exception ex)
             {
-                this.listBox1.Items.Add(ex.Message);
+                MessageBox.Show(ex.Message);
+//                this.listBox1.Items.Add(ex.Message);
             }
             finally
             {
@@ -620,7 +652,7 @@ namespace BarCodeScanner
                 while (count > 0)
                 {
                     String str = new String(read, 0, count);
-                    this.listBox1.Items.Add(str);
+//                    this.listBox1.Items.Add(str);
                     count = sr.Read(read, 0, 30);
                 }
             }
@@ -633,11 +665,12 @@ namespace BarCodeScanner
                     message = response.StatusDescription;
                     response.Close();
                 }
-                this.listBox1.Items.Add(message);
+//                this.listBox1.Items.Add(message);
             }
             catch (Exception ex)
             {
-                this.listBox1.Items.Add(ex.Message);
+                MessageBox.Show(ex.Message);
+//                this.listBox1.Items.Add(ex.Message);
             }
             finally
             {
@@ -708,29 +741,38 @@ namespace BarCodeScanner
 
         #endregion
 
-        private void button5_Click(object sender, EventArgs e)
+
+/*        private void button3_Click(object sender, EventArgs e)
+        {
+            //MessageBox.Show("Нажата F3");
+            //LoadXml(@"2419.xml");
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            //MessageBox.Show("Нажата F4");
+            Close();
+        }*/
+
+
+/*        private void button5_Click(object sender, EventArgs e)
         { 
-/*            string p = CurrentPath + @"\2419.xml";
-            if ( CargoDoc.LoadFromFile(p , out CargoDocDB ) == true)
-            {  */
+//            string p = CurrentPath + @"\2419.xml";
+//            if ( CargoDoc.LoadFromFile(p , out CargoDocDB ) == true)
+            {  
 
 //            }
 //            d.Close();
 //            Close();
-        }
+        } */
 
-        private void button6_Click(object sender, EventArgs e)
+/*        private void button6_Click(object sender, EventArgs e)
         {
             foreach (string s in doclist)
             {
-                listBox1.Items.Add(s);
+//                listBox1.Items.Add(s);
             }
-/*            if (LoadAllDataFromXml())
-            {
-                DocListForm d = new DocListForm();
-                d.Show();
-            } */
-        }
+        }*/
 
 /*        private void LoadXml(string filename)
         {
@@ -775,6 +817,308 @@ namespace BarCodeScanner
             cs.Scanned -= OnScan;
             cs.Dispose();
             Dispose();
+        }
+
+        private void DocListForm_KeyDown(object sender, KeyEventArgs e)
+        {
+
+        }
+
+        public void ReloadDocTable()
+        {
+            //            DataTable table = new DataTable();
+            //            dataGrid1.DataSource = table;
+            //            DataTableReader reader = new DataTableReader(GetCustomers(table, dataGrid1));
+            //            MainForm.doctable.Clear();
+
+            //            MainForm.doctable.Load(MainForm.docreader);
+
+            //            MainForm.doclistform.dataGrid1.Refresh();
+            //            MainForm.doclistform.dataGrid1.Update();
+
+            //            GetCustomers();
+
+            doctable.Rows.Clear();
+
+            foreach (CargoDoc d in cargodocs)
+            {
+                doctable.Rows.Add(new object[] { d.Number.Trim(), colData(d.Data), d.Partner });
+            }
+            doctable.AcceptChanges();
+        }
+
+        public static string colData(string s)
+        {
+            string ss;
+            try
+            {
+                ss = s.Substring(8, 2) + '.' + s.Substring(5, 2) + '.' + s.Substring(2, 2);
+            }
+            catch
+            {
+                ss = "01.01.01";
+            }
+            return ss;
+        }
+
+        public static string uncolData(string s)
+        {
+            string ss;
+            try
+            {
+                ss = s.Substring(0, 4) + s.Substring(5, 2) + s.Substring(8, 2);
+            }
+            catch
+            {
+                ss = "01.01.01";
+            }
+            return ss;
+        }
+
+        public static string nowcolData(string s)
+        {
+            string ss;
+            try
+            {
+                ss = "20"+s.Substring(6, 2) + "-" + s.Substring(3, 2) + "-" + s.Substring(0, 2) + "T" + s.Substring(9,8)+@"+02:00";
+            }
+            catch
+            {
+                ss = "01.01.01";
+            }
+            return ss;
+        }
+
+        private void GetCustomers()
+        {
+            //            AddDataToTable();
+
+            if (doctable.Columns.Count == 0)
+            {
+
+                DataColumn Number = doctable.Columns.Add("№ док.", typeof(string));
+                doctable.Columns.Add("Дата", typeof(string));
+                doctable.Columns.Add("Контрагент", typeof(string));
+
+                // Set the ID column as the primary key column.
+                doctable.PrimaryKey = new DataColumn[] { Number };
+            }
+
+            ReloadDocTable();
+
+            // ширина колонок
+            dataGrid1.TableStyles.Clear();
+            DataGridTableStyle tableStyle = new DataGridTableStyle();
+            //            tableStyle.MappingName = MainForm.doctable.TableName;
+
+            /*            vColumn.MappingName = "Name";
+                        vColumn.HeaderText = "Наименование";*/
+
+            DataGridTextBoxColumnColored col1 = new DataGridTextBoxColumnColored();
+            //            DataGridTextBoxColumn col1 = new DataGridTextBoxColumn();
+            col1.Width = 80;
+            col1.MappingName = doctable.Columns[0].ColumnName;
+            col1.HeaderText = doctable.Columns[0].ColumnName;
+            col1.NeedBackground += new DataGridTextBoxColumnColored.NeedBackgroundEventHandler(OnBackgroundEventHandler);
+            tableStyle.GridColumnStyles.Add(col1);
+
+            DataGridTextBoxColumnColored col2 = new DataGridTextBoxColumnColored();
+            //            DataGridTextBoxColumn col2 = new DataGridTextBoxColumn();
+            col2.Width = 90;
+            col2.MappingName = doctable.Columns[1].ColumnName;
+            col2.HeaderText = doctable.Columns[1].ColumnName;
+            col2.NeedBackground += new DataGridTextBoxColumnColored.NeedBackgroundEventHandler(OnBackgroundEventHandler);
+            tableStyle.GridColumnStyles.Add(col2);
+
+            DataGridTextBoxColumnColored col3 = new DataGridTextBoxColumnColored();
+            //            DataGridTextBoxColumn col3 = new DataGridTextBoxColumn();
+            //            if (MainForm.cargodocs.Count > 9) col3.Width = 236;
+            //            else 
+            col3.Width = 260;
+            col3.MappingName = doctable.Columns[2].ColumnName;
+            col3.HeaderText = doctable.Columns[2].ColumnName;
+            col3.NeedBackground += new DataGridTextBoxColumnColored.NeedBackgroundEventHandler(OnBackgroundEventHandler);
+            tableStyle.GridColumnStyles.Add(col3);
+
+            dataGrid1.TableStyles.Add(tableStyle);
+
+
+            /*            table.Rows.Add(new object[] { 0, "Mary" });
+                        table.Rows.Add(new object[] { 1, "Andy" });
+                        table.Rows.Add(new object[] { 2, "Peter" });*/
+
+            doctable.AcceptChanges();
+            //            return MainForm.doctable;
+        }
+
+        # region Buttons/Events
+/*        private void DocListForm_Closed(object sender, EventArgs e)
+        {
+            Tag = "Closed";
+        }
+
+        private void DocListForm_GotFocus(object sender, EventArgs e)
+        {
+            Tag = "GotFocus";
+        }
+
+        private void DocListForm_Activated(object sender, EventArgs e)
+        {
+            Tag = "Activated";
+        }
+
+        private void DocListForm_Deactivate(object sender, EventArgs e)
+        {
+            Tag = "Deactivate";
+        }
+
+        private void DocListForm_LostFocus(object sender, EventArgs e)
+        {
+            Tag = "LostFocus";
+        }*/
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            Close();
+        }
+
+        private void MainForm_KeyDown(object sender, KeyEventArgs e)
+        {
+            if ((e.KeyCode == System.Windows.Forms.Keys.Enter))
+            {
+                //                MessageBox.Show("Нажата F1 аппаратно");
+                //                var z = sender;
+                //                var ee = e;
+                /*                MainForm.productlistform = new ProductListForm();
+                                MainForm.productlistform.Show();*/
+                dataGrid1_Click(sender, e);
+            }
+            if ((e.KeyCode == System.Windows.Forms.Keys.F1))
+            {
+                //                MessageBox.Show("Нажата F1 аппаратно");
+                button1_Click(this, e);
+            }
+            if ((e.KeyCode == System.Windows.Forms.Keys.F2))
+            {
+                button2_Click(this, e);
+                //                MessageBox.Show("Нажата F2 аппаратно");
+            }
+            if ((e.KeyCode == System.Windows.Forms.Keys.F3))
+            {
+                //button3_Click(this, e);
+                //                MessageBox.Show("Нажата F3 аппаратно");
+            }
+            if ((e.KeyCode == System.Windows.Forms.Keys.F4))
+            {
+                button4_Click(this, e);
+                //                MessageBox.Show("Нажата F4 аппаратно");
+            }
+        }
+
+        private void MainForm_Paint(object sender, PaintEventArgs e)
+        {
+            Tag = "Paint";
+        }
+
+        private void dataGrid1_Paint(object sender, PaintEventArgs e)
+        {
+            //      dataGrid1.
+        }
+
+        #endregion
+        // разукрашивание ячеек в нужный цвет
+        public class DataGridTextBoxColumnColored : DataGridTextBoxColumn
+        {
+            //Определим класс аргумента события, делегат и само событие, 
+            //необходимые для "общения" кода выполняющего прорисовку ячейки, с кодом, 
+            //предоставляющим цвет для этой ячейки. 
+            public class NeedBackgroundEventArgs : EventArgs
+            {
+                private int FRowNum;
+                private Brush FBackBrush;
+                private Brush FForeBrush;
+                private CurrencyManager FSource;
+
+                public int RowNum { get { return FRowNum; } }
+                public Brush BackBrush { get { return FBackBrush; } set { FBackBrush = value; } }
+                public Brush ForeBrush { get { return FForeBrush; } set { FForeBrush = value; } }
+                public CurrencyManager Source { get { return FSource; } }
+
+                public NeedBackgroundEventArgs(CurrencyManager source, int rowNum, Brush backBrush, Brush foreBrush)
+                {
+                    this.FRowNum = rowNum;
+                    this.FBackBrush = BackBrush;
+                    this.FForeBrush = foreBrush;
+                    this.FSource = source;
+                }
+            }
+            public delegate void NeedBackgroundEventHandler(object sender, NeedBackgroundEventArgs e);
+            public event NeedBackgroundEventHandler NeedBackground;
+
+            //А вот и переопределенный метод DataGridTextBoxColumn.Paint(), 
+            //запрашивающий при помощи события (аргументов) цвет и передающий его 
+            //базовому методу Paint(), в параметре backBrush. 
+            //Теперь метод Paint базового класса будет заниматься прорисовкой ячейки, 
+            //используя при этом подставленный нами backBrush. 
+            protected override void Paint(Graphics g, Rectangle bounds, CurrencyManager source, int rowNum, Brush backBrush, Brush foreBrush, bool alignToRight)
+            {
+                NeedBackgroundEventArgs e = new NeedBackgroundEventArgs(source, rowNum, backBrush, foreBrush);
+                if (NeedBackground != null) NeedBackground(this, e);
+                base.Paint(g, bounds, source, rowNum, e.BackBrush, e.ForeBrush, alignToRight);
+            }
+        }
+
+        private void OnBackgroundEventHandler(object sender, DataGridTextBoxColumnColored.NeedBackgroundEventArgs e)
+        {
+
+            Color fullColor = new Color();
+            Color partialColor = new Color();
+
+            partialColor = Color.FromArgb(255, 127, 127);
+            fullColor = Color.FromArgb(127, 255, 127);
+
+            /*            if (e.RowNum == dataGrid1.CurrentRowIndex)
+                        {
+                            e.BackBrush = new SolidBrush(dataGrid1.SelectionBackColor);
+                            e.ForeBrush = new SolidBrush(dataGrid1.SelectionForeColor);
+                        }
+                        else
+                        {*/
+            /*                int divVal = e.RowNum / 2;
+                            if (divVal * 2 != e.RowNum) e.BackBrush = new SolidBrush(partialColor);
+                            else e.BackBrush = new SolidBrush(fullColor);*/
+
+            //e.ForeBrush = new SolidBrush(dataGrid1.ForeColor);
+            e.ForeBrush = new SolidBrush(Color.Black);
+
+            string val = doctable.Rows[e.RowNum][0].ToString().Trim();
+            if (val == "337")
+                //                    e.BackBrush = new SolidBrush(Color.LightGreen);
+                e.BackBrush = new SolidBrush(fullColor);
+            else if (val == "336")
+                //                    e.BackBrush = new SolidBrush(Color.Pink);
+                e.BackBrush = new SolidBrush(partialColor);
+            else
+                e.BackBrush = new SolidBrush(dataGrid1.BackColor);
+
+            //                e.ForeBrush = new SolidBrush(dataGrid1.ForeColor); 
+            //            } 
+        }
+
+        private void dataGrid1_Click(object sender, EventArgs e)
+        {
+            //            var z = sender;
+            //            var ee = e;
+            currentdoccol = dataGrid1.CurrentCell.ColumnNumber;
+            currentdocrow = dataGrid1.CurrentCell.RowNumber;
+            productlistform = new ProductListForm();
+            productlistform.Show();
+        }
+
+        private void dataGrid1_CurrentCellChanged(object sender, EventArgs e)
+        {
+            currentdoccol = dataGrid1.CurrentCell.ColumnNumber;
+            currentdocrow = dataGrid1.CurrentCell.RowNumber;
         }
 
     }

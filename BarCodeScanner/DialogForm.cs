@@ -13,10 +13,11 @@ namespace BarCodeScanner
     {
         private static DialogResult dr;
 
-        public DialogForm(string text, string title, string button1Text, string button2Text)
+        public DialogForm(string text1, string text2, string title, string button1Text, string button2Text)
         {
             InitializeComponent();
-            label1.Text = text;
+            labelText1.Text = text1;
+            labelText2.Text = text2;
             this.Text = title;
             buttonRetry.Text = button1Text;
             buttonCancel.Text = button2Text;
@@ -34,9 +35,9 @@ namespace BarCodeScanner
             Close();
         }
 
-        public static DialogResult Dialog(string text, string title, string button1Text, string button2Text)
+        public static DialogResult Dialog(string text1, string text2, string title, string button1Text, string button2Text)
         {
-            DialogForm d = new DialogForm(text, title, button1Text, button2Text);
+            DialogForm d = new DialogForm(text1, text2, title, button1Text, button2Text);
             dr = d.ShowDialog();
             d.Close();
             return dr;

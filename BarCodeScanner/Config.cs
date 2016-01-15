@@ -13,5 +13,5 @@ namespace BarCodeScanner
         public static Boolean superuser = false;
     }
 
-    public enum ScanMode { Doc, BarCod, Nothing }
+    public enum ScanMode { Doc, BarCod, DelBarCod, Nothing }
 }
