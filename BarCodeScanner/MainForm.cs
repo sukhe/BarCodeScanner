@@ -132,10 +132,12 @@ namespace BarCodeScanner
             Boolean result = false;
             cargodocs.Clear();
             doclist = Directory.GetFiles(CurrentPath + "doc", "*_*_*.xml");
+            string ss = "";
             try
             {
                 foreach (string s in doclist)
                 {
+                    ss = s;
                     cargodocs.Add(CargoDoc.LoadFromFile(s));
                 }
                 result = true;
@@ -143,9 +145,9 @@ namespace BarCodeScanner
             catch (Exception ex)
             {
                 if (ex.InnerException == null)
-                    MessageBox.Show(@"[MF03] " + ex.Message);
+                    MessageBox.Show(@"[MF03] " + ss + " " + ex.Message);
                 else
-                    MessageBox.Show(@"[MF03] " + ex.Message + " " + ex.InnerException.Message);
+                    MessageBox.Show(@"[MF03] " + ss + " " + ex.Message + " " + ex.InnerException.Message);
                 return false;
             }
             return result;
@@ -189,7 +191,7 @@ namespace BarCodeScanner
                     {
                         DownloadXML(barcod);
                         LoadAllDataFromXml();
-                        doclistform.ReloadDocTable();
+                        ReloadDocTable();
                     }
                     break;
                 case (ScanMode.BarCod):
@@ -320,6 +322,19 @@ namespace BarCodeScanner
 
         private void button1_Click(object sender, EventArgs e)
         {
+/*            CargoDoc d = new CargoDoc();
+            d = MainForm.cargodocs[MainForm.currentdocrow];
+            string n = d.Number.Trim();
+            string t = MainForm.uncolData(d.Data);
+            d.SaveToFile(MainForm.CurrentPath + @"doc\"+ n + "_" + t + "_" + Config.scannerNumber.ToString() + ".xml");*/
+
+            string n = cargodocs[currentdocrow].Number.Trim();
+            string t = uncolData(cargodocs[currentdocrow].Data);
+            RestAPI(@"http://192.168.10.213/CargoDocService.svc/CargoDoc/" + n + "_" + t + "_" + Config.scannerNumber);
+        }
+
+/*        private void button1_Click(object sender, EventArgs e)
+        {
             if (LoadAllDataFromXml())
             {
 //                DocListForm d = new DocListForm();
@@ -328,7 +343,7 @@ namespace BarCodeScanner
                 doclistform = new DocListForm();
                 doclistform.Show();
 //                doclistform.Focus();
-            }
+            }*/
 
 
 /*            DownloadXML("9237_20151118_02");
@@ -358,12 +373,8 @@ namespace BarCodeScanner
             }
             cd.SaveToFile(CurrentPath + @"\doc\"+ndoc+@".xml"); */
 
-        }
+//        }
 
-        private void button2_Click(object sender, EventArgs e)
-        {
-            //
-        }
 
 /*        private void button2_Click(object sender, EventArgs e)
         {
@@ -613,7 +624,7 @@ namespace BarCodeScanner
             return sb;
         }
 
-        private void PutHTTP(string url)
+        private void PostHTTP(string url)
         {
             //                string url = txtURL.Text;
             //                string proxy = txtProxy.Text;
@@ -633,7 +644,7 @@ namespace BarCodeScanner
                         }*/
 
                 WebRequest req = WebRequest.Create(url);
-                req.Method = "PUT";
+                req.Method = "POST";
                 req.ContentType = "text/xml; charset=utf-8";
                 //req.ContentType = "application/json; charset=utf-8";
                 req.Timeout = 60000;
@@ -696,7 +707,8 @@ namespace BarCodeScanner
             req.Timeout = 60000;
             // We give the Request as "State" to the function, you'll see why
 
-            string payload = "<xml>...</xml>";
+//            string payload = "<xml>...</xml>";
+            string payload = cargodocs[currentdocrow].Serialize();
             req.ContentLength = payload.Length;
 
 /*            using (var client = new System.Net.WebClient())
@@ -727,7 +739,8 @@ namespace BarCodeScanner
             System.IO.Stream respStream = resp.GetResponseStream();
             // The most important part here is the Schema url where "contract" is the namespace of the class Contact.
 //            System.Xml.Serialization.XmlSerializer ser = new System.Xml.Serialization.XmlSerializer(typeof(string[]), "http://schemas.datacontract.org/2004/07/contract");
-            System.Xml.Serialization.XmlSerializer ser = new System.Xml.Serialization.XmlSerializer(typeof(string[]), "<xml>...</xml>");
+//            System.Xml.Serialization.XmlSerializer ser = new System.Xml.Serialization.XmlSerializer(typeof(string[]), "<xml>...</xml>");
+            System.Xml.Serialization.XmlSerializer ser = new System.Xml.Serialization.XmlSerializer(typeof(string[]), cargodocs[currentdocrow].Serialize());
             string[] result = (string[])ser.Deserialize(respStream);
             // Do something useful...
 
@@ -803,8 +816,9 @@ namespace BarCodeScanner
 
         private string DeleteNameSpace(string s) // применять только один раз! иначе откусывает лишнее
         {
-            string begin = s.Substring(0, s.IndexOf(" "));
-            return begin + ">" + s.Substring(s.IndexOf(">") + 1);
+            string ss = s.Substring(s.IndexOf("<Cargo"));
+            string begin = ss.Substring(0, ss.IndexOf(" "));
+            return begin + ">" + ss.Substring(ss.IndexOf(">") + 1);
         }
 
         private string DeleteNil(string s)
@@ -1000,7 +1014,7 @@ namespace BarCodeScanner
             }
             if ((e.KeyCode == System.Windows.Forms.Keys.F2))
             {
-                button2_Click(this, e);
+                //button2_Click(this, e);
                 //                MessageBox.Show("Нажата F2 аппаратно");
             }
             if ((e.KeyCode == System.Windows.Forms.Keys.F3))
@@ -1111,6 +1125,7 @@ namespace BarCodeScanner
             //            var ee = e;
             currentdoccol = dataGrid1.CurrentCell.ColumnNumber;
             currentdocrow = dataGrid1.CurrentCell.RowNumber;
+
             productlistform = new ProductListForm();
             productlistform.Show();
         }
@@ -1121,5 +1136,6 @@ namespace BarCodeScanner
             currentdocrow = dataGrid1.CurrentCell.RowNumber;
         }
 
+        
     }
 }
