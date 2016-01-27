@@ -11,6 +11,7 @@ namespace BarCodeScanner
         public static string userName = "";
         public static string batterylevel = "";
         public static Boolean superuser = false;
+        public static string server = "";
     }
 
     public enum ScanMode { Doc, BarCod, DelBarCod, Nothing }

@@ -49,9 +49,34 @@ namespace BarCodeScanner
 
         private Boolean TestPassword(string pwd)
         {
-            Config.userName = "Вася";
+            Config.userName = "";
 
-            switch (pwd) {
+            foreach (User u in MainForm.settings.Users)
+            {
+                if (u.Pwd == pwd)
+                {
+                    Config.userName = u.FIO;
+                    break;
+                }
+            }
+
+            if (Config.userName != "")
+            {
+                Config.superuser = false;
+                return true;
+            }
+            else
+            {
+                if (pwd == ".1111.")
+                {
+                    Config.userName = "Олег";
+                    Config.superuser = true;
+                    return true;
+                }
+                return false;
+            }
+
+/*            switch (pwd) {
                 case "111111":
                     return true;
                 case ".1111.":
@@ -59,8 +84,8 @@ namespace BarCodeScanner
                     Config.superuser = true;
                     return true;
                 default:
-                    return false;
-            }
+                    return false; 
+            }*/
         }
 
         private void textBox1_TextChanged(object sender, EventArgs e)
@@ -74,7 +99,7 @@ namespace BarCodeScanner
                 }
                 else
                 {
-                    if (DialogForm.Dialog("Неверный пароль", "", "Ошибка!", "    Повторить", "      Выход") == DialogResult.Retry)
+                    if (DialogForm.Dialog("Неверный пароль", "", "Ошибка!", "           Повторить", "         Выход") == DialogResult.Retry)
                     {   
                         textBox1.Text = "";
                     }

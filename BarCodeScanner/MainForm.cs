@@ -21,7 +21,7 @@ namespace BarCodeScanner
     {
         public static List<CargoDoc> cargodocs = new List<CargoDoc>();
         public static string[] doclist;
-        static Settings settings = new Settings();
+        public static Settings settings = new Settings();
         Stream ReceiveStream = null;
         StreamReader sr = null;
         public static string CurrentPath;
@@ -47,9 +47,49 @@ namespace BarCodeScanner
         public static DataTable xcodetable;
         public static DataTableReader xcodereader;
 
+        public static List<string> log = new List<string>();
+
 //        public static DataTable doctable;
 //        public static DataTableReader docreader;
 
+
+        private void LogErr(string Label, Exception ex)
+        {
+            if (ex.InnerException == null)
+            {
+                log.Add(System.DateTime.Now.ToString()+" "+Label + " " + ex.Message);
+                MessageBox.Show(Label + " " + ex.Message);
+            }
+            else
+            {
+                log.Add(System.DateTime.Now.ToString()+" "+Label + " " + ex.Message + " " + ex.InnerException.Message);
+                MessageBox.Show(Label + " " + ex.Message + " " + ex.InnerException.Message);
+            }
+        }
+
+
+        private void Log(string Label)
+        {
+            log.Add(System.DateTime.Now.ToString()+" "+Label);
+        }
+
+        private void LogShow(string Label)
+        {
+            log.Add(System.DateTime.Now.ToString()+" "+Label);
+            MessageBox.Show(Label);
+        }
+
+        private void LogSave() 
+        {
+            using (StreamWriter w = File.AppendText(CurrentPath + "log.txt"))
+            {
+                foreach (string s in log)
+                {
+                    w.WriteLine(s);
+                }
+            }
+            log.Clear();
+        }
 
         /// <summary>
         /// Проверяем наличие файла настроек и каталогов. При отсутствии - загружаем/создаём.
@@ -59,12 +99,12 @@ namespace BarCodeScanner
         private Boolean TestFilesAndDirs()
         {
             CurrentPath = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().GetName().CodeBase)+@"\";
-
+            
             if (!File.Exists(CurrentPath + "settings.xml"))
             {
                 if (!DownloadSettings())
                 {
-                    MessageBox.Show("Файл настроек не найден!");
+                    LogShow("Файл настроек не найден!");
                     return false;
                 }
             }
@@ -79,13 +119,68 @@ namespace BarCodeScanner
             if (!Directory.Exists(CurrentPath+"doc"))
                 Directory.CreateDirectory(CurrentPath+"doc");
 
-            doclist = Directory.GetFiles(CurrentPath + "doc", "*_*_*.xml");
+//            doclist = Directory.GetFiles(CurrentPath + "doc", "*_*_*.xml");
 // Сделать загрузку данных из файлов, чтобы в списке были даты, контрагенты и т.п.
 // Вообще, это надо в отдельную функцию засунуть, чтобы суперюзер мог перечитать список
 
             Config.scannerNumber = "02";
-            return true;
+            Config.server = "192.168.10.213";
+            Config.scannerNumber = "02";
+            //Config.scannerNumber = GetScannerID();
+            if (Config.scannerNumber == "") return false;
+            else return true;
         }
+
+        private Boolean PingServer(string serverAddress)
+        {
+            int timeout = 5000;
+            Boolean result = false;
+            OpenNETCF.Net.NetworkInformation.Ping ping = new OpenNETCF.Net.NetworkInformation.Ping();
+            OpenNETCF.Net.NetworkInformation.PingReply reply = ping.Send(serverAddress, timeout);
+            try
+            {
+//                OpenNETCF.Net.NetworkInformation.PingReply reply = ping.Send(serverAddress, timeout);
+                if (reply.Status == OpenNETCF.Net.NetworkInformation.IPStatus.Success)
+                {
+                    result = true;
+                }
+            }
+            catch 
+            {
+                Log("MF.PingServer.Status " + reply.Status.ToString());
+            }
+            return result;
+        }
+
+        private string GetScannerID()
+        {
+            string mac = "";
+            string number = "";
+            foreach (OpenNETCF.Net.NetworkInformation.NetworkInterface ni in OpenNETCF.Net.NetworkInformation.NetworkInterface.GetAllNetworkInterfaces())
+            {
+                if (ni.Description == "SDIO86861")
+                {
+                    mac = ni.GetPhysicalAddress().ToString();
+                    break;
+                }
+            }
+
+            foreach (Scanner t in settings.Scanners)
+            {
+                if ((t.MAC == mac) && (mac != ""))
+                {
+                    number = t.Nomer;
+                    break;
+                }
+            }
+            if (number == "")
+            {
+                LogShow(@"[MF05] Неопознанный сканер!");
+//                Close();
+            }
+            return number;
+        }
+
 
         /// <summary>
         /// Загрузка файла настроек с сервера. Делаем указанное количество попыток.
@@ -117,10 +212,7 @@ namespace BarCodeScanner
                 }
                 catch (Exception ex)
                 {
-                    if (ex.InnerException == null)
-                        MessageBox.Show(@"[MF02] " + ex.Message);
-                    else
-                        MessageBox.Show(@"[MF02] " + ex.Message + " " + ex.InnerException.Message);
+                    LogErr(@"[MF02]", ex);
                     return false; 
                 }
             }
@@ -144,10 +236,7 @@ namespace BarCodeScanner
             }
             catch (Exception ex)
             {
-                if (ex.InnerException == null)
-                    MessageBox.Show(@"[MF03] " + ss + " " + ex.Message);
-                else
-                    MessageBox.Show(@"[MF03] " + ss + " " + ex.Message + " " + ex.InnerException.Message);
+                LogErr(@"[MF03]", ex);
                 return false;
             }
             return result;
@@ -157,17 +246,20 @@ namespace BarCodeScanner
         {
             InitializeComponent();
 
-            TestFilesAndDirs();
-            CargoDoc cargodoc = new CargoDoc();
-            MainForm.scanmode = ScanMode.Doc;
+            if (TestFilesAndDirs())
+            {
+                CargoDoc cargodoc = new CargoDoc();
+                MainForm.scanmode = ScanMode.Doc;
 
-            cs = new CasioScanner();
-            cs.Scanned += OnScan;
-            cs.Open();
-//            addItem = new AddScan(ListItemAdd); // назначение делегата для потокобезопасного вызова процедуры
-            addItem = new AddScan(GetXML);
+                cs = new CasioScanner();
+                cs.Scanned += OnScan;
+                cs.Open();
+                //            addItem = new AddScan(ListItemAdd); // назначение делегата для потокобезопасного вызова процедуры
+                addItem = new AddScan(GetXML);
 
-            dataGrid1.Focus();
+                dataGrid1.Focus();
+            }
+            else Close();
         }
 
         private Boolean existDoc(string s)
@@ -185,13 +277,20 @@ namespace BarCodeScanner
                         int space = barcod.IndexOf(" ");
                         string data_raw = barcod.Remove(0, space);
                         string data = data_raw.Substring(7, 2) + "." + data_raw.Substring(5, 2) + "." + data_raw.Substring(3, 2);
-                        MessageBox.Show("Документ № " + barcod.Substring(0,space) + " от " + data + " уже загружен!");
+                        LogShow("Документ № " + barcod.Substring(0,space) + " от " + data + " уже загружен!");
                     }
                     else
                     {
-                        DownloadXML(barcod);
-                        LoadAllDataFromXml();
-                        ReloadDocTable();
+                        if (PingServer(Config.server))
+                        {
+                            DownloadXML(barcod);
+                            LoadAllDataFromXml();
+                            ReloadDocTable();
+                        }
+                        else
+                        {
+                            LogShow("[MF.GetXML] Нет связи с сервером!");
+                        }
                     }
                     break;
                 case (ScanMode.BarCod):
@@ -216,13 +315,13 @@ namespace BarCodeScanner
                         find_product = true;
                         if (Convert.ToInt16(p.ScannedBar) > Convert.ToInt16(p.Quantity))
                         {
-                            MessageBox.Show("Превышение количества продукции с кодом " + bar);
+                            LogShow("Превышение количества продукции с кодом " + bar);
                         }
                         else
                         {
                             if (Convert.ToInt16(p.ScannedBar) == Convert.ToInt16(p.Quantity))
                             {
-                                MessageBox.Show("Достигнуто нужное количество продукции с кодом " + bar);
+                               LogShow("Достигнуто нужное количество продукции с кодом " + bar);
                             }
                             cargodocs[currentdocrow].TotalProducts[i].ScannedBar = (Convert.ToInt16(p.ScannedBar) + 1).ToString();
                             producttable.Rows[currentdocrow].ItemArray[3] = (Convert.ToInt16(p.ScannedBar) + 1).ToString();
@@ -259,13 +358,9 @@ namespace BarCodeScanner
             }
             catch (Exception ex)
             {
-                if (ex.InnerException == null)
-                    MessageBox.Show(@"[MF04] " + ex.Message);
-                else
-                    MessageBox.Show(@"[MF04] " + ex.Message + " " + ex.InnerException.Message);
-                
+               LogErr(@"[MF04]",ex);
             }
-            if (!find_product) MessageBox.Show("В этом заказе нет продукции с кодом " + bar);
+            if (!find_product) LogShow("В этом заказе нет продукции с кодом " + bar);
         }
 
 
@@ -280,16 +375,52 @@ namespace BarCodeScanner
 //            listBox1.Invoke(GetXML, (e.Data).ToString());
         }
 
-        public Boolean DownloadXML(string barcod)
+        private string GetTime()
         {
             try
             {
-//                string s = sRestAPI("http://192.168.10.213/CargoDocService.svc/CargoDoc/" + barcod.Replace(" ","_")+"_"+Config.scannerNumber);
-                string s = GetHTTP("http://192.168.10.213/CargoDocService.svc/CargoDoc/" + barcod.Replace(" ", "_") + "_" + Config.scannerNumber);
+                XmlSerializer serializer = new XmlSerializer(typeof(CustomTime));
+                string s = sRestAPI("http://192.168.10.213/CargoDocService.svc/Time");
                 s = DeleteNameSpace(s);
-                s = DeleteNil(s);
+                CustomTime customtime = new CustomTime();
+                using (var reader = new StringReader(s))
+                {
+                    customtime = (CustomTime)serializer.Deserialize(reader);
+                }
+                return customtime.Time.ToString();
+            }
+            catch (Exception ex)
+            {
+                LogShow("[MF.GetTime] "+ex);
+                return "";
+            }
+        }
+
+        public Boolean DownloadXML(string barcod)
+        {
+//            if (GetTime()!="") 
+            try
+            {
+/*                string s = sRestAPI("http://192.168.10.213/CargoDocService.svc/CargoDoc/" + barcod.Replace(" ","_")+"_"+Config.scannerNumber);
+//                string s = GetHTTP("http://192.168.10.213/CargoDocService.svc/CargoDoc/" + barcod.Replace(" ", "_") + "_" + Config.scannerNumber);
+                s = DeleteNameSpace(s);
+                s = DeleteNil(s);*/
 //                listBox1.Items.Add("Получено " + s.Length.ToString() + " байт данных");
 
+                string s;
+                int i = 0;
+                do
+                {
+                    s = sRestAPI("http://192.168.10.213/CargoDocService.svc/CargoDoc/" + barcod.Replace(" ", "_") + "_" + Config.scannerNumber);
+                    s = DeleteNameSpace(s);
+                    s = DeleteNil(s);
+                    if (s == "<CargoDoc>")
+                    {
+                        i++;
+                        System.Threading.Thread.Sleep(1000);
+                    } else i = 3;
+                } while (i < 3);
+                
                 XmlSerializer serializer = new XmlSerializer(typeof(CargoDoc));
                 CargoDoc cd = new CargoDoc();
 
@@ -305,19 +436,14 @@ namespace BarCodeScanner
                     fs.Write(info, 0, info.Length);
 //                    listBox1.Items.Add("Получено " + info.Length.ToString() + " байт данных");
                 }
-
-
                 return true;
             }
             catch (Exception ex)
             {
-                if (ex.InnerException == null)
-                    MessageBox.Show(@"[MF01] "+ex.Message);
-                else
-                    MessageBox.Show(@"[MF01] "+ex.Message + " " + ex.InnerException.Message);
+                LogErr(@"[MF01]",ex);
                 return false;
             }
-
+//            return false;
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -327,10 +453,23 @@ namespace BarCodeScanner
             string n = d.Number.Trim();
             string t = MainForm.uncolData(d.Data);
             d.SaveToFile(MainForm.CurrentPath + @"doc\"+ n + "_" + t + "_" + Config.scannerNumber.ToString() + ".xml");*/
-
+/*            if (PingServer("192.168.10.213")){
+                Log("MF.SendDoc "+cargodocs[currentdocrow].Number);
+            } else {
+                Log("MF.SendDoc "+cargodocs[currentdocrow].Number + "Server not connect");
+            }
+            GetTime(); 
+            LogShow("MF GetTime Done");*/
             string n = cargodocs[currentdocrow].Number.Trim();
             string t = uncolData(cargodocs[currentdocrow].Data);
-            RestAPI(@"http://192.168.10.213/CargoDocService.svc/CargoDoc/" + n + "_" + t + "_" + Config.scannerNumber);
+            //pRestAPI(@"http://192.168.10.213/CargoDocService.svc/CargoDoc/" + n + "_" + t + "_" + Config.scannerNumber);
+            if (PingServer("192.168.10.213")) {
+//                MSDNPost
+                SendDoc(@"http://192.168.10.213/CargoDocService.svc/CargoDoc/" + n + "_" + t + "_" + Config.scannerNumber);
+                Log("MF.DocSended " + cargodocs[currentdocrow].Number);
+            } else {
+                Log("MF.DocNotSended "+cargodocs[currentdocrow].Number);
+            }
         }
 
 /*        private void button1_Click(object sender, EventArgs e)
@@ -470,25 +609,34 @@ namespace BarCodeScanner
 
         private void MainForm_Load(object sender, EventArgs e)
         {
-
-/*            if (LoginForm.Dialog() == DialogResult.Abort) Close();
-            else
-            { */
             Config.userName = "Бендер О.И.";
-            if (LoadAllDataFromXml())
+            if (LoginForm.Dialog() == DialogResult.Abort) Close();
+            else
             {
-                if (doctable == null)
-                    doctable = new DataTable();
-                dataGrid1.DataSource = doctable;
-                GetCustomers();
+            Config.scannerNumber = GetScannerID();
+            if (Config.scannerNumber == "")
+                Close();
+            else
+            {
+                if (LoadAllDataFromXml())
+                {
+                    if (doctable == null)
+                        doctable = new DataTable();
+                    dataGrid1.DataSource = doctable;
+                    GetCustomers();
+                }
+                Log("Start " + Config.userName + " " + Config.scannerNumber);
+                labelInfo.Text = "Ск." + Config.scannerNumber + "/" + Config.userName;
+                labelTime.Text = System.DateTime.Now.ToShortDateString().Substring(0, 5) + " " + System.DateTime.Now.ToShortTimeString();
+                //MessageBox.Show("Сканер №" + Config.scannerNumber + " \nПользователь: " + Config.userName);
             }
 
 //                this.statusBar1.Text = "Сканер №" + Config.scannerNumber + " / " + Config.userName;
-/*            }
+            }
             if (Config.superuser)
             {
                 this.BackColor = Color.Coral;
-            } */
+            }
         }
 
         #region HTTP
@@ -560,6 +708,7 @@ namespace BarCodeScanner
                         }*/
 
                 WebRequest req = WebRequest.Create(url);
+                req.Timeout = 5000;
                 WebResponse result = req.GetResponse();
                 ReceiveStream = result.GetResponseStream();
                 Encoding encode = System.Text.Encoding.GetEncoding("utf-8");
@@ -591,7 +740,7 @@ namespace BarCodeScanner
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message);
+                LogErr(@"[MF.GetHTTP]",ex);
 //                this.listBox1.Items.Add(ex.Message);
             }
             finally
@@ -604,21 +753,208 @@ namespace BarCodeScanner
 
         private string sRestAPI(string url)
         {
-            string sb;
+            string sb = "";
             try
             {
+                Log("MF sRestAPI Begin");
                 HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
                 request.Method = "GET";
-                request.Timeout = 15000;
+                request.Timeout = 5000;
                 request.ContentType = "text/xml;charset=utf-8";
 
                 HttpWebResponse response = (HttpWebResponse)request.GetResponse();
+                Log("MF sRestAPI response");
                 StreamReader reader = new StreamReader(response.GetResponseStream(), Encoding.UTF8);
 
                 sb = reader.ReadToEnd().ToString();
+                Log("MF.sRestAPI = " + sb);
+                response.Close();
+                reader.Close();
             }
             catch (Exception ex)
             {
+                LogErr(@"[MF.sRestAPI]", ex);
+                sb = ex.Message.ToString();
+            }
+            return sb;
+        }
+
+        private string SendDoc(string url)
+        {
+            string sb = "";
+            try
+            {
+//                Log("MF.SendDoc.Begin");
+                HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
+                request.Method = "POST";
+                request.Timeout = 5000;
+                request.ContentType = "application/xml;charset=utf-8";
+
+                string postData = cargodocs[currentdocrow].Serialize();
+                byte[] byteArray = Encoding.UTF8.GetBytes(postData);
+                request.ContentLength = byteArray.Length;
+                Stream dataStream = request.GetRequestStream();
+                dataStream.Write(byteArray, 0, byteArray.Length);
+                dataStream.Close();
+
+                HttpWebResponse response = (HttpWebResponse)request.GetResponse();
+//                Log("MF.SendDoc.Response");
+                StreamReader reader = new StreamReader(response.GetResponseStream(), Encoding.UTF8);
+
+                sb = HTTPDecode(reader.ReadToEnd().ToString());
+
+                try
+                {
+                    Protocol proto = new Protocol();
+                    XmlSerializer serializer = new XmlSerializer(typeof(Protocol));
+                    using (var r = new StringReader(sb))
+                    {
+                        proto = (Protocol)serializer.Deserialize(r);
+                    }
+                    if (proto.Error != null)
+                    {
+                        Log("[MF.SendDoc.Error] " + sb);
+                        MessageBox.Show("[MF.SendDoc.Error] " + proto.Error);
+                    }
+                    else
+                        if (proto.Message != null)
+                        {
+                            Log("[MF.SendDoc.Result] " + sb);
+                            MessageBox.Show("Отправлено " + proto.Message + " штрихкодов по документу " + cargodocs[currentdocrow].Number.Trim());
+                        }
+                        else
+                        {
+                            LogShow("[MF.SendDoc.Error3]");
+                        }
+                }
+                catch
+                {
+                    LogShow("[MF.SendDoc.Error2] " + sb);
+                }
+                
+//                LogShow("MF.SendDoc = " + sb);
+                response.Close();
+                reader.Close();
+            }
+            catch (Exception ex)
+            {
+                LogErr("[MF.SendDoc.GlobalError]", ex);
+                sb = ex.Message.ToString();
+            }
+            return sb;
+        }
+
+        private string HTTPDecode(string input)
+        {
+            string ss = input.Replace("&lt;", "<");
+            input = ss.Replace("&gt;", ">");
+            ss = input.Substring(input.IndexOf("<string>")+8);
+//            ss.
+            input = ss.Substring(0,ss.Length-9);
+            return input;
+        }
+
+        private void MSDNPost(string url)
+        {
+            // Create a request using a URL that can receive a post. 
+            //            WebRequest request = WebRequest.Create("http://localhost:8888/CargoDocService.svc/CargoDoc/9237_20151118_02");
+            WebRequest request = WebRequest.Create(url);
+            //request.Timeout = 5000;
+            //WebRequest.DefaultWebProxy = WebRequest.GetSystemWebProxy();
+
+            //WebRequest.DefaultWebProxy = new WebProxy("http://127.0.0.1:8800", true);
+            // Set the Method property of the request to POST.
+            request.Method = "POST";
+            // Create POST data and convert it to a byte array.
+            CargoDoc cargodoc = CargoDoc.LoadFromFile(CurrentPath + @"doc\337_20151118_02.xml");
+            //            CargoDoc cargodoc = CargoDoc.LoadFromFile(@"D:\WORK\CASIO\RestClient\2408.xml");
+            //string postData = DeleteNameSpace2(cargodoc.Serialize());
+            string postData = cargodoc.Serialize();
+
+//            string postData = cargodocs[currentdocrow].Serialize();
+//            listBox1.Items.Add(postData);
+            byte[] byteArray = Encoding.UTF8.GetBytes(postData);
+            // Set the ContentType property of the WebRequest.
+            request.ContentType = "application/xml;charset=utf-8";
+            //            request.ContentType = "application/x-www-form-urlencoded";
+            // Set the ContentLength property of the WebRequest.
+            request.ContentLength = byteArray.Length;
+            // Get the request stream.
+            try
+            {
+                Log("MSDN.request");
+                Stream dataStream = request.GetRequestStream();
+                // Write the data to the request stream.
+                dataStream.Write(byteArray, 0, byteArray.Length);
+                // Close the Stream object.
+                dataStream.Close();
+                // Get the response.
+                Log("MSDN.response");
+                WebResponse response = request.GetResponse();
+                // Display the status.
+                //                Console.WriteLine(((HttpWebResponse)response).StatusDescription);
+                // Get the stream containing content returned by the server.
+                dataStream = response.GetResponseStream();
+                // Open the stream using a StreamReader for easy access.
+                StreamReader reader = new StreamReader(dataStream);
+                // Read the content.
+                string responseFromServer = reader.ReadToEnd();
+                responseFromServer = HTTPDecode(responseFromServer);
+
+                /*                HttpWebResponse response = (HttpWebResponse)request.GetResponse();
+                                StreamReader reader = new StreamReader(response.GetResponseStream(), Encoding.UTF8);
+                                string responseFromServer = reader.ReadToEnd().ToString(); */
+
+                // Display the content.
+                //                listBox1.Items.Add(responseFromServer);
+                //                Console.WriteLine(responseFromServer);
+                // Clean up the streams.
+/*                reader.Close();
+                dataStream.Close();
+                response.Close(); */
+                LogShow(@"[MF.MSDN.End] " + responseFromServer);
+
+            }
+            catch (Exception ex)
+            {
+                LogErr(@"[MF.MSDN]", ex);
+                //                listBox1.Items.Add(ex.Message);
+                /*                Console.WriteLine(ex.Message);
+                                if (ex.InnerException != null)
+                                {
+                //                    listBox1.Items.Add(ex.InnerException.Message);
+                                   Console.WriteLine(ex.InnerException.Message);
+                                }*/
+            }
+        }
+
+        private string pRestAPI(string url)
+        {
+            string sb = "";
+            try
+            {
+                HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
+                request.Method = "POST";
+                request.Timeout = 5000;
+                request.ContentType = "text/xml;charset=utf-8";
+
+                string payload = cargodocs[currentdocrow].Serialize();
+                byte[] postBytes = Encoding.UTF8.GetBytes(payload);
+//                    .ASCII.GetBytes(str);
+                request.ContentLength = postBytes.Length;
+//                request.ContentType = "application/x-www-form-urlencoded";
+                Stream requestStream = request.GetRequestStream();
+                requestStream.Write(postBytes, 0, postBytes.Length);
+                requestStream.Close();
+
+                HttpWebResponse response = (HttpWebResponse)request.GetResponse();
+                StreamReader reader = new StreamReader(response.GetResponseStream(), Encoding.UTF8);
+                sb = reader.ReadToEnd().ToString();
+
+            }
+            catch (Exception ex)
+            {
+                LogErr(@"[MF.pRestAPI]", ex);
                 sb = ex.Message.ToString();
             }
             return sb;
@@ -647,7 +983,7 @@ namespace BarCodeScanner
                 req.Method = "POST";
                 req.ContentType = "text/xml; charset=utf-8";
                 //req.ContentType = "application/json; charset=utf-8";
-                req.Timeout = 60000;
+                req.Timeout = 5000;
 
 
                 WebResponse result = req.GetResponse();
@@ -669,6 +1005,7 @@ namespace BarCodeScanner
             }
             catch (WebException ex)
             {
+                LogErr(@"[MF.PostHTTP.1]", ex);
                 string message = ex.Message;
                 HttpWebResponse response = (HttpWebResponse)ex.Response;
                 if (null != response)
@@ -680,7 +1017,8 @@ namespace BarCodeScanner
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message);
+                LogErr(@"[MF.PostHTTP.2]", ex);
+//                MessageBox.Show(ex.Message);
 //                this.listBox1.Items.Add(ex.Message);
             }
             finally
@@ -704,7 +1042,7 @@ namespace BarCodeScanner
             // Tells the web service you want XML and not JSON
             req.Accept = "text/xml";
             // You never know how long it takes for the other side to do its job
-            req.Timeout = 60000;
+            req.Timeout = 5000;
             // We give the Request as "State" to the function, you'll see why
 
 //            string payload = "<xml>...</xml>";
@@ -807,18 +1145,44 @@ namespace BarCodeScanner
 
         private void timer1_Tick(object sender, EventArgs e)
         {
-
+            labelTime.Text = System.DateTime.Now.ToShortDateString().Substring(0, 5) + " " + System.DateTime.Now.ToShortTimeString();
             if (SystemState.PowerBatteryState == BatteryState.Critical)
             {
-                //                MessageBox.Show("Низкий заряд батареи. Поставьте сканер на подзарядку.", "Внимание!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button1);
+                MessageBox.Show("Низкий заряд батареи. Поставьте сканер на подзарядку.", "Внимание!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button1);
             };
         }
 
         private string DeleteNameSpace(string s) // применять только один раз! иначе откусывает лишнее
         {
-            string ss = s.Substring(s.IndexOf("<Cargo"));
-            string begin = ss.Substring(0, ss.IndexOf(" "));
-            return begin + ">" + ss.Substring(ss.IndexOf(">") + 1);
+            string ss = "";
+            if (s.IndexOf("<Cargo") >= 0)
+            {
+                ss = s.Substring(s.IndexOf("<Cargo"));
+//                string begin = ss.Substring(0, ss.IndexOf(" "));
+//                return begin + ">" + ss.Substring(ss.IndexOf(">") + 1);
+            }
+            else 
+            if (s.IndexOf("<Settings") >= 0)
+            {
+                ss = s.Substring(s.IndexOf("<Settings"));
+//                string begin = ss.Substring(0, ss.IndexOf(" "));
+//                return begin + ">" + ss.Substring(ss.IndexOf(">") + 1);
+//                return s.Substring(s.IndexOf("<Users"));
+            } 
+            else
+            if (s.IndexOf("<CustomTime") >= 0)
+            {
+                ss = s.Substring(s.IndexOf("<CustomTime"));
+//                string begin = ss.Substring(0, ss.IndexOf(" "));
+//                return begin + ">" + ss.Substring(ss.IndexOf(">") + 1);
+                //                return s.Substring(s.IndexOf("<Users"));
+            };
+            if (ss != "")
+            {
+                string begin = ss.Substring(0, ss.IndexOf(" "));
+                return begin + ">" + ss.Substring(ss.IndexOf(">") + 1);
+            }
+            return "";
         }
 
         private string DeleteNil(string s)
@@ -828,9 +1192,13 @@ namespace BarCodeScanner
 
         private void MainForm_Closing(object sender, CancelEventArgs e)
         {
-            cs.Scanned -= OnScan;
-            cs.Dispose();
+            if (cs != null)
+            {
+                cs.Scanned -= OnScan;
+                cs.Dispose();
+            }
             Dispose();
+            LogSave();
         }
 
         private void DocListForm_KeyDown(object sender, KeyEventArgs e)
@@ -852,11 +1220,24 @@ namespace BarCodeScanner
 
             //            GetCustomers();
 
-            doctable.Rows.Clear();
+/*            int q;
+            int b;*/
 
+            doctable.Rows.Clear();
             foreach (CargoDoc d in cargodocs)
             {
-                doctable.Rows.Add(new object[] { d.Number.Trim(), colData(d.Data), d.Partner });
+/*                q = 0;
+                b = 0;
+
+                foreach (Product p in d.TotalProducts)
+                {
+                    q += Convert.ToInt16(p.Quantity);
+                    b += Convert.ToInt16(p.ScannedBar);
+                }
+
+                d.Quantity = q.ToString();
+                d.ScannedBar = b.ToString();*/
+                doctable.Rows.Add(new object[] { d.Number.Trim(), colData(d.Data), d.Partner, d.Quantity, d.ScannedBar });
             }
             doctable.AcceptChanges();
         }
@@ -913,6 +1294,8 @@ namespace BarCodeScanner
                 DataColumn Number = doctable.Columns.Add("№ док.", typeof(string));
                 doctable.Columns.Add("Дата", typeof(string));
                 doctable.Columns.Add("Контрагент", typeof(string));
+                doctable.Columns.Add("Надо", typeof(string));
+                doctable.Columns.Add("Уже", typeof(string));
 
                 // Set the ID column as the primary key column.
                 doctable.PrimaryKey = new DataColumn[] { Number };
@@ -928,31 +1311,44 @@ namespace BarCodeScanner
             /*            vColumn.MappingName = "Name";
                         vColumn.HeaderText = "Наименование";*/
 
-            DataGridTextBoxColumnColored col1 = new DataGridTextBoxColumnColored();
+            DataGridTextBoxColumnColored col0 = new DataGridTextBoxColumnColored();
             //            DataGridTextBoxColumn col1 = new DataGridTextBoxColumn();
-            col1.Width = 80;
-            col1.MappingName = doctable.Columns[0].ColumnName;
-            col1.HeaderText = doctable.Columns[0].ColumnName;
+            col0.Width = 80;
+            col0.MappingName = doctable.Columns[0].ColumnName;
+            col0.HeaderText = doctable.Columns[0].ColumnName;
+            col0.NeedBackground += new DataGridTextBoxColumnColored.NeedBackgroundEventHandler(OnBackgroundEventHandler);
+            tableStyle.GridColumnStyles.Add(col0);
+
+            DataGridTextBoxColumnColored col1 = new DataGridTextBoxColumnColored();
+            //            DataGridTextBoxColumn col2 = new DataGridTextBoxColumn();
+            col1.Width = 90;
+            col1.MappingName = doctable.Columns[1].ColumnName;
+            col1.HeaderText = doctable.Columns[1].ColumnName;
             col1.NeedBackground += new DataGridTextBoxColumnColored.NeedBackgroundEventHandler(OnBackgroundEventHandler);
             tableStyle.GridColumnStyles.Add(col1);
 
             DataGridTextBoxColumnColored col2 = new DataGridTextBoxColumnColored();
-            //            DataGridTextBoxColumn col2 = new DataGridTextBoxColumn();
-            col2.Width = 90;
-            col2.MappingName = doctable.Columns[1].ColumnName;
-            col2.HeaderText = doctable.Columns[1].ColumnName;
+            //            DataGridTextBoxColumn col3 = new DataGridTextBoxColumn();
+            if (MainForm.cargodocs.Count > 9) 
+              col2.Width = 236;
+            else 
+              col2.Width = 252;
+            col2.MappingName = doctable.Columns[2].ColumnName;
+            col2.HeaderText = doctable.Columns[2].ColumnName;
             col2.NeedBackground += new DataGridTextBoxColumnColored.NeedBackgroundEventHandler(OnBackgroundEventHandler);
             tableStyle.GridColumnStyles.Add(col2);
 
-            DataGridTextBoxColumnColored col3 = new DataGridTextBoxColumnColored();
-            //            DataGridTextBoxColumn col3 = new DataGridTextBoxColumn();
-            //            if (MainForm.cargodocs.Count > 9) col3.Width = 236;
-            //            else 
-            col3.Width = 260;
-            col3.MappingName = doctable.Columns[2].ColumnName;
-            col3.HeaderText = doctable.Columns[2].ColumnName;
-            col3.NeedBackground += new DataGridTextBoxColumnColored.NeedBackgroundEventHandler(OnBackgroundEventHandler);
+            DataGridTextBoxColumn col3 = new DataGridTextBoxColumn();
+            col3.Width = 0;
+            col3.MappingName = doctable.Columns[3].ColumnName;
+            col3.HeaderText = doctable.Columns[3].ColumnName;
             tableStyle.GridColumnStyles.Add(col3);
+
+            DataGridTextBoxColumn col4 = new DataGridTextBoxColumn();
+            col4.Width = 0;
+            col4.MappingName = doctable.Columns[4].ColumnName;
+            col4.HeaderText = doctable.Columns[4].ColumnName;
+            tableStyle.GridColumnStyles.Add(col4);
 
             dataGrid1.TableStyles.Add(tableStyle);
 
@@ -1105,15 +1501,28 @@ namespace BarCodeScanner
             //e.ForeBrush = new SolidBrush(dataGrid1.ForeColor);
             e.ForeBrush = new SolidBrush(Color.Black);
 
-            string val = doctable.Rows[e.RowNum][0].ToString().Trim();
-            if (val == "337")
+//            string val = doctable.Rows[e.RowNum][0].ToString().Trim();
+
+            int q = Convert.ToInt16(doctable.Rows[e.RowNum][3]);
+            int b = Convert.ToInt16(doctable.Rows[e.RowNum][4]);
+            /*            int q = 5;
+                        int b = 5; */
+
+            if ((b < q) && (b != 0))
+                e.BackBrush = new SolidBrush(partialColor);
+            else if (b >= q)
+                e.BackBrush = new SolidBrush(fullColor);
+            else
+                e.BackBrush = new SolidBrush(Color.White);
+
+/*            if (val == "337")
                 //                    e.BackBrush = new SolidBrush(Color.LightGreen);
                 e.BackBrush = new SolidBrush(fullColor);
             else if (val == "336")
                 //                    e.BackBrush = new SolidBrush(Color.Pink);
                 e.BackBrush = new SolidBrush(partialColor);
             else
-                e.BackBrush = new SolidBrush(dataGrid1.BackColor);
+                e.BackBrush = new SolidBrush(dataGrid1.BackColor); */
 
             //                e.ForeBrush = new SolidBrush(dataGrid1.ForeColor); 
             //            } 
@@ -1121,13 +1530,19 @@ namespace BarCodeScanner
 
         private void dataGrid1_Click(object sender, EventArgs e)
         {
-            //            var z = sender;
-            //            var ee = e;
-            currentdoccol = dataGrid1.CurrentCell.ColumnNumber;
-            currentdocrow = dataGrid1.CurrentCell.RowNumber;
+            if (dataGrid1.VisibleRowCount != 0)
+            {
+                currentdoccol = dataGrid1.CurrentCell.ColumnNumber;
+                currentdocrow = dataGrid1.CurrentCell.RowNumber;
 
-            productlistform = new ProductListForm();
-            productlistform.Show();
+                productlistform = new ProductListForm();
+                productlistform.Show();
+            }
+            else
+            {
+                Log("MF.DataGrid.Empty.Table");
+                MessageBox.Show("В сканере нет загруженных документов!");
+            }
         }
 
         private void dataGrid1_CurrentCellChanged(object sender, EventArgs e)
@@ -1136,6 +1551,17 @@ namespace BarCodeScanner
             currentdocrow = dataGrid1.CurrentCell.RowNumber;
         }
 
-        
+        private void labelInfo_ParentChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show(GetTime());
+            OpenNETCF.
+        }
+
+                
     }
 }

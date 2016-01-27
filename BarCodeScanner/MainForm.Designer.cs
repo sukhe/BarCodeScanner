@@ -45,6 +45,8 @@
             this.label1 = new System.Windows.Forms.Label();
             this.button4 = new System.Windows.Forms.Button();
             this.dataGrid1 = new System.Windows.Forms.DataGrid();
+            this.labelInfo = new System.Windows.Forms.Label();
+            this.labelTime = new System.Windows.Forms.Label();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             this.SuspendLayout();
@@ -56,7 +58,8 @@
             // 
             // timer1
             // 
-            this.timer1.Interval = 10000;
+            this.timer1.Enabled = true;
+            this.timer1.Interval = 30000;
             this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
             // 
             // panel1
@@ -80,6 +83,7 @@
             // label7
             // 
             this.label7.BackColor = System.Drawing.Color.Green;
+            this.label7.Enabled = false;
             this.label7.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold);
             this.label7.ForeColor = System.Drawing.Color.White;
             this.label7.Location = new System.Drawing.Point(123, 29);
@@ -91,6 +95,7 @@
             // label6
             // 
             this.label6.BackColor = System.Drawing.Color.Blue;
+            this.label6.Enabled = false;
             this.label6.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold);
             this.label6.ForeColor = System.Drawing.Color.White;
             this.label6.Location = new System.Drawing.Point(3, 29);
@@ -120,14 +125,19 @@
             // 
             // button3
             // 
+            this.button3.Enabled = false;
+            this.button3.Font = new System.Drawing.Font("Tahoma", 9F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Strikeout))));
             this.button3.Location = new System.Drawing.Point(120, 27);
             this.button3.Name = "button3";
             this.button3.Size = new System.Drawing.Size(120, 24);
             this.button3.TabIndex = 4;
             this.button3.Text = "      Всё";
+            this.button3.Click += new System.EventHandler(this.button3_Click);
             // 
             // button2
             // 
+            this.button2.Enabled = false;
+            this.button2.Font = new System.Drawing.Font("Tahoma", 9F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Strikeout))));
             this.button2.Location = new System.Drawing.Point(0, 27);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(120, 24);
@@ -198,10 +208,30 @@
             this.dataGrid1.Dock = System.Windows.Forms.DockStyle.Top;
             this.dataGrid1.Location = new System.Drawing.Point(0, 0);
             this.dataGrid1.Name = "dataGrid1";
-            this.dataGrid1.Size = new System.Drawing.Size(240, 211);
+            this.dataGrid1.Size = new System.Drawing.Size(240, 190);
             this.dataGrid1.TabIndex = 2;
             this.dataGrid1.CurrentCellChanged += new System.EventHandler(this.dataGrid1_CurrentCellChanged);
             this.dataGrid1.Click += new System.EventHandler(this.dataGrid1_Click);
+            // 
+            // labelInfo
+            // 
+            this.labelInfo.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.labelInfo.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
+            this.labelInfo.Location = new System.Drawing.Point(0, 193);
+            this.labelInfo.Name = "labelInfo";
+            this.labelInfo.Size = new System.Drawing.Size(162, 17);
+            this.labelInfo.ParentChanged += new System.EventHandler(this.labelInfo_ParentChanged);
+            // 
+            // labelTime
+            // 
+            this.labelTime.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.labelTime.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.labelTime.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(128)))));
+            this.labelTime.Location = new System.Drawing.Point(164, 193);
+            this.labelTime.Name = "labelTime";
+            this.labelTime.Size = new System.Drawing.Size(75, 17);
+            this.labelTime.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             // 
             // MainForm
             // 
@@ -209,6 +239,8 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.AutoScroll = true;
             this.ClientSize = new System.Drawing.Size(240, 294);
+            this.Controls.Add(this.labelTime);
+            this.Controls.Add(this.labelInfo);
             this.Controls.Add(this.dataGrid1);
             this.Controls.Add(this.panel1);
             this.KeyPreview = true;
@@ -243,6 +275,8 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Button button4;
+        private System.Windows.Forms.Label labelInfo;
+        private System.Windows.Forms.Label labelTime;
     }
 }
 

@@ -70,9 +70,10 @@ namespace BarCodeScanner
             
             DataGridTextBoxColumnColored col1 = new DataGridTextBoxColumnColored();
             //            DataGridTextBoxColumn col1 = new DataGridTextBoxColumn();
-//            if (MainForm.producttable.Rows.Count > 9) col2.Width = 236;
-//            else col2.Width = 260;
-            col1.Width = 180; //204
+            if (MainForm.producttable.Rows.Count > 12) 
+                col1.Width = 180;
+            else 
+                col1.Width = 204;
             col1.MappingName = MainForm.producttable.Columns[1].ColumnName;
             col1.HeaderText = MainForm.producttable.Columns[1].ColumnName;
             col1.NeedBackgroundProduct += new DataGridTextBoxColumnColored.NeedBackgroundEventHandlerProduct(OnBackgroundEventHandlerProduct);
@@ -124,6 +125,8 @@ namespace BarCodeScanner
 //                MainForm.producttable.Rows.Add(new object[] { p.PID });
             }
             MainForm.producttable.AcceptChanges();
+            MainForm.cargodocs[MainForm.currentdocrow].Quantity = q.ToString();
+            MainForm.cargodocs[MainForm.currentdocrow].ScannedBar = b.ToString();
             label2.Text = q.ToString() + "/" + b.ToString();
             if (b == 0) label2.BackColor = Color.White;
             else if (b < q) label2.BackColor = partialColor;
@@ -191,7 +194,8 @@ namespace BarCodeScanner
 
             e.ForeBrush = new SolidBrush(Color.Black);
 
-            string val = MainForm.doctable.Rows[e.RowNum][0].ToString().Trim();
+//            string val = MainForm.doctable.Rows[e.RowNum][0].ToString().Trim();
+
             int q = Convert.ToInt16(MainForm.producttable.Rows[e.RowNum][2]);
             int b = Convert.ToInt16(MainForm.producttable.Rows[e.RowNum][3]);
 /*            int q = 5;

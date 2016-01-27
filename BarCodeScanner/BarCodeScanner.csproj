@@ -57,6 +57,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>C:\Program Files\CASIO\OpenNETCF\OpenNETCF.dll</HintPath>
     </Reference>
+    <Reference Include="OpenNETCF.Net, Version=2.3.12317.0, Culture=neutral, PublicKeyToken=e60dbea84bb431b7, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\Program Files\CASIO\OpenNETCF\OpenNETCF.Net.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data.SqlServerCe, Version=3.5.1.0, Culture=neutral, PublicKeyToken=3be235df1c8d2ad3, processorArchitecture=MSIL">
@@ -84,6 +88,11 @@
       <DependentUpon>CargoDocs.xsd</DependentUpon>
     </Compile>
     <Compile Include="CasioScanner.cs" />
+    <Compile Include="customtime.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>customtime.xsd</DependentUpon>
+    </Compile>
     <Compile Include="ProductListForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -144,6 +153,11 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="protocol.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>protocol.xsd</DependentUpon>
+    </Compile>
     <Compile Include="ScannedDataEventArgs.cs" />
     <Compile Include="ScannerStatus.cs" />
     <Compile Include="settings.Designer.cs">
@@ -171,12 +185,35 @@
       <DependentUpon>CargoDocs.xsd</DependentUpon>
     </None>
     <None Include="ClassDiagram1.cd" />
+    <None Include="customtime.xsc">
+      <DependentUpon>customtime.xsd</DependentUpon>
+    </None>
+    <None Include="customtime.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>customtime.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="customtime.xss">
+      <DependentUpon>customtime.xsd</DependentUpon>
+    </None>
     <None Include="Properties\DataSources\CargoDoc.datasource" />
+    <None Include="protocol.xsc">
+      <DependentUpon>protocol.xsd</DependentUpon>
+    </None>
+    <None Include="protocol.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>protocol.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="protocol.xss">
+      <DependentUpon>protocol.xsd</DependentUpon>
+    </None>
     <None Include="settings.xsc">
       <DependentUpon>settings.xsd</DependentUpon>
     </None>
     <None Include="settings.xsd">
-      <SubType>Designer</SubType>
+      <SubType>
+      </SubType>
       <Generator>MSDataSetGenerator</Generator>
       <LastGenOutput>settings.Designer.cs</LastGenOutput>
     </None>
