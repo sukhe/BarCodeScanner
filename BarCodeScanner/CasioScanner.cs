@@ -136,7 +136,7 @@ namespace BarCodeScanner
                         throw new Exception("[CS01] Error end");
 //                        break;
                     case (OBReadLibNet.Def.OBR_PON):
-                        throw new Exception("[CS02] Already open");
+                        throw new Exception("[CS02] Already open / Перезагрузите сканер");
 //                        break;
                     case (OBReadLibNet.Def.OBR_POF):
                         throw new Exception("[CS03] Not open");

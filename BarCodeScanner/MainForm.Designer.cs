@@ -125,7 +125,6 @@
             // 
             // button3
             // 
-            this.button3.Enabled = false;
             this.button3.Font = new System.Drawing.Font("Tahoma", 9F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Strikeout))));
             this.button3.Location = new System.Drawing.Point(120, 27);
             this.button3.Name = "button3";
@@ -220,7 +219,6 @@
             this.labelInfo.Location = new System.Drawing.Point(0, 193);
             this.labelInfo.Name = "labelInfo";
             this.labelInfo.Size = new System.Drawing.Size(162, 17);
-            this.labelInfo.ParentChanged += new System.EventHandler(this.labelInfo_ParentChanged);
             // 
             // labelTime
             // 

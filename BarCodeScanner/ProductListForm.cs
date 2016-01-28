@@ -13,8 +13,8 @@ namespace BarCodeScanner
     {
 
         public static int currentproductrow;
-        private Color fullColor;
-        private Color partialColor;
+/*        private Color fullColor;
+        private Color partialColor; */
 
         public ProductListForm()
         {
@@ -22,10 +22,10 @@ namespace BarCodeScanner
             label1.Text = "№"+MainForm.cargodocs[MainForm.currentdocrow].Number.Trim() + " / " + MainForm.cargodocs[MainForm.currentdocrow].Partner.Trim();
             MainForm.scanmode = ScanMode.BarCod;
 
-            fullColor = new Color();
+/*            fullColor = new Color();
             partialColor = new Color();
             partialColor = Color.FromArgb(255, 127, 127);
-            fullColor = Color.FromArgb(127, 255, 127);
+            fullColor = Color.FromArgb(127, 255, 127); */
 
             dataGrid1.Focus();
         }
@@ -129,8 +129,8 @@ namespace BarCodeScanner
             MainForm.cargodocs[MainForm.currentdocrow].ScannedBar = b.ToString();
             label2.Text = q.ToString() + "/" + b.ToString();
             if (b == 0) label2.BackColor = Color.White;
-            else if (b < q) label2.BackColor = partialColor;
-            else label2.BackColor = fullColor;
+            else if (b < q) label2.BackColor = MainForm.partialColor;
+            else label2.BackColor = MainForm.fullColor;
         }
 
         // разукрашивание ячеек в нужный цвет
@@ -177,54 +177,21 @@ namespace BarCodeScanner
 
         private void OnBackgroundEventHandlerProduct(object sender, DataGridTextBoxColumnColored.NeedBackgroundEventArgs e)
         {
-
-
-            /*            if (e.RowNum == dataGrid1.CurrentRowIndex)
-                        {
-                            e.BackBrush = new SolidBrush(dataGrid1.SelectionBackColor);
-                            e.ForeBrush = new SolidBrush(dataGrid1.SelectionForeColor);
-                        }
-                        else
-                        {*/
-            /*                int divVal = e.RowNum / 2;
-                            if (divVal * 2 != e.RowNum) e.BackBrush = new SolidBrush(partialColor);
-                            else e.BackBrush = new SolidBrush(fullColor);*/
-
-            //e.ForeBrush = new SolidBrush(dataGrid1.ForeColor);
-
             e.ForeBrush = new SolidBrush(Color.Black);
-
-//            string val = MainForm.doctable.Rows[e.RowNum][0].ToString().Trim();
 
             int q = Convert.ToInt16(MainForm.producttable.Rows[e.RowNum][2]);
             int b = Convert.ToInt16(MainForm.producttable.Rows[e.RowNum][3]);
-/*            int q = 5;
-            int b = 5; */
 
             if ((b < q) && (b != 0))
-                e.BackBrush = new SolidBrush(partialColor);
+                e.BackBrush = new SolidBrush(MainForm.partialColor);
             else if (b >= q)
-                e.BackBrush = new SolidBrush(fullColor);
+                e.BackBrush = new SolidBrush(MainForm.fullColor);
             else
                 e.BackBrush = new SolidBrush(Color.White);
-
-
-/*            if (val == "337")
-                //                    e.BackBrush = new SolidBrush(Color.LightGreen);
-                e.BackBrush = new SolidBrush(fullColor);
-            else if (val == "336")
-                //                    e.BackBrush = new SolidBrush(Color.Pink);
-                e.BackBrush = new SolidBrush(partialColor);
-            else
-                e.BackBrush = new SolidBrush(dataGrid1.BackColor);*/
-
-            //                e.ForeBrush = new SolidBrush(dataGrid1.ForeColor); 
-            //            } 
         }
 
         private void dataGrid1_CurrentCellChanged(object sender, EventArgs e)
         {
-//            dataGrid1.Update();
             currentproductrow = dataGrid1.CurrentRowIndex;
         }
 
@@ -250,7 +217,7 @@ namespace BarCodeScanner
             CargoDoc d = new CargoDoc();
             d = MainForm.cargodocs[MainForm.currentdocrow];
             string n = d.Number.Trim();
-            string t = MainForm.uncolData(d.Data);
+            string t = MainForm.ConvertToYYYYMMDD(d.Data);
             d.SaveToFile(MainForm.CurrentPath + @"doc\"+ n + "_" + t + "_" + Config.scannerNumber.ToString() + ".xml");
             MainForm.scanmode = ScanMode.Doc;
             Close();

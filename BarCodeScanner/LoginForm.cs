@@ -13,7 +13,6 @@ namespace BarCodeScanner
 {
     public partial class LoginForm : Form
     {
-//        string CurrentPath;
 
         private static DialogResult LoginResult;
 
@@ -21,31 +20,6 @@ namespace BarCodeScanner
         {
             InitializeComponent();
         }
-
-/*        private Boolean LoadSettings()
-        {
-            Boolean ls = false;
-            XmlSerializer serializer = new XmlSerializer(typeof(Settings));
-
-            Settings set = new Settings();
-//            using (TextReader reader = new StringReader(set.ToString()))
-            try
-            {
-                //using (var stream = File.OpenRead(@"D:\WORK\CASIO\ConnectTo1C\2418.xml"))
-                using (var stream = File.OpenRead(CurrentPath+@"\settings.xml"))
-                {
-                    set = (Settings)serializer.Deserialize(stream);
-                    ls = true;
-                    Config.scannerNumber = "1";
-
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Ошибка загрузки настроек " + ex.Message.ToString() + " - " + ex.InnerException.Message.ToString()); 
-            }
-            return ls;
-        }*/
 
         private Boolean TestPassword(string pwd)
         {
@@ -69,23 +43,16 @@ namespace BarCodeScanner
             {
                 if (pwd == ".1111.")
                 {
-                    Config.userName = "Олег";
-                    Config.superuser = true;
-                    return true;
+                    Config.userName = "Superuser";
+//                    Config.superuser = true;
+                    ServiceForm serviceform = new ServiceForm();
+                    serviceform.ShowDialog();
+                    serviceform.Close();
+//                    return true;
                 }
                 return false;
             }
 
-/*            switch (pwd) {
-                case "111111":
-                    return true;
-                case ".1111.":
-                    Config.userName = "Олег";
-                    Config.superuser = true;
-                    return true;
-                default:
-                    return false; 
-            }*/
         }
 
         private void textBox1_TextChanged(object sender, EventArgs e)
@@ -99,14 +66,30 @@ namespace BarCodeScanner
                 }
                 else
                 {
-                    if (DialogForm.Dialog("Неверный пароль", "", "Ошибка!", "           Повторить", "         Выход") == DialogResult.Retry)
-                    {   
-                        textBox1.Text = "";
+                    if (Config.userName == "Superuser")
+                    {
+                        Config.userName = "";
+                        if (DialogForm.Dialog("Войти в программу?", "", "Вопрос", "              Да", "          Нет") == DialogResult.Retry)
+                        {
+                            textBox1.Text = "";
+                        }
+                        else
+                        {
+                            LoginResult = DialogResult.Abort;
+                            Close();
+                        }
                     }
                     else
                     {
-                        LoginResult = DialogResult.Abort;
-                        Close();
+                        if (DialogForm.Dialog("Неверный пароль", "", "Ошибка!", "           Повторить", "         Выход") == DialogResult.Retry)
+                        {
+                            textBox1.Text = "";
+                        }
+                        else
+                        {
+                            LoginResult = DialogResult.Abort;
+                            Close();
+                        }
                     }
                 }
             }
@@ -128,25 +111,13 @@ namespace BarCodeScanner
 
         private void LoginForm_KeyDown(object sender, KeyEventArgs e)
         {
-/*            if ((e.KeyCode == System.Windows.Forms.Keys.F1))
-            {
-                //                MessageBox.Show("Нажата F1 аппаратно");
-                buttonRetry_Click(this, e);
-            }
-            if ((e.KeyCode == System.Windows.Forms.Keys.F2))
-            {
-                buttonRetry_Click(this, e);
-                //                MessageBox.Show("Нажата F2 аппаратно");
-            } */
             if ((e.KeyCode == System.Windows.Forms.Keys.F3))
             {
                 buttonClose_Click(this, e);
-                //                MessageBox.Show("Нажата F3 аппаратно");
             }
             if ((e.KeyCode == System.Windows.Forms.Keys.F4))
             {
                 buttonClose_Click(this, e);
-                //                MessageBox.Show("Нажата F4 аппаратно");
             }
 
         }
@@ -156,12 +127,10 @@ namespace BarCodeScanner
             if ((e.KeyCode == System.Windows.Forms.Keys.F3))
             {
                 buttonClose_Click(this, e);
-                //                MessageBox.Show("Нажата F3 аппаратно");
             }
             if ((e.KeyCode == System.Windows.Forms.Keys.F4))
             {
                 buttonClose_Click(this, e);
-                //                MessageBox.Show("Нажата F4 аппаратно");
             }
         }
 

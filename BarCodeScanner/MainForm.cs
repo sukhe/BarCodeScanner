@@ -19,92 +19,118 @@ namespace BarCodeScanner
 
     public partial class MainForm : Form
     {
-        public static List<CargoDoc> cargodocs = new List<CargoDoc>();
-        public static string[] doclist;
-        public static Settings settings = new Settings();
-        Stream ReceiveStream = null;
-        StreamReader sr = null;
-        public static string CurrentPath;
-//        public static Config 
+        public static List<CargoDoc> cargodocs = new List<CargoDoc>();  // структура в памяти, куда загружаются 
+                                                                        // все отгрузочные документы, имеющиеся в сканере
+        public static Settings settings = new Settings();               // сюда загружаются данные из файла настроек settings.xml
+        public static string[] doclist;                                 // список всех отгрузочных документов (файлов в подкаталоге doc)
+        public static string CurrentPath;                               // путь в файловой системе к каталогу программы
 
-        CasioScanner cs;
-        public delegate void AddScan(string s);
-        public AddScan addItem;
+        CasioScanner cs;                                                // класс сканера, запускаемый в отдельном потоке
+        public delegate void AddScan(string s);                         // 
+        public AddScan addBarCode;
 
-        public static ScanMode scanmode;
+        public static ScanMode scanmode;                                // режим сканирования штрихкодов - документ, продукция и т.д.
 
-        public static DocListForm doclistform;
+//        public static DocListForm doclistform;                          
         public static DataTable doctable;
         public static DataTableReader docreader;
-        public static int currentdocrow;
-        public static int currentdoccol;
+        public static int currentdocrow;                                // номер текущей строки таблицы отгрузочных документов
+        public static int currentdoccol;                                // номер текущей колонки таблицы отгрузочных документов
 
-        public static ProductListForm productlistform;
+        public static ProductListForm productlistform;                  // форма для работы со списком продукции
         public static DataTable producttable;
         public static DataTableReader productreader;
 
-        public static XCodeListForm xcodelistform;
+        public static XCodeListForm xcodelistform;                      // форма для работы со списком штрих-кодов
         public static DataTable xcodetable;
         public static DataTableReader xcodereader;
 
-        public static List<string> log = new List<string>();
+        public static List<string> log = new List<string>();            // структура для хранения логов в памяти, при выходе из программы
+                                                                        // записывается на диск
+        public static Color fullColor;                                  // цвет фона для строк с полностью заполненным документом
+        public static Color partialColor;                               // цвет фона для строк с частично заполненным документом
 
-//        public static DataTable doctable;
-//        public static DataTableReader docreader;
-
-
-        private void LogErr(string Label, Exception ex)
+        public MainForm()
         {
-            if (ex.InnerException == null)
+            InitializeComponent();
+
+            if (TestFilesAndDirs())
             {
-                log.Add(System.DateTime.Now.ToString()+" "+Label + " " + ex.Message);
-                MessageBox.Show(Label + " " + ex.Message);
+                CargoDoc cargodoc = new CargoDoc();
+                MainForm.scanmode = ScanMode.Doc;
+
+                cs = new CasioScanner();
+                cs.Scanned += OnScan;
+                cs.Open();
+                addBarCode = new AddScan(BarCodeProcessing); // назначение делегата для потокобезопасного вызова процедуры
+
+                dataGrid1.Focus();
             }
+            else Close();
+        }
+
+/*        private Boolean existDoc(string s)
+        {
+            return doclist.Contains(s);
+        } */
+
+        private void MainForm_Load(object sender, EventArgs e)
+        {
+            Config.userName = "Мистер Х";
+            if (LoginForm.Dialog() == DialogResult.Abort) Close();
             else
             {
-                log.Add(System.DateTime.Now.ToString()+" "+Label + " " + ex.Message + " " + ex.InnerException.Message);
-                MessageBox.Show(Label + " " + ex.Message + " " + ex.InnerException.Message);
-            }
-        }
-
-
-        private void Log(string Label)
-        {
-            log.Add(System.DateTime.Now.ToString()+" "+Label);
-        }
-
-        private void LogShow(string Label)
-        {
-            log.Add(System.DateTime.Now.ToString()+" "+Label);
-            MessageBox.Show(Label);
-        }
-
-        private void LogSave() 
-        {
-            using (StreamWriter w = File.AppendText(CurrentPath + "log.txt"))
-            {
-                foreach (string s in log)
+/*            Config.scannerNumber = GetScannerID();
+            if (Config.scannerNumber == "")
+                Close();
+            else
+            {*/
+                if (LoadAllDataFromXml())
                 {
-                    w.WriteLine(s);
+                    if (doctable == null)
+                        doctable = new DataTable();
+                    dataGrid1.DataSource = doctable;
+                    GetCustomers();
                 }
+                Log("Start " + Config.userName + " " + Config.scannerNumber);
+                labelInfo.Text = "Ск." + Config.scannerNumber + "/" + Config.userName;
+                labelTime.Text = System.DateTime.Now.ToShortDateString().Substring(0, 5) + " " + System.DateTime.Now.ToShortTimeString();
+//            }
             }
-            log.Clear();
+/*            if (Config.superuser)
+            {
+                this.BackColor = Color.Coral;
+            }*/
         }
+
+        private void MainForm_Closing(object sender, CancelEventArgs e)
+        {
+            // сделать сохранение xml ?
+            LogSave();
+            if (cs != null)
+            {
+                cs.Scanned -= OnScan;
+                cs.Dispose();
+            }
+            Dispose();
+        }
+
+        # region BeforeWork - проверки, обработки перед запуском основной программы
 
         /// <summary>
-        /// Проверяем наличие файла настроек и каталогов. При отсутствии - загружаем/создаём.
-        /// Составляем список имеющихся на сканере документов.
+        /// Проверяем наличие файла настроек и каталога "doc". При отсутствии - загружаем/создаём.
+        /// Определяем номер сканера
         /// </summary>
         /// <returns>Истина если всё хорошо; ложь, если что-то не в порядке</returns>
         private Boolean TestFilesAndDirs()
         {
-            CurrentPath = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().GetName().CodeBase)+@"\";
-            
+            CurrentPath = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().GetName().CodeBase) + @"\";
+
             if (!File.Exists(CurrentPath + "settings.xml"))
             {
                 if (!DownloadSettings())
                 {
-                    LogShow("Файл настроек не найден!");
+                    LogShow("[MF.TestFilesAndDirs] Файл настроек не найден!");
                     return false;
                 }
             }
@@ -116,87 +142,106 @@ namespace BarCodeScanner
             /*            if (!Directory.Exists(CurrentPath+@"\log")
                             Directory.CreateDirectory(CurrentPath+@"\log"); */
 
-            if (!Directory.Exists(CurrentPath+"doc"))
-                Directory.CreateDirectory(CurrentPath+"doc");
+            if (!Directory.Exists(CurrentPath + "doc"))
+                Directory.CreateDirectory(CurrentPath + "doc");
 
-//            doclist = Directory.GetFiles(CurrentPath + "doc", "*_*_*.xml");
-// Сделать загрузку данных из файлов, чтобы в списке были даты, контрагенты и т.п.
-// Вообще, это надо в отдельную функцию засунуть, чтобы суперюзер мог перечитать список
-
-            Config.scannerNumber = "02";
-            Config.server = "192.168.10.213";
-            Config.scannerNumber = "02";
-            //Config.scannerNumber = GetScannerID();
-            if (Config.scannerNumber == "") return false;
+            Config.serverIp = "192.168.10.213";
+//            Config.scannerNumber = 
+            GetScannerID();
+            if (Config.scannerNumber == "")
+            {
+                LogShow("[MF.GetScannerID] Неопознанный сканер");
+                return false;
+            }
             else return true;
         }
 
-        private Boolean PingServer(string serverAddress)
+        /// <summary>
+        /// Определяем номер сканера по мак-адресу сетевого интерфейса, сравнивая его с файлом настроек
+        /// </summary>
+        public static void GetScannerID()
         {
-            int timeout = 5000;
-            Boolean result = false;
-            OpenNETCF.Net.NetworkInformation.Ping ping = new OpenNETCF.Net.NetworkInformation.Ping();
-            OpenNETCF.Net.NetworkInformation.PingReply reply = ping.Send(serverAddress, timeout);
-            try
-            {
-//                OpenNETCF.Net.NetworkInformation.PingReply reply = ping.Send(serverAddress, timeout);
-                if (reply.Status == OpenNETCF.Net.NetworkInformation.IPStatus.Success)
-                {
-                    result = true;
-                }
-            }
-            catch 
-            {
-                Log("MF.PingServer.Status " + reply.Status.ToString());
-            }
-            return result;
-        }
-
-        private string GetScannerID()
-        {
-            string mac = "";
-            string number = "";
             foreach (OpenNETCF.Net.NetworkInformation.NetworkInterface ni in OpenNETCF.Net.NetworkInformation.NetworkInterface.GetAllNetworkInterfaces())
             {
                 if (ni.Description == "SDIO86861")
                 {
-                    mac = ni.GetPhysicalAddress().ToString();
+                    Config.scannerMac = ni.GetPhysicalAddress().ToString();
+                    Config.scannerIp = ni.CurrentIpAddress.ToString();
                     break;
                 }
             }
 
             foreach (Scanner t in settings.Scanners)
             {
-                if ((t.MAC == mac) && (mac != ""))
+                if ((t.MAC == Config.scannerMac) && (Config.scannerMac != ""))
                 {
-                    number = t.Nomer;
+                    Config.scannerNumber = t.Nomer;
                     break;
                 }
             }
-            if (number == "")
+/*            if (number == "")
             {
-                LogShow(@"[MF05] Неопознанный сканер!");
-//                Close();
+                LogShow("[MF.GetScannerID] Неопознанный сканер");
+                //                Close();
             }
-            return number;
+            return number;*/
         }
 
+        /// <summary>
+        /// Загружаем в память все имеющиеся на сканере документы
+        /// </summary>
+        /// <returns>Истина если всё хорошо; ложь, если что-то не в порядке</returns>
+        private Boolean LoadAllDataFromXml()
+        {
+            Boolean result = false;
+            cargodocs.Clear();
+            doclist = Directory.GetFiles(CurrentPath + "doc", "*_*_*.xml");
+            string ss = "";
+            try
+            {
+                foreach (string s in doclist)
+                {
+                    ss = s;
+                    try
+                    {
+                        cargodocs.Add(CargoDoc.LoadFromFile(s));
+                    }
+                    catch (Exception ex)
+                    {
+                        LogErr("[MF.LoadAllDataFromXml.Doc] Не открывается документ " + s.Substring(s.IndexOf(@"\doc\") + 5), ex);
+                    }
+                }
+                result = true;
+            }
+            catch (Exception ex)
+            {
+                LogErr("[MF.LoadAllDataFromXml.Error] ", ex);
+                return false;
+            }
+            return result;
+        }
+
+
+        #endregion
+
+        # region Network - работа с сетью (обмен данными, пинги)
 
         /// <summary>
         /// Загрузка файла настроек с сервера. Делаем указанное количество попыток.
         /// Критерий правильности загрузки - в полученном конфиге количество пользователей больше нуля
         /// </summary>
         /// <returns>Истина если загрузилось; ложь, если нет</returns>
-        private Boolean DownloadSettings()
+        public static Boolean DownloadSettings()
         {
             Boolean result = false;
             int repeat = 3;      // количество повторов для считывания настроек по сети
 
-            string s = sRestAPI("http://192.168.10.213/CargoDocService.svc/Settings");
-            s = DeleteNameSpace(s);
+            string s = RestAPI_GET("http://192.168.10.213/CargoDocService.svc/Settings");
+            s = MainForm.DeleteNameSpace(s);
             XmlSerializer serializer = new XmlSerializer(typeof(Settings));
 
-            while (repeat>0 && result == false) {
+            while (repeat > 0 && result == false)
+            {
                 try
                 {
                     using (var reader = new StringReader(s))
@@ -212,175 +257,86 @@ namespace BarCodeScanner
                 }
                 catch (Exception ex)
                 {
-                    LogErr(@"[MF02]", ex);
-                    return false; 
+                    MainForm.LogErr("[MF.DownloadSettings] ", ex);
+                    return false;
                 }
             }
             return result;
         }
 
-        private Boolean LoadAllDataFromXml()
+        /// <summary>
+        /// Загрузка отгрузочной накладной с сервера
+        /// </summary>
+        /// <returns>Истина если загрузилось; ложь, если нет</returns>
+        public Boolean DownloadXML(string docnum)
         {
-            Boolean result = false;
-            cargodocs.Clear();
-            doclist = Directory.GetFiles(CurrentPath + "doc", "*_*_*.xml");
-            string ss = "";
+            //            if (GetTime()!="") 
+            //string docnum = barcod.Replace(" ", "_") + "_" + Config.scannerNumber;
             try
             {
-                foreach (string s in doclist)
+                string s;
+                //string docnum = barcod.Replace(" ", "_") + "_" + Config.scannerNumber;
+                int i = 0;
+                do
                 {
-                    ss = s;
-                    cargodocs.Add(CargoDoc.LoadFromFile(s));
+                    s = RestAPI_GET("http://192.168.10.213/CargoDocService.svc/CargoDoc/" + docnum);
+                    s = DeleteNameSpace(s);
+                    s = DeleteNil(s);
+                    if (s == "<CargoDoc>")
+                    {
+                        i++;
+                        System.Threading.Thread.Sleep(1000);
+                    }
+                    else i = 3;
+                } while (i < 3);
+
+                if (s == "<CargoDoc>")
+                {
+                    LogShow("[MF.DownloadXML.1] Получен пустой документ " + docnum);
+                    return false;
                 }
-                result = true;
+                else
+                {
+                    try
+                    {
+                        XmlSerializer serializer = new XmlSerializer(typeof(CargoDoc));
+                        CargoDoc cd = new CargoDoc();
+                        using (var reader = new StringReader(s))
+                        {
+                            cd = (CargoDoc)serializer.Deserialize(reader);
+                            cd.SaveToFile(CurrentPath + @"doc\" + docnum + ".xml");
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        LogErr("[MF.DownloadXML.2] Документ получен с ошибками ", ex);
+                    }
+
+/*                    using (FileStream fs = File.OpenWrite(CurrentPath + @"doc\" + docnum + ".xml"))
+                    {
+                        Byte[] info = new UTF8Encoding(true).GetBytes(s);
+                        fs.Write(info, 0, info.Length);
+                    }*/
+                }
+                return true;
             }
             catch (Exception ex)
             {
-                LogErr(@"[MF03]", ex);
+                LogErr("[MF.DownloadXML.3]", ex);
                 return false;
             }
-            return result;
         }
 
-        public MainForm()
-        {
-            InitializeComponent();
-
-            if (TestFilesAndDirs())
-            {
-                CargoDoc cargodoc = new CargoDoc();
-                MainForm.scanmode = ScanMode.Doc;
-
-                cs = new CasioScanner();
-                cs.Scanned += OnScan;
-                cs.Open();
-                //            addItem = new AddScan(ListItemAdd); // назначение делегата для потокобезопасного вызова процедуры
-                addItem = new AddScan(GetXML);
-
-                dataGrid1.Focus();
-            }
-            else Close();
-        }
-
-        private Boolean existDoc(string s)
-        {
-            return doclist.Contains(s);
-        }
-
-        public void GetXML(string barcod)
-        {
-            switch (scanmode) 
-            {
-                case (ScanMode.Doc):
-                    if (existDoc(CurrentPath + @"doc\" + barcod.Replace(" ", "_") + "_" + Config.scannerNumber + ".xml"))
-                    {
-                        int space = barcod.IndexOf(" ");
-                        string data_raw = barcod.Remove(0, space);
-                        string data = data_raw.Substring(7, 2) + "." + data_raw.Substring(5, 2) + "." + data_raw.Substring(3, 2);
-                        LogShow("Документ № " + barcod.Substring(0,space) + " от " + data + " уже загружен!");
-                    }
-                    else
-                    {
-                        if (PingServer(Config.server))
-                        {
-                            DownloadXML(barcod);
-                            LoadAllDataFromXml();
-                            ReloadDocTable();
-                        }
-                        else
-                        {
-                            LogShow("[MF.GetXML] Нет связи с сервером!");
-                        }
-                    }
-                    break;
-                case (ScanMode.BarCod):
-                    ScanBarCode(barcod);
-                    break;
-                case (ScanMode.Nothing):
-                    break;
-            }
-        }
-
-        public void ScanBarCode(string barcod)
-        {
-            string bar = barcod.Substring(0,5);
-            Boolean find_product = false;
-            int i = 0;
-            try
-            {
-                foreach (Product p in cargodocs[currentdocrow].TotalProducts)
-                {
-                    if (p.PID == bar)
-                    {
-                        find_product = true;
-                        if (Convert.ToInt16(p.ScannedBar) > Convert.ToInt16(p.Quantity))
-                        {
-                            LogShow("Превышение количества продукции с кодом " + bar);
-                        }
-                        else
-                        {
-                            if (Convert.ToInt16(p.ScannedBar) == Convert.ToInt16(p.Quantity))
-                            {
-                               LogShow("Достигнуто нужное количество продукции с кодом " + bar);
-                            }
-                            cargodocs[currentdocrow].TotalProducts[i].ScannedBar = (Convert.ToInt16(p.ScannedBar) + 1).ToString();
-                            producttable.Rows[currentdocrow].ItemArray[3] = (Convert.ToInt16(p.ScannedBar) + 1).ToString();
-
-                            XCode x = new XCode();
-
-                            x.Data = nowcolData(System.DateTime.Now.ToString());
-                            x.Fio = Config.userName;
-                            x.DData = "";
-                            x.DFio = "";
-                            x.PID = p.PID;
-                            x.ScanCode = barcod;
-                            x.ScanFrom = "";
-                            x.ScanTo = "";
-                            x.ScannerID = Config.scannerNumber;
-
-                            var xl = new List<XCode>();
-                            xl.AddRange(cargodocs[currentdocrow].XCodes);
-                            xl.Add(x);
-                            cargodocs[currentdocrow].XCodes = xl.ToArray();
-
-                            if (xcodelistform != null && xcodelistform.Visible)
-                            {
-                                xcodetable.AcceptChanges();
-                                xcodelistform.ReloadXCodeTable();
-                            }
-                            else productlistform.ReloadProductTable();
-//                            xcodelistform.Refresh();
-                            break;
-                        }
-                    }
-                    i++;
-                }
-            }
-            catch (Exception ex)
-            {
-               LogErr(@"[MF04]",ex);
-            }
-            if (!find_product) LogShow("В этом заказе нет продукции с кодом " + bar);
-        }
-
-
-/*        void ListItemAdd(string text)
-        {
-            listBox1.Items.Add(text);
-        } */
-
-        private void OnScan(object sender, ScannedDataEventArgs e)
-        {
-            this.Invoke(addItem, (e.Data).ToString());
-//            listBox1.Invoke(GetXML, (e.Data).ToString());
-        }
-
+        /// <summary>
+        /// Получение текущего времени с сервера
+        /// </summary>
+        /// <returns>Дата и время в текстовом виде -> 27.01.2016 14:46:38</returns>
         private string GetTime()
         {
             try
             {
                 XmlSerializer serializer = new XmlSerializer(typeof(CustomTime));
-                string s = sRestAPI("http://192.168.10.213/CargoDocService.svc/Time");
+                string s = RestAPI_GET("http://192.168.10.213/CargoDocService.svc/Time");
                 s = DeleteNameSpace(s);
                 CustomTime customtime = new CustomTime();
                 using (var reader = new StringReader(s))
@@ -391,400 +347,80 @@ namespace BarCodeScanner
             }
             catch (Exception ex)
             {
-                LogShow("[MF.GetTime] "+ex);
+                LogShow("[MF.GetTime] " + ex);
                 return "";
             }
         }
 
-        public Boolean DownloadXML(string barcod)
+        /// <summary>
+        /// Проверка доступности сервера по сети
+        /// При этом не проверяется его работоспособность
+        /// </summary>
+        /// <returns>Истина - сервер доступен, ложь - нет</returns>
+        public static Boolean PingServer(string serverAddress)
         {
-//            if (GetTime()!="") 
+            int timeout = 5000;
+            Boolean result = false;
+            OpenNETCF.Net.NetworkInformation.Ping ping = new OpenNETCF.Net.NetworkInformation.Ping();
+            OpenNETCF.Net.NetworkInformation.PingReply reply = ping.Send(serverAddress, timeout);
             try
             {
-/*                string s = sRestAPI("http://192.168.10.213/CargoDocService.svc/CargoDoc/" + barcod.Replace(" ","_")+"_"+Config.scannerNumber);
-//                string s = GetHTTP("http://192.168.10.213/CargoDocService.svc/CargoDoc/" + barcod.Replace(" ", "_") + "_" + Config.scannerNumber);
-                s = DeleteNameSpace(s);
-                s = DeleteNil(s);*/
-//                listBox1.Items.Add("Получено " + s.Length.ToString() + " байт данных");
-
-                string s;
-                int i = 0;
-                do
+                if (reply.Status == OpenNETCF.Net.NetworkInformation.IPStatus.Success)
                 {
-                    s = sRestAPI("http://192.168.10.213/CargoDocService.svc/CargoDoc/" + barcod.Replace(" ", "_") + "_" + Config.scannerNumber);
-                    s = DeleteNameSpace(s);
-                    s = DeleteNil(s);
-                    if (s == "<CargoDoc>")
-                    {
-                        i++;
-                        System.Threading.Thread.Sleep(1000);
-                    } else i = 3;
-                } while (i < 3);
-                
-                XmlSerializer serializer = new XmlSerializer(typeof(CargoDoc));
-                CargoDoc cd = new CargoDoc();
-
-/*                using (var reader = new StringReader(s))
-                {
-                    cd = (CargoDoc)serializer.Deserialize(reader);
+                    result = true;
                 }
-                cd.SaveToFile(CurrentPath + @"doc\" + barcod.Replace(" ","_") + "_" +Config.scannerNumber+".xml");*/
-
-                using (FileStream fs = File.OpenWrite(CurrentPath + @"doc\" + barcod.Replace(" ", "_") + "_" + Config.scannerNumber + ".xml"))
-                {
-                    Byte[] info = new UTF8Encoding(true).GetBytes(s);
-                    fs.Write(info, 0, info.Length);
-//                    listBox1.Items.Add("Получено " + info.Length.ToString() + " байт данных");
-                }
-                return true;
             }
-            catch (Exception ex)
+            catch
             {
-                LogErr(@"[MF01]",ex);
-                return false;
+                MainForm.Log("[MF.PingServer.Status] " + reply.Status.ToString());
             }
-//            return false;
+            return result;
         }
 
-        private void button1_Click(object sender, EventArgs e)
-        {
-/*            CargoDoc d = new CargoDoc();
-            d = MainForm.cargodocs[MainForm.currentdocrow];
-            string n = d.Number.Trim();
-            string t = MainForm.uncolData(d.Data);
-            d.SaveToFile(MainForm.CurrentPath + @"doc\"+ n + "_" + t + "_" + Config.scannerNumber.ToString() + ".xml");*/
-/*            if (PingServer("192.168.10.213")){
-                Log("MF.SendDoc "+cargodocs[currentdocrow].Number);
-            } else {
-                Log("MF.SendDoc "+cargodocs[currentdocrow].Number + "Server not connect");
-            }
-            GetTime(); 
-            LogShow("MF GetTime Done");*/
-            string n = cargodocs[currentdocrow].Number.Trim();
-            string t = uncolData(cargodocs[currentdocrow].Data);
-            //pRestAPI(@"http://192.168.10.213/CargoDocService.svc/CargoDoc/" + n + "_" + t + "_" + Config.scannerNumber);
-            if (PingServer("192.168.10.213")) {
-//                MSDNPost
-                SendDoc(@"http://192.168.10.213/CargoDocService.svc/CargoDoc/" + n + "_" + t + "_" + Config.scannerNumber);
-                Log("MF.DocSended " + cargodocs[currentdocrow].Number);
-            } else {
-                Log("MF.DocNotSended "+cargodocs[currentdocrow].Number);
-            }
-        }
-
-/*        private void button1_Click(object sender, EventArgs e)
-        {
-            if (LoadAllDataFromXml())
-            {
-//                DocListForm d = new DocListForm();
-//                d.Show();
-//                if (doclistform == null) 
-                doclistform = new DocListForm();
-                doclistform.Show();
-//                doclistform.Focus();
-            }*/
-
-
-/*            DownloadXML("9237_20151118_02");
- * 
-            string ndoc = "9237_20151118_02";
-            string s = sRestAPI("http://192.168.10.213/CargoDocService.svc/CargoDoc/" + ndoc); */
-
-//            s = "<CargoDoc><Data>2015-11-18T10:56:52+02:00</Data><DocId i:nil=\"true\"/><Error i:nil=\"true\"/><Number>9237     </Number><Partner>ТОВ \"БИТТЕХ";
-
-/*            s = DeleteNameSpace(s);
-            s = DeleteNil(s);
-
-            listBox1.Items.Clear();
-            listBox1.Items.Add("Получено " + s.Length.ToString() + " байт данных"); */
-
-/*            using (FileStream fs = File.OpenWrite(CurrentPath + ndoc + ".xml"))
-            {
-                Byte[] info = new UTF8Encoding(true).GetBytes(s);
-                fs.Write(info, 0, info.Length);
-            }*/
-
-/*            XmlSerializer serializer = new XmlSerializer(typeof(CargoDoc));
-            CargoDoc cd = new CargoDoc();
-            using (var reader = new StringReader(s))
-            {
-                cd = (CargoDoc)serializer.Deserialize(reader);
-            }
-            cd.SaveToFile(CurrentPath + @"\doc\"+ndoc+@".xml"); */
-
-//        }
-
-
-/*        private void button2_Click(object sender, EventArgs e)
-        {
-            string s = sRestAPI("http://192.168.10.213/CargoDocService.svc/Settings");
-
-            s = DeleteNameSpace(s);
-
-            XmlSerializer serializer = new XmlSerializer(typeof(Settings)); */
-
-//            Settings set = new Settings(); 
-
-/*            using (FileStream fs = File.OpenWrite(CurrentPath + "\\seti.xml"))
-            {
-                Byte[] info = new UTF8Encoding(true).GetBytes(s);
-                fs.Write(info, 0, info.Length);
-            }
-            */
-
-/*            try
-            {
-
-                using (var reader = new StringReader(s))
-                {
-
-                    settings = (Settings)serializer.Deserialize(reader);
-                }
-
-            }
-            catch (Exception ex)
-            {
-                s = ex.Message;
-                if (ex.InnerException != null)
-                {
-                    s = s + " " + ex.InnerException.Message;
-                }
-            }
-
-            listBox1.Items.Add("Места погрузки/разгрузки");
-            foreach (Location l in settings.Locations) {
-                listBox1.Items.Add(l.LID + " - " + l.Name);
-            }
-
-            listBox1.Items.Add("Пользователи");
-            foreach (User u in settings.Users)
-            {
-                listBox1.Items.Add(u.FIO + " - " + u.Pwd);
-            }
-
-            listBox1.Items.Add("Сканеры");
-            foreach (Scanner c in settings.Scanners)
-            {
-                listBox1.Items.Add(c.MAC + " - " + c.Nomer);
-            }
-
-            listBox1.Items.Add("Перемещения");
-            foreach (Transfer t in settings.Transfers)
-            {
-                listBox1.Items.Add(t.Name + " - " + t.From + " - " + t.To);
-            } */
-            
-
-//            Settings set = Settings.Deserialize(s);
-            //MessageBox.Show("Нажата F2");
-//            GetHTTP("http://192.168.10.213/CargoDocService.svc/Settings");
-//            RestAPI("http://192.168.10.213/CargoDocService.svc/CargoDoc/" + s);
-
-//        }
-
-/*        private void MainForm_KeyDown(object sender, KeyEventArgs e)
-        {
-            if ((e.KeyCode == System.Windows.Forms.Keys.F1))
-            {
-//                MessageBox.Show("Нажата F1 аппаратно");
-                button1_Click(this,e);
-            }
-            if ((e.KeyCode == System.Windows.Forms.Keys.F2))
-            {
-                button2_Click(this, e);
-//                MessageBox.Show("Нажата F2 аппаратно");
-            }
-            if ((e.KeyCode == System.Windows.Forms.Keys.F3))
-            {
-                button3_Click(this, e);
-//                MessageBox.Show("Нажата F3 аппаратно");
-            }
-            if ((e.KeyCode == System.Windows.Forms.Keys.F4))
-            {
-                button4_Click(this, e);
-//                MessageBox.Show("Нажата F4 аппаратно");
-            }
-
-        }*/
-
-        private void MainForm_Load(object sender, EventArgs e)
-        {
-            Config.userName = "Бендер О.И.";
-            if (LoginForm.Dialog() == DialogResult.Abort) Close();
-            else
-            {
-            Config.scannerNumber = GetScannerID();
-            if (Config.scannerNumber == "")
-                Close();
-            else
-            {
-                if (LoadAllDataFromXml())
-                {
-                    if (doctable == null)
-                        doctable = new DataTable();
-                    dataGrid1.DataSource = doctable;
-                    GetCustomers();
-                }
-                Log("Start " + Config.userName + " " + Config.scannerNumber);
-                labelInfo.Text = "Ск." + Config.scannerNumber + "/" + Config.userName;
-                labelTime.Text = System.DateTime.Now.ToShortDateString().Substring(0, 5) + " " + System.DateTime.Now.ToShortTimeString();
-                //MessageBox.Show("Сканер №" + Config.scannerNumber + " \nПользователь: " + Config.userName);
-            }
-
-//                this.statusBar1.Text = "Сканер №" + Config.scannerNumber + " / " + Config.userName;
-            }
-            if (Config.superuser)
-            {
-                this.BackColor = Color.Coral;
-            }
-        }
-
-        #region HTTP
-
-        private string StringGetWebPage(String uri)
-        {
-            const int bufSizeMax = 65536; // max read buffer size conserves memory
-            const int bufSizeMin = 8192;  // min size prevents numerous small reads
-            StringBuilder sb;
-
-
-
-
-            // A WebException is thrown if HTTP request fails
-            try 
-            {
-
-                // Create an HttpWebRequest using WebRequest.Create (see .NET docs)!
-                HttpWebRequest request = (HttpWebRequest)WebRequest.Create(uri);
-                request.Method = "GET";
-                request.Timeout = 5000;
-
-                // Execute the request and obtain the response stream
-                HttpWebResponse response = (HttpWebResponse)request.GetResponse();
-                Stream responseStream = response.GetResponseStream();
-
-                // Content-Length header is not trustable, but makes a good hint.
-                // Responses longer than int size will throw an exception here!
-                int length = (int)response.ContentLength;
-
-                // Use Content-Length if between bufSizeMax and bufSizeMin
-                int bufSize = bufSizeMin;
-                if (length > bufSize)
-                    bufSize = length > bufSizeMax ? bufSizeMax : length;
-
-                // Allocate buffer and StringBuilder for reading response
-                byte[] buf = new byte[bufSize];
-                sb = new StringBuilder(bufSize);
-                // Read response stream until end
-                while ((length = responseStream.Read(buf, 0, buf.Length)) != 0)
-                    sb.Append(Encoding.UTF8.GetString(buf, 0, length));
-
-             }
-             catch (Exception ex)
-             {
-                sb = new StringBuilder(ex.Message);
-             }
-         return sb.ToString();
-         }
-
-        private string GetHTTP(string url)
-        {
-            //                string url = txtURL.Text;
-            //                string proxy = txtProxy.Text;
-            string s = "";
-
-            try
-            {
-                /*        if(!"".Equals(txtProxy.Text))
-                        {
-                            WebProxy proxyObject = new WebProxy(proxy, 80);
-
-                            // Disable proxy use when the host is local.
-                            proxyObject.BypassProxyOnLocal = true;
-
-                            // HTTP requests use this proxy information.
-                            GlobalProxySelection.Select = proxyObject;
-
-                        }*/
-
-                WebRequest req = WebRequest.Create(url);
-                req.Timeout = 5000;
-                WebResponse result = req.GetResponse();
-                ReceiveStream = result.GetResponseStream();
-                Encoding encode = System.Text.Encoding.GetEncoding("utf-8");
-
-                var sr = new StreamReader(ReceiveStream, encode);
-                s = sr.ReadToEnd();
-
-/*                XmlSerializer serializer = new XmlSerializer(typeof(CargoDoc));
-                CargoDoc cd = new CargoDoc();
-
-                using (FileStream fs = File.OpenWrite(CurrentPath + "cargon.xml"))
-                {
-                    Byte[] info = new UTF8Encoding(true).GetBytes(sr.ToString());
-                    fs.Write(info, 0, info.Length);
-                    listBox1.Items.Add("Получено "+info.Length.ToString()+" байт данных");
-                } */
-                return s;
-            }
-            catch (WebException ex)
-            {
-                string message = ex.Message;
-                HttpWebResponse response = (HttpWebResponse)ex.Response;
-                if (null != response)
-                {
-                    message = response.StatusDescription;
-                    response.Close();
-                }
-//                this.listBox1.Items.Add(message);
-            }
-            catch (Exception ex)
-            {
-                LogErr(@"[MF.GetHTTP]",ex);
-//                this.listBox1.Items.Add(ex.Message);
-            }
-            finally
-            {
-                if (ReceiveStream != null) ReceiveStream.Close();
-                if (sr != null) sr.Close();
-            }
-            return s;
-        }
-
-        private string sRestAPI(string url)
+        /// <summary>
+        /// Получение данных с сервера командой GET
+        /// </summary>
+        /// <returns>Ответ сервера в виде строки</returns>
+        public static string RestAPI_GET(string url)
         {
             string sb = "";
             try
             {
-                Log("MF sRestAPI Begin");
+                MainForm.Log("[MF.RestAPI_GET.Begin]");
                 HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
                 request.Method = "GET";
                 request.Timeout = 5000;
                 request.ContentType = "text/xml;charset=utf-8";
 
                 HttpWebResponse response = (HttpWebResponse)request.GetResponse();
-                Log("MF sRestAPI response");
+                MainForm.Log("[MF.RestAPI_GET.Response]");
                 StreamReader reader = new StreamReader(response.GetResponseStream(), Encoding.UTF8);
 
                 sb = reader.ReadToEnd().ToString();
-                Log("MF.sRestAPI = " + sb);
+                MainForm.Log("[MF.RestAPI_GET.Reader] " + sb);
                 response.Close();
                 reader.Close();
             }
             catch (Exception ex)
             {
-                LogErr(@"[MF.sRestAPI]", ex);
+                MainForm.LogErr("[MF.RestAPI_GET.Error] ", ex);
                 sb = ex.Message.ToString();
             }
             return sb;
         }
 
-        private string SendDoc(string url)
+        /// <summary>
+        /// Загрузка данных на сервер командой POST
+        /// В ответ приходит или количество загруженных штрих-кодов или ошибка в заранее оговоренной форме (см. класс Protocol)
+        /// </summary>
+        /// <param name="url">Строка в формате БазовыйURLДляОтправкиДанных/НомерДокумента_Дата_НомерСканера </param>
+        /// <returns>Ответ сервера - количество загруженных штрих-кодов или ошибка</returns>
+        private string RestAPI_POST(string url)
         {
             string sb = "";
             try
             {
-//                Log("MF.SendDoc.Begin");
+                //                Log("MF.SendDoc.Begin");
                 HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
                 request.Method = "POST";
                 request.Timeout = 5000;
@@ -798,7 +434,7 @@ namespace BarCodeScanner
                 dataStream.Close();
 
                 HttpWebResponse response = (HttpWebResponse)request.GetResponse();
-//                Log("MF.SendDoc.Response");
+                //                Log("MF.SendDoc.Response");
                 StreamReader reader = new StreamReader(response.GetResponseStream(), Encoding.UTF8);
 
                 sb = HTTPDecode(reader.ReadToEnd().ToString());
@@ -813,480 +449,63 @@ namespace BarCodeScanner
                     }
                     if (proto.Error != null)
                     {
-                        Log("[MF.SendDoc.Error] " + sb);
-                        MessageBox.Show("[MF.SendDoc.Error] " + proto.Error);
+                        Log("[MF.RestAPI_POST.Error] " + sb);
+                        MessageBox.Show("[MF.RestAPI_POST.Error] " + proto.Error);
                     }
                     else
                         if (proto.Message != null)
                         {
-                            Log("[MF.SendDoc.Result] " + sb);
+                            Log("[MF.RestAPI_POST.Result] " + sb);
                             MessageBox.Show("Отправлено " + proto.Message + " штрихкодов по документу " + cargodocs[currentdocrow].Number.Trim());
                         }
                         else
                         {
-                            LogShow("[MF.SendDoc.Error3]");
+                            LogShow("[MF.RestAPI_POST.Error.3]");
                         }
                 }
                 catch
                 {
-                    LogShow("[MF.SendDoc.Error2] " + sb);
+                    LogShow("[MF.RestAPI_POST.Error.2] " + sb);
                 }
-                
-//                LogShow("MF.SendDoc = " + sb);
+
+                //                LogShow("MF.SendDoc = " + sb);
                 response.Close();
                 reader.Close();
             }
             catch (Exception ex)
             {
-                LogErr("[MF.SendDoc.GlobalError]", ex);
+                LogErr("[MF.RestAPI_POST.GlobalError]", ex);
                 sb = ex.Message.ToString();
             }
             return sb;
         }
 
-        private string HTTPDecode(string input)
-        {
-            string ss = input.Replace("&lt;", "<");
-            input = ss.Replace("&gt;", ">");
-            ss = input.Substring(input.IndexOf("<string>")+8);
-//            ss.
-            input = ss.Substring(0,ss.Length-9);
-            return input;
-        }
+        # endregion
 
-        private void MSDNPost(string url)
-        {
-            // Create a request using a URL that can receive a post. 
-            //            WebRequest request = WebRequest.Create("http://localhost:8888/CargoDocService.svc/CargoDoc/9237_20151118_02");
-            WebRequest request = WebRequest.Create(url);
-            //request.Timeout = 5000;
-            //WebRequest.DefaultWebProxy = WebRequest.GetSystemWebProxy();
+        #region DataGrid - загрузка данных в таблицу, обработка событий, раскраска
 
-            //WebRequest.DefaultWebProxy = new WebProxy("http://127.0.0.1:8800", true);
-            // Set the Method property of the request to POST.
-            request.Method = "POST";
-            // Create POST data and convert it to a byte array.
-            CargoDoc cargodoc = CargoDoc.LoadFromFile(CurrentPath + @"doc\337_20151118_02.xml");
-            //            CargoDoc cargodoc = CargoDoc.LoadFromFile(@"D:\WORK\CASIO\RestClient\2408.xml");
-            //string postData = DeleteNameSpace2(cargodoc.Serialize());
-            string postData = cargodoc.Serialize();
-
-//            string postData = cargodocs[currentdocrow].Serialize();
-//            listBox1.Items.Add(postData);
-            byte[] byteArray = Encoding.UTF8.GetBytes(postData);
-            // Set the ContentType property of the WebRequest.
-            request.ContentType = "application/xml;charset=utf-8";
-            //            request.ContentType = "application/x-www-form-urlencoded";
-            // Set the ContentLength property of the WebRequest.
-            request.ContentLength = byteArray.Length;
-            // Get the request stream.
-            try
-            {
-                Log("MSDN.request");
-                Stream dataStream = request.GetRequestStream();
-                // Write the data to the request stream.
-                dataStream.Write(byteArray, 0, byteArray.Length);
-                // Close the Stream object.
-                dataStream.Close();
-                // Get the response.
-                Log("MSDN.response");
-                WebResponse response = request.GetResponse();
-                // Display the status.
-                //                Console.WriteLine(((HttpWebResponse)response).StatusDescription);
-                // Get the stream containing content returned by the server.
-                dataStream = response.GetResponseStream();
-                // Open the stream using a StreamReader for easy access.
-                StreamReader reader = new StreamReader(dataStream);
-                // Read the content.
-                string responseFromServer = reader.ReadToEnd();
-                responseFromServer = HTTPDecode(responseFromServer);
-
-                /*                HttpWebResponse response = (HttpWebResponse)request.GetResponse();
-                                StreamReader reader = new StreamReader(response.GetResponseStream(), Encoding.UTF8);
-                                string responseFromServer = reader.ReadToEnd().ToString(); */
-
-                // Display the content.
-                //                listBox1.Items.Add(responseFromServer);
-                //                Console.WriteLine(responseFromServer);
-                // Clean up the streams.
-/*                reader.Close();
-                dataStream.Close();
-                response.Close(); */
-                LogShow(@"[MF.MSDN.End] " + responseFromServer);
-
-            }
-            catch (Exception ex)
-            {
-                LogErr(@"[MF.MSDN]", ex);
-                //                listBox1.Items.Add(ex.Message);
-                /*                Console.WriteLine(ex.Message);
-                                if (ex.InnerException != null)
-                                {
-                //                    listBox1.Items.Add(ex.InnerException.Message);
-                                   Console.WriteLine(ex.InnerException.Message);
-                                }*/
-            }
-        }
-
-        private string pRestAPI(string url)
-        {
-            string sb = "";
-            try
-            {
-                HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
-                request.Method = "POST";
-                request.Timeout = 5000;
-                request.ContentType = "text/xml;charset=utf-8";
-
-                string payload = cargodocs[currentdocrow].Serialize();
-                byte[] postBytes = Encoding.UTF8.GetBytes(payload);
-//                    .ASCII.GetBytes(str);
-                request.ContentLength = postBytes.Length;
-//                request.ContentType = "application/x-www-form-urlencoded";
-                Stream requestStream = request.GetRequestStream();
-                requestStream.Write(postBytes, 0, postBytes.Length);
-                requestStream.Close();
-
-                HttpWebResponse response = (HttpWebResponse)request.GetResponse();
-                StreamReader reader = new StreamReader(response.GetResponseStream(), Encoding.UTF8);
-                sb = reader.ReadToEnd().ToString();
-
-            }
-            catch (Exception ex)
-            {
-                LogErr(@"[MF.pRestAPI]", ex);
-                sb = ex.Message.ToString();
-            }
-            return sb;
-        }
-
-        private void PostHTTP(string url)
-        {
-            //                string url = txtURL.Text;
-            //                string proxy = txtProxy.Text;
-
-            try
-            {
-                /*        if(!"".Equals(txtProxy.Text))
-                        {
-                            WebProxy proxyObject = new WebProxy(proxy, 80);
-
-                            // Disable proxy use when the host is local.
-                            proxyObject.BypassProxyOnLocal = true;
-
-                            // HTTP requests use this proxy information.
-                            GlobalProxySelection.Select = proxyObject;
-
-                        }*/
-
-                WebRequest req = WebRequest.Create(url);
-                req.Method = "POST";
-                req.ContentType = "text/xml; charset=utf-8";
-                //req.ContentType = "application/json; charset=utf-8";
-                req.Timeout = 5000;
-
-
-                WebResponse result = req.GetResponse();
-                ReceiveStream = result.GetResponseStream();
-                Encoding encode = System.Text.Encoding.GetEncoding("utf-8");
-                sr = new StreamReader(ReceiveStream, encode);
-
-                // Read the stream into arrays of 30 characters
-                // to add as items in the list box. Repeat until
-                // buffer is read.
-                Char[] read = new Char[30];
-                int count = sr.Read(read, 0, 30);
-                while (count > 0)
-                {
-                    String str = new String(read, 0, count);
-//                    this.listBox1.Items.Add(str);
-                    count = sr.Read(read, 0, 30);
-                }
-            }
-            catch (WebException ex)
-            {
-                LogErr(@"[MF.PostHTTP.1]", ex);
-                string message = ex.Message;
-                HttpWebResponse response = (HttpWebResponse)ex.Response;
-                if (null != response)
-                {
-                    message = response.StatusDescription;
-                    response.Close();
-                }
-//                this.listBox1.Items.Add(message);
-            }
-            catch (Exception ex)
-            {
-                LogErr(@"[MF.PostHTTP.2]", ex);
-//                MessageBox.Show(ex.Message);
-//                this.listBox1.Items.Add(ex.Message);
-            }
-            finally
-            {
-                ReceiveStream.Close();
-                sr.Close();
-            }
-        }
-
-        private void RestAPI(string url)
-        {
-            // A REST Url like: http://host/api/contacts
-//            String url = this.txtURL.Text;
-            System.Net.HttpWebRequest req = (System.Net.HttpWebRequest)System.Net.WebRequest.Create(url);
-            // You can skip this step for anonymous web services
-//            req.Credentials = new System.Net.NetworkCredential("username", "password");
-            // You can replace it with POST, PUT, DELETE
-            req.Method = "POST";
-            // Actually the content is empty but just for coherence...
-            req.ContentType = "text/xml;charset=utf-8";
-            // Tells the web service you want XML and not JSON
-            req.Accept = "text/xml";
-            // You never know how long it takes for the other side to do its job
-            req.Timeout = 5000;
-            // We give the Request as "State" to the function, you'll see why
-
-//            string payload = "<xml>...</xml>";
-            string payload = cargodocs[currentdocrow].Serialize();
-            req.ContentLength = payload.Length;
-
-/*            using (var client = new System.Net.WebClient())
-            {
-                client.UploadData(address, "PUT", data);
-            } */
-
-/*            string payload = "<xml>...</xml>";
-            req.ContentLength = payload.Length;
-            Stream dataStream = req.GetRequestStream();
-            System.Xml.Serialization.XmlSerializer ser = new System.Xml.Serialization.XmlSerializer(typeof(string[]), payload);
-            //string[] result = (string[])ser.Deserialize(ser);
-//            Serialize(dataStream, payload);
-            dataStream.Close(); */
-            req.BeginGetResponse(new AsyncCallback(RespCallback), req);
-        }
-
-        private static void RespCallback(IAsyncResult asynchronousResult)
-        {
-/*            public Form1 f;
-            public string url; */
-            
-
-            System.Net.HttpWebRequest req = (System.Net.HttpWebRequest)asynchronousResult.AsyncState;
-            // Now you see why we wanted the Request :)
-            System.Net.HttpWebResponse resp = (System.Net.HttpWebResponse)req.EndGetResponse(asynchronousResult);
-            // This step can be done asynchronously aswell, it would be a good idea for large data amounts.
-            System.IO.Stream respStream = resp.GetResponseStream();
-            // The most important part here is the Schema url where "contract" is the namespace of the class Contact.
-//            System.Xml.Serialization.XmlSerializer ser = new System.Xml.Serialization.XmlSerializer(typeof(string[]), "http://schemas.datacontract.org/2004/07/contract");
-//            System.Xml.Serialization.XmlSerializer ser = new System.Xml.Serialization.XmlSerializer(typeof(string[]), "<xml>...</xml>");
-            System.Xml.Serialization.XmlSerializer ser = new System.Xml.Serialization.XmlSerializer(typeof(string[]), cargodocs[currentdocrow].Serialize());
-            string[] result = (string[])ser.Deserialize(respStream);
-            // Do something useful...
-
-            // Для доступа к GUI
-/*            foreach (string s in result)
-            {
-                f.listBox1.Invoke(new Action(AddText), new object[] { String.Format("{0} {1}", s) });
-            } */
-
-        }
-
-        #endregion
-
-
-/*        private void button3_Click(object sender, EventArgs e)
-        {
-            //MessageBox.Show("Нажата F3");
-            //LoadXml(@"2419.xml");
-        }
-
-        private void button4_Click(object sender, EventArgs e)
-        {
-            //MessageBox.Show("Нажата F4");
-            Close();
-        }*/
-
-
-/*        private void button5_Click(object sender, EventArgs e)
-        { 
-//            string p = CurrentPath + @"\2419.xml";
-//            if ( CargoDoc.LoadFromFile(p , out CargoDocDB ) == true)
-            {  
-
-//            }
-//            d.Close();
-//            Close();
-        } */
-
-/*        private void button6_Click(object sender, EventArgs e)
-        {
-            foreach (string s in doclist)
-            {
-//                listBox1.Items.Add(s);
-            }
-        }*/
-
-/*        private void LoadXml(string filename)
-        {
-            string sb;
-            CargoDoc cargo = new CargoDoc();
-
-            try
-            {
-                cargo = CargoDoc.LoadFromFile(CurrentPath + "\\" +filename);
-                listBox1.Items.Add(cargo.Partner);
-                listBox1.Items.Add(cargo.Number);
-                cargodocs.Add(cargo);
-            }
-            catch (Exception ex)
-            {
-                sb = ex.Message.ToString();
-            }
-        }*/
-
-        private void timer1_Tick(object sender, EventArgs e)
-        {
-            labelTime.Text = System.DateTime.Now.ToShortDateString().Substring(0, 5) + " " + System.DateTime.Now.ToShortTimeString();
-            if (SystemState.PowerBatteryState == BatteryState.Critical)
-            {
-                MessageBox.Show("Низкий заряд батареи. Поставьте сканер на подзарядку.", "Внимание!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button1);
-            };
-        }
-
-        private string DeleteNameSpace(string s) // применять только один раз! иначе откусывает лишнее
-        {
-            string ss = "";
-            if (s.IndexOf("<Cargo") >= 0)
-            {
-                ss = s.Substring(s.IndexOf("<Cargo"));
-//                string begin = ss.Substring(0, ss.IndexOf(" "));
-//                return begin + ">" + ss.Substring(ss.IndexOf(">") + 1);
-            }
-            else 
-            if (s.IndexOf("<Settings") >= 0)
-            {
-                ss = s.Substring(s.IndexOf("<Settings"));
-//                string begin = ss.Substring(0, ss.IndexOf(" "));
-//                return begin + ">" + ss.Substring(ss.IndexOf(">") + 1);
-//                return s.Substring(s.IndexOf("<Users"));
-            } 
-            else
-            if (s.IndexOf("<CustomTime") >= 0)
-            {
-                ss = s.Substring(s.IndexOf("<CustomTime"));
-//                string begin = ss.Substring(0, ss.IndexOf(" "));
-//                return begin + ">" + ss.Substring(ss.IndexOf(">") + 1);
-                //                return s.Substring(s.IndexOf("<Users"));
-            };
-            if (ss != "")
-            {
-                string begin = ss.Substring(0, ss.IndexOf(" "));
-                return begin + ">" + ss.Substring(ss.IndexOf(">") + 1);
-            }
-            return "";
-        }
-
-        private string DeleteNil(string s)
-        {
-            return s.Replace(@" i:nil=""true""", "");
-        }
-
-        private void MainForm_Closing(object sender, CancelEventArgs e)
-        {
-            if (cs != null)
-            {
-                cs.Scanned -= OnScan;
-                cs.Dispose();
-            }
-            Dispose();
-            LogSave();
-        }
-
-        private void DocListForm_KeyDown(object sender, KeyEventArgs e)
-        {
-
-        }
-
+        /// <summary>
+        /// Загрузка в экранную таблицу отгрузочных документов данных из соответствующей структуры в памяти
+        /// </summary>
         public void ReloadDocTable()
         {
-            //            DataTable table = new DataTable();
-            //            dataGrid1.DataSource = table;
-            //            DataTableReader reader = new DataTableReader(GetCustomers(table, dataGrid1));
-            //            MainForm.doctable.Clear();
-
-            //            MainForm.doctable.Load(MainForm.docreader);
-
-            //            MainForm.doclistform.dataGrid1.Refresh();
-            //            MainForm.doclistform.dataGrid1.Update();
-
-            //            GetCustomers();
-
-/*            int q;
-            int b;*/
-
             doctable.Rows.Clear();
             foreach (CargoDoc d in cargodocs)
             {
-/*                q = 0;
-                b = 0;
-
-                foreach (Product p in d.TotalProducts)
-                {
-                    q += Convert.ToInt16(p.Quantity);
-                    b += Convert.ToInt16(p.ScannedBar);
-                }
-
-                d.Quantity = q.ToString();
-                d.ScannedBar = b.ToString();*/
-                doctable.Rows.Add(new object[] { d.Number.Trim(), colData(d.Data), d.Partner, d.Quantity, d.ScannedBar });
+                doctable.Rows.Add(new object[] { d.Number.Trim(), ConvertToDDMMYY(d.Data), d.Partner, d.Quantity, d.ScannedBar });
             }
             doctable.AcceptChanges();
         }
 
-        public static string colData(string s)
-        {
-            string ss;
-            try
-            {
-                ss = s.Substring(8, 2) + '.' + s.Substring(5, 2) + '.' + s.Substring(2, 2);
-            }
-            catch
-            {
-                ss = "01.01.01";
-            }
-            return ss;
-        }
-
-        public static string uncolData(string s)
-        {
-            string ss;
-            try
-            {
-                ss = s.Substring(0, 4) + s.Substring(5, 2) + s.Substring(8, 2);
-            }
-            catch
-            {
-                ss = "01.01.01";
-            }
-            return ss;
-        }
-
-        public static string nowcolData(string s)
-        {
-            string ss;
-            try
-            {
-                ss = "20"+s.Substring(6, 2) + "-" + s.Substring(3, 2) + "-" + s.Substring(0, 2) + "T" + s.Substring(9,8)+@"+02:00";
-            }
-            catch
-            {
-                ss = "01.01.01";
-            }
-            return ss;
-        }
-
+        /// <summary>
+        /// Формирование экранной таблицы отгрузочных документов
+        /// </summary>
         private void GetCustomers()
         {
-            //            AddDataToTable();
+            fullColor = new Color();
+            partialColor = new Color();
+            partialColor = Color.FromArgb(255, 127, 127);
+            fullColor = Color.FromArgb(127, 255, 127);
 
             if (doctable.Columns.Count == 0)
             {
@@ -1352,91 +571,12 @@ namespace BarCodeScanner
 
             dataGrid1.TableStyles.Add(tableStyle);
 
-
-            /*            table.Rows.Add(new object[] { 0, "Mary" });
-                        table.Rows.Add(new object[] { 1, "Andy" });
-                        table.Rows.Add(new object[] { 2, "Peter" });*/
-
             doctable.AcceptChanges();
-            //            return MainForm.doctable;
         }
 
-        # region Buttons/Events
-/*        private void DocListForm_Closed(object sender, EventArgs e)
-        {
-            Tag = "Closed";
-        }
-
-        private void DocListForm_GotFocus(object sender, EventArgs e)
-        {
-            Tag = "GotFocus";
-        }
-
-        private void DocListForm_Activated(object sender, EventArgs e)
-        {
-            Tag = "Activated";
-        }
-
-        private void DocListForm_Deactivate(object sender, EventArgs e)
-        {
-            Tag = "Deactivate";
-        }
-
-        private void DocListForm_LostFocus(object sender, EventArgs e)
-        {
-            Tag = "LostFocus";
-        }*/
-
-        private void button4_Click(object sender, EventArgs e)
-        {
-            Close();
-        }
-
-        private void MainForm_KeyDown(object sender, KeyEventArgs e)
-        {
-            if ((e.KeyCode == System.Windows.Forms.Keys.Enter))
-            {
-                //                MessageBox.Show("Нажата F1 аппаратно");
-                //                var z = sender;
-                //                var ee = e;
-                /*                MainForm.productlistform = new ProductListForm();
-                                MainForm.productlistform.Show();*/
-                dataGrid1_Click(sender, e);
-            }
-            if ((e.KeyCode == System.Windows.Forms.Keys.F1))
-            {
-                //                MessageBox.Show("Нажата F1 аппаратно");
-                button1_Click(this, e);
-            }
-            if ((e.KeyCode == System.Windows.Forms.Keys.F2))
-            {
-                //button2_Click(this, e);
-                //                MessageBox.Show("Нажата F2 аппаратно");
-            }
-            if ((e.KeyCode == System.Windows.Forms.Keys.F3))
-            {
-                //button3_Click(this, e);
-                //                MessageBox.Show("Нажата F3 аппаратно");
-            }
-            if ((e.KeyCode == System.Windows.Forms.Keys.F4))
-            {
-                button4_Click(this, e);
-                //                MessageBox.Show("Нажата F4 аппаратно");
-            }
-        }
-
-        private void MainForm_Paint(object sender, PaintEventArgs e)
-        {
-            Tag = "Paint";
-        }
-
-        private void dataGrid1_Paint(object sender, PaintEventArgs e)
-        {
-            //      dataGrid1.
-        }
-
-        #endregion
-        // разукрашивание ячеек в нужный цвет
+        /// <summary>
+        /// Определяем класс для работы с цветными строками экранной таблицы отгрузочных документов
+        /// </summary>
         public class DataGridTextBoxColumnColored : DataGridTextBoxColumn
         {
             //Определим класс аргумента события, делегат и само событие, 
@@ -1478,35 +618,22 @@ namespace BarCodeScanner
             }
         }
 
+        /// <summary>
+        /// Раскрашивание в нужный цвет ячеек экранной таблицы отгрузочных документов
+        /// в зависимости от степени готовности документа
+        /// </summary>
         private void OnBackgroundEventHandler(object sender, DataGridTextBoxColumnColored.NeedBackgroundEventArgs e)
         {
-
             Color fullColor = new Color();
             Color partialColor = new Color();
 
             partialColor = Color.FromArgb(255, 127, 127);
             fullColor = Color.FromArgb(127, 255, 127);
 
-            /*            if (e.RowNum == dataGrid1.CurrentRowIndex)
-                        {
-                            e.BackBrush = new SolidBrush(dataGrid1.SelectionBackColor);
-                            e.ForeBrush = new SolidBrush(dataGrid1.SelectionForeColor);
-                        }
-                        else
-                        {*/
-            /*                int divVal = e.RowNum / 2;
-                            if (divVal * 2 != e.RowNum) e.BackBrush = new SolidBrush(partialColor);
-                            else e.BackBrush = new SolidBrush(fullColor);*/
-
-            //e.ForeBrush = new SolidBrush(dataGrid1.ForeColor);
             e.ForeBrush = new SolidBrush(Color.Black);
-
-//            string val = doctable.Rows[e.RowNum][0].ToString().Trim();
 
             int q = Convert.ToInt16(doctable.Rows[e.RowNum][3]);
             int b = Convert.ToInt16(doctable.Rows[e.RowNum][4]);
-            /*            int q = 5;
-                        int b = 5; */
 
             if ((b < q) && (b != 0))
                 e.BackBrush = new SolidBrush(partialColor);
@@ -1514,20 +641,11 @@ namespace BarCodeScanner
                 e.BackBrush = new SolidBrush(fullColor);
             else
                 e.BackBrush = new SolidBrush(Color.White);
-
-/*            if (val == "337")
-                //                    e.BackBrush = new SolidBrush(Color.LightGreen);
-                e.BackBrush = new SolidBrush(fullColor);
-            else if (val == "336")
-                //                    e.BackBrush = new SolidBrush(Color.Pink);
-                e.BackBrush = new SolidBrush(partialColor);
-            else
-                e.BackBrush = new SolidBrush(dataGrid1.BackColor); */
-
-            //                e.ForeBrush = new SolidBrush(dataGrid1.ForeColor); 
-            //            } 
         }
 
+        /// <summary>
+        /// При щелчке на строке таблицы (или нажатии Enter) вызывается список продукции этого отгрузочного документа
+        /// </summary>
         private void dataGrid1_Click(object sender, EventArgs e)
         {
             if (dataGrid1.VisibleRowCount != 0)
@@ -1540,28 +658,383 @@ namespace BarCodeScanner
             }
             else
             {
-                Log("MF.DataGrid.Empty.Table");
+                Log("[MF.DataGrid.Empty.Table]");
                 MessageBox.Show("В сканере нет загруженных документов!");
             }
         }
 
+        /// <summary>
+        /// При изменении текущей ячейки обновляем соответствующие переменные
+        /// </summary>
         private void dataGrid1_CurrentCellChanged(object sender, EventArgs e)
         {
             currentdoccol = dataGrid1.CurrentCell.ColumnNumber;
             currentdocrow = dataGrid1.CurrentCell.RowNumber;
         }
 
-        private void labelInfo_ParentChanged(object sender, EventArgs e)
-        {
+        #endregion
 
+        #region ButtonClick - обработка нажатия клавиш
+
+        /// <summary>
+        /// Обработка нажатий аппаратных клавиш
+        /// </summary>
+        private void MainForm_KeyDown(object sender, KeyEventArgs e)
+        {
+            if ((e.KeyCode == System.Windows.Forms.Keys.Enter))
+            {
+                dataGrid1_Click(sender, e);
+            }
+            if ((e.KeyCode == System.Windows.Forms.Keys.F1))
+            {
+                button1_Click(this, e);
+            }
+            if ((e.KeyCode == System.Windows.Forms.Keys.F2))
+            {
+            }
+            if ((e.KeyCode == System.Windows.Forms.Keys.F3))
+            {
+            }
+            if ((e.KeyCode == System.Windows.Forms.Keys.F4))
+            {
+                button4_Click(this, e);
+            }
         }
+
+        /// <summary>
+        /// Отправка отгрузочного документа на сервер
+        /// </summary>
+        private void button1_Click(object sender, EventArgs e)
+        {
+            /*            if (PingServer("192.168.10.213")){
+                            Log("MF.SendDoc "+cargodocs[currentdocrow].Number);
+                        } else {
+                            Log("MF.SendDoc "+cargodocs[currentdocrow].Number + "Server not connect");
+                        }
+                        GetTime(); 
+                        LogShow("MF GetTime Done");*/
+            string n = cargodocs[currentdocrow].Number.Trim();
+            string t = ConvertToYYYYMMDD(cargodocs[currentdocrow].Data);
+            if (PingServer("192.168.10.213"))
+            {
+                RestAPI_POST(@"http://192.168.10.213/CargoDocService.svc/CargoDoc/" + n + "_" + t + "_" + Config.scannerNumber);
+                Log("[MF.DocSended] " + cargodocs[currentdocrow].Number);
+            }
+            else
+            {
+                Log("[MF.DocNotSended] " + cargodocs[currentdocrow].Number);
+            }
+        }
+
 
         private void button3_Click(object sender, EventArgs e)
         {
             MessageBox.Show(GetTime());
-            OpenNETCF.
+//           написать синхронизацию времени сканера с сервером
         }
 
-                
+        /// <summary>
+        /// Выход из программы
+        /// </summary>
+        private void button4_Click(object sender, EventArgs e)
+        {
+            Close();
+        }
+
+        #endregion
+
+        # region Scan - обработка событий сканирования штрихкодов
+
+        /// <summary>
+        /// Добавление отсканированного штрих-кода в таблицу на экране и стуктуры в памяти
+        /// </summary>
+        public void ScanBarCode(string barcod)
+        {
+            string bar = barcod.Substring(0, 5);
+            Boolean find_product = false;
+            int i = 0;
+            try
+            {
+                foreach (Product p in cargodocs[currentdocrow].TotalProducts)
+                {
+                    if (p.PID == bar)
+                    {
+                        find_product = true;
+                        if (Convert.ToInt16(p.ScannedBar) > Convert.ToInt16(p.Quantity))
+                        {
+                            LogShow("Превышение количества продукции с кодом " + bar);
+                        }
+                        else
+                        {
+                            if (Convert.ToInt16(p.ScannedBar) == Convert.ToInt16(p.Quantity))
+                            {
+                                LogShow("Достигнуто нужное количество продукции с кодом " + bar);
+                            }
+                            cargodocs[currentdocrow].TotalProducts[i].ScannedBar = (Convert.ToInt16(p.ScannedBar) + 1).ToString();
+                            producttable.Rows[currentdocrow].ItemArray[3] = (Convert.ToInt16(p.ScannedBar) + 1).ToString();
+
+                            XCode x = new XCode();
+
+                            x.Data = ConvertToFullDataTime(System.DateTime.Now.ToString());
+                            x.Fio = Config.userName;
+                            x.DData = "";
+                            x.DFio = "";
+                            x.PID = p.PID;
+                            x.ScanCode = barcod;
+                            x.ScanFrom = "";
+                            x.ScanTo = "";
+                            x.ScannerID = Config.scannerNumber;
+
+                            var xl = new List<XCode>();
+                            xl.AddRange(cargodocs[currentdocrow].XCodes);
+                            xl.Add(x);
+                            cargodocs[currentdocrow].XCodes = xl.ToArray();
+                                
+                            if (xcodelistform != null && xcodelistform.Visible)
+                            {
+                                xcodetable.AcceptChanges();
+                                xcodelistform.ReloadXCodeTable();
+                            }
+                            else productlistform.ReloadProductTable();
+                            break;
+                        }
+                    }
+                    i++;
+                }
+            }
+            catch (Exception ex)
+            {
+                LogErr("[MF.ScanBarCode]", ex);
+            }
+            if (!find_product) LogShow("В этом заказе нет продукции с кодом " + bar);
+        }
+
+        /// <summary>
+        /// Вызов обработчика при возникновении события считывания штрих-кода
+        /// </summary>
+        private void OnScan(object sender, ScannedDataEventArgs e)
+        {
+            this.Invoke(addBarCode, (e.Data).ToString());
+        }
+
+        /// <summary>
+        /// Считанный штрих-код может быть штрих-кодом товара или штрих-кодом отгрузочного документа
+        /// Здесь производится определение того, что это за штрих-код, и вызов соответствующих процедур
+        /// </summary>
+        public void BarCodeProcessing(string barcod)
+        {
+            switch (scanmode)
+            {
+                case (ScanMode.Doc):
+                    string docnum = barcod.Replace(" ", "_") + "_" + Config.scannerNumber;
+                    //                    if (existDoc(CurrentPath + @"doc\" + barcod.Replace(" ", "_") + "_" + Config.scannerNumber + ".xml"))
+                    if (doclist.Contains(CurrentPath + @"doc\" + docnum + ".xml"))
+                                                                 
+                    {
+                        int space = barcod.IndexOf(" ");
+                        string data_raw = barcod.Remove(0, space);
+                        string data = data_raw.Substring(7, 2) + "." + data_raw.Substring(5, 2) + "." + data_raw.Substring(3, 2);
+                        LogShow("Документ № " + barcod.Substring(0, space) + " от " + data + " уже загружен!");
+                    }
+                    else
+                    {
+                        if (PingServer(Config.serverIp))
+                        {
+                            if (DownloadXML(docnum))
+                            {
+                                LoadAllDataFromXml();
+                                ReloadDocTable();
+                            }
+                        }
+                        else
+                        {
+                            LogShow("[MF.BarCodeProcessing] Нет связи с сервером!");
+                        }
+                    }
+                    break;
+                case (ScanMode.BarCod):
+                    ScanBarCode(barcod);
+                    break;
+                case (ScanMode.Nothing):
+                    break;
+            }
+        }
+
+        # endregion
+
+        # region Log - протоколирование событий
+
+
+        /// <summary>
+        /// Добавление в лог-файл строки с отметкой времени плюс распарсенного сообщения об ошибке
+        /// </summary>
+        public static void LogErr(string Label, Exception ex)
+        {
+            if (ex.InnerException == null)
+            {
+                MainForm.log.Add(System.DateTime.Now.ToString() + " " + Label + " " + ex.Message);
+                MessageBox.Show(Label + " " + ex.Message);
+            }
+            else
+            {
+                MainForm.log.Add(System.DateTime.Now.ToString() + " " + Label + " " + ex.Message + " " + ex.InnerException.Message);
+                MessageBox.Show(Label + " " + ex.Message + " " + ex.InnerException.Message);
+            }
+        }
+
+        /// <summary>
+        /// Добавление в лог-файл строки с отметкой времени
+        /// </summary>
+        public static void Log(string Label)
+        {
+            MainForm.log.Add(System.DateTime.Now.ToString() + " " + Label);
+        }
+
+        /// <summary>
+        /// Добавление в лог-файл строки с отметкой времени и показ такого-же сообщения во всплывающем окне
+        /// </summary>
+        public static void LogShow(string Label)
+        {
+            MainForm.log.Add(System.DateTime.Now.ToString() + " " + Label);
+            MessageBox.Show(Label);
+        }
+
+        /// <summary>
+        /// Сохранение лог-файла на диск
+        /// </summary>
+        private void LogSave()
+        {
+            using (StreamWriter w = File.AppendText(CurrentPath + "log.txt"))
+            {
+                foreach (string s in log)
+                {
+                    w.WriteLine(s);
+                }
+            }
+            log.Clear();
+        }
+        #endregion
+
+        #region Utilities - маленькие вспомогательные функции
+
+        /// <summary>
+        /// Преобразование отметки времени из формата "2015-11-18T14:50:17+02:00" в формат "18.11.15"
+        /// </summary>
+        /// <returns>Строка с датой</returns>
+        public static string ConvertToDDMMYY(string s)
+        {
+            string ss;
+            try
+            {
+                ss = s.Substring(8, 2) + '.' + s.Substring(5, 2) + '.' + s.Substring(2, 2);
+            }
+            catch
+            {
+                ss = "01.01.01";
+            }
+            return ss;
+        }
+
+        /// <summary>
+        /// Преобразование отметки времени из формата "2015-11-18T14:50:17+02:00" в формат "20151118"
+        /// </summary>
+        /// <returns>Строка с датой</returns>
+        public static string ConvertToYYYYMMDD(string s)
+        {
+            string ss;
+            try
+            {
+                ss = s.Substring(0, 4) + s.Substring(5, 2) + s.Substring(8, 2);
+            }
+            catch
+            {
+                ss = "01.01.01";
+            }
+            return ss;
+        }
+
+        /// <summary>
+        /// Преобразование отметки времени из формата "27.01.16 14:27:48" в формат "2016-01-27T14:27:48+02:00"
+        /// </summary>
+        /// <returns>Строка с датой</returns>
+        public static string ConvertToFullDataTime(string s)
+        {
+            string ss;
+            try
+            {
+                ss = "20" + s.Substring(6, 2) + "-" + s.Substring(3, 2) + "-" + s.Substring(0, 2) + "T" + s.Substring(9, 8) + @"+02:00";
+            }
+            catch
+            {
+                ss = "01.01.01";
+            }
+            return ss;
+        }
+
+        /// <summary>
+        /// Удаляет из XML определения пространств имён
+        /// Применять только один раз, иначе удаляет больше чем надо
+        /// </summary>
+        /// <returns>Строка</returns>
+        public static string DeleteNameSpace(string s)
+        {
+            string ss = "";
+            if (s.IndexOf("<Cargo") >= 0)
+            {
+                ss = s.Substring(s.IndexOf("<Cargo"));
+            }
+            else
+                if (s.IndexOf("<Settings") >= 0)
+                {
+                    ss = s.Substring(s.IndexOf("<Settings"));
+                }
+                else
+                    if (s.IndexOf("<CustomTime") >= 0)
+                    {
+                        ss = s.Substring(s.IndexOf("<CustomTime"));
+                    };
+            if (ss != "")
+            {
+                string begin = ss.Substring(0, ss.IndexOf(" "));
+                return begin + ">" + ss.Substring(ss.IndexOf(">") + 1);
+            }
+            return "";
+        }
+
+        /// <summary>
+        /// Заменяет в XML значения nil на ""
+        /// </summary>
+        /// <returns>Строка</returns>
+        private string DeleteNil(string s)
+        {
+            return s.Replace(@" i:nil=""true""", "");
+        }
+
+        /// <summary>
+        /// Заменяет HTTP-шные коды на обычные символы
+        /// </summary>
+        /// <returns>Строка</returns>
+        private string HTTPDecode(string input)
+        {
+            string ss = input.Replace("&lt;", "<");
+            input = ss.Replace("&gt;", ">");
+            ss = input.Substring(input.IndexOf("<string>") + 8);
+            input = ss.Substring(0, ss.Length - 9);
+            return input;
+        }
+
+        #endregion
+
+        /// <summary>
+        /// Обновляет значение времени на экране и проверяет состояние батареи
+        /// </summary>
+        private void timer1_Tick(object sender, EventArgs e)
+        {
+            labelTime.Text = System.DateTime.Now.ToShortDateString().Substring(0, 5) + " " + System.DateTime.Now.ToShortTimeString();
+            if (SystemState.PowerBatteryState == BatteryState.Critical)
+            {
+                MessageBox.Show("Низкий заряд батареи. Поставьте сканер на подзарядку.", "Внимание!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button1);
+            };
+        }
     }
 }

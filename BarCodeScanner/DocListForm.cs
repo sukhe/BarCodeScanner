@@ -111,7 +111,7 @@ namespace BarCodeScanner
             ReloadDocTable();
             
             // ширина колонок
-            MainForm.doclistform.dataGrid1.TableStyles.Clear();
+            dataGrid1.TableStyles.Clear();
             DataGridTableStyle tableStyle = new DataGridTableStyle();
 //            tableStyle.MappingName = MainForm.doctable.TableName;
 
@@ -144,8 +144,7 @@ namespace BarCodeScanner
             col3.NeedBackground += new DataGridTextBoxColumnColored.NeedBackgroundEventHandler(OnBackgroundEventHandler);
             tableStyle.GridColumnStyles.Add(col3);
 
-            MainForm.doclistform.dataGrid1.TableStyles.Add(tableStyle);
-
+            dataGrid1.TableStyles.Add(tableStyle);
 
 /*            table.Rows.Add(new object[] { 0, "Mary" });
             table.Rows.Add(new object[] { 1, "Andy" });

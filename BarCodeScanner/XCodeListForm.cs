@@ -11,20 +11,14 @@ namespace BarCodeScanner
 {
     public partial class XCodeListForm : Form
     {
-        private Color fullColor;
-        private Color partialColor;
+/*        private Color fullColor;
+        private Color partialColor;*/
 
         public XCodeListForm()
         {
             InitializeComponent();
             label1.Text = MainForm.cargodocs[MainForm.currentdocrow].Partner.Trim() + " " + MainForm.cargodocs[MainForm.currentdocrow].Number.Trim();
             MainForm.scanmode = ScanMode.BarCod;
-
-            fullColor = new Color();
-            partialColor = new Color();
-            partialColor = Color.FromArgb(255, 127, 127);
-            fullColor = Color.FromArgb(127, 255, 127);
-
             dataGrid1.Focus();
         }
 
@@ -36,21 +30,6 @@ namespace BarCodeScanner
             GetXCodes();
         }
 
-/*
-        private string GetNameFromPID(string s)
-        {
-            string name = "";
-            foreach (Product p in MainForm.cargodocs[MainForm.currentdocrow].TotalProducts)
-            {
-                if (p.PID == s) 
-                { 
-                    name = p.PName;
-                    break;
-                }
-            }
-            return name;
-        } */
-
         public void ReloadXCodeTable()
         {
             MainForm.xcodetable.Rows.Clear();
@@ -61,7 +40,7 @@ namespace BarCodeScanner
             {
                 if (pid==x.PID)
                 {
-                    MainForm.xcodetable.Rows.Add(new object[] { x.ScanCode, MainForm.colData(x.Data), x.Fio, x.DData, x.DFio, x.Data });
+                    MainForm.xcodetable.Rows.Add(new object[] { x.ScanCode, MainForm.ConvertToDDMMYY(x.Data), x.Fio, x.DData, x.DFio, x.Data });
                 }
             }
             MainForm.xcodetable.AcceptChanges();
@@ -69,12 +48,8 @@ namespace BarCodeScanner
 
         private void GetXCodes()
         {
-            //            AddDataToTable();
-
             if (MainForm.xcodetable.Columns.Count == 0)
             {
-
-//                DataColumn PID = MainForm.producttable.Columns.Add("Код", typeof(string));
                 DataColumn BarCod = MainForm.xcodetable.Columns.Add("Штрихкод", typeof(string));
                 MainForm.xcodetable.Columns.Add("Дата", typeof(string));
                 MainForm.xcodetable.Columns.Add("ФИО", typeof(string));
@@ -112,8 +87,8 @@ namespace BarCodeScanner
 
             DataGridTextBoxColumnColored col2 = new DataGridTextBoxColumnColored();
             //DataGridTextBoxColumn col2 = new DataGridTextBoxColumn();
-            if (MainForm.xcodetable.Rows.Count > 12) col2.Width = 132;
-            else col2.Width = 156;
+            if (MainForm.xcodetable.Rows.Count > 12) col2.Width = 131;
+            else col2.Width = 153;
             col2.MappingName = MainForm.xcodetable.Columns[2].ColumnName;
             col2.HeaderText = MainForm.xcodetable.Columns[2].ColumnName;
             col2.NeedBackgroundXCode += new DataGridTextBoxColumnColored.NeedBackgroundEventHandlerXCode(OnBackgroundEventHandlerProductXCode);
@@ -139,34 +114,21 @@ namespace BarCodeScanner
             col5.HeaderText = MainForm.xcodetable.Columns[5].ColumnName;
             tableStyle.GridColumnStyles.Add(col5);
 
-            //DataGridTextBoxColumnColored col4 = new DataGridTextBoxColumnColored();
-            /*DataGridTextBoxColumn col4 = new DataGridTextBoxColumn();
-            col4.Width = 71;
-            col4.MappingName = MainForm.producttable.Columns[3].ColumnName;
-            col4.HeaderText = MainForm.producttable.Columns[3].ColumnName;
-            //col4.NeedBackground += new DataGridTextBoxColumnColored.NeedBackgroundEventHandler(OnBackgroundEventHandler);
-            tableStyle.GridColumnStyles.Add(col4); */
-
             // учесть ширину вертикальной прокрутки в ширине колонок
 
-            //MainForm.xcodelistform.
-                dataGrid1.TableStyles.Add(tableStyle);
+            dataGrid1.TableStyles.Add(tableStyle);
 
             MainForm.xcodetable.AcceptChanges();
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
-//            MessageBox.Show("Удаление штрих-кода ещё не готово");
             int i = dataGrid1.CurrentRowIndex;
             string barcod = MainForm.xcodetable.Rows[i].Field<string>(0);
             string data = MainForm.xcodetable.Rows[i].Field<string>(5);
             MainForm.scanmode = ScanMode.Nothing;
             if (DialogForm.Dialog("Удалить штрих-код ",barcod, "Удалить?", "        Да", "        Нет") == DialogResult.Retry)
             {
-//                MainForm.xcodetable.Rows[i][3] = "1";
-//                MainForm.xcodetable.Rows[i][4] = Config.userName;
-
                 XCode x = new XCode();
 
                 int j = 0;
@@ -180,47 +142,15 @@ namespace BarCodeScanner
                     j++;
                 }
 
-//                x = MainForm.cargodocs[MainForm.currentdocrow].XCodes[i];
-
-
-                x.DData = MainForm.nowcolData(System.DateTime.Now.ToString());
+                x.DData = MainForm.ConvertToFullDataTime(System.DateTime.Now.ToString());
                 x.DFio = Config.userName;
                 x.Fio = System.DateTime.Now.ToShortTimeString();
-
-/*                x.Data = MainForm.cargodocs[MainForm.currentdocrow].XCodes[i].Data;
-                x.Fio = MainForm.cargodocs[MainForm.currentdocrow].XCodes[i].Fio;
-                x.DData = MainForm.nowcolData(System.DateTime.Now.ToString());;
-                x.DFio = Config.userName;
-                x.PID = MainForm.cargodocs[MainForm.currentdocrow].XCodes[i].PID;
-//                x.PID = MainForm.producttable.Rows[ProductListForm.currentproductrow].Field<string>(0);
-                x.ScanCode = MainForm.cargodocs[MainForm.currentdocrow].XCodes[i].ScanCode;
-                x.ScanFrom = "";
-                x.ScanTo = "";
-                x.ScannerID = MainForm.cargodocs[MainForm.currentdocrow].XCodes[i].ScannerID;*/
-
-//                var xl = new List<XCode>();
-//                xl.AddRange(MainForm.cargodocs[MainForm.currentdocrow].XCodes);
-//                xl.Add(x);
-/*                j = 0;
-                foreach (XCode z in MainForm.cargodocs[MainForm.currentdocrow].XCodes)
-                {
-                    if (z.Data == data && z.ScanCode == barcod)
-                    { */
-//                        MainForm.cargodocs[MainForm.currentdocrow].XCodes[j] = x;
-/*                        break;
-                    }
-                    j++;
-                } */
-
-//                MainForm.cargodocs[MainForm.currentdocrow].XCodes[i] = x;
 
                 if (MainForm.xcodelistform != null && MainForm.xcodelistform.Visible)
                 {
                     MainForm.xcodetable.AcceptChanges();
                     MainForm.xcodelistform.ReloadXCodeTable();
                 }
-//                else productlistform.ReloadProductTable();
-
 
             }
             MainForm.scanmode = ScanMode.BarCod;
@@ -295,7 +225,7 @@ namespace BarCodeScanner
             if (MainForm.xcodetable.Rows[e.RowNum].Field<string>(3) == "")
                 e.BackBrush = new SolidBrush(Color.White);
             else
-                e.BackBrush = new SolidBrush(partialColor);
+                e.BackBrush = new SolidBrush(MainForm.partialColor);
         }
     }
 }

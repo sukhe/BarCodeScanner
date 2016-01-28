@@ -24,3 +24,4 @@ D:\WORK\CASIO\BarCodeScanner\BarCodeScanner\obj\Debug\BarCodeScanner.ProductList
 D:\WORK\CASIO\BarCodeScanner\BarCodeScanner\obj\Debug\BarCodeScanner.XCodeListForm.resources
 D:\WORK\CASIO\BarCodeScanner\BarCodeScanner\bin\Debug\OpenNETCF.Net.dll
 D:\WORK\CASIO\BarCodeScanner\BarCodeScanner\bin\Debug\OpenNETCF.WindowsCE.Messaging.dll
+D:\WORK\CASIO\BarCodeScanner\BarCodeScanner\obj\Debug\BarCodeScanner.ServiceForm.resources
