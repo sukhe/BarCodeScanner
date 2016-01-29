@@ -1,5 +1,4 @@
 D:\WORK\CASIO\BarCodeScanner\BarCodeScanner\obj\Debug\ResolveAssemblyReference.cache
-D:\WORK\CASIO\BarCodeScanner\BarCodeScanner\obj\Debug\BarCodeScanner.DocListForm.resources
 D:\WORK\CASIO\BarCodeScanner\BarCodeScanner\obj\Debug\BarCodeScanner.MainForm.resources
 D:\WORK\CASIO\BarCodeScanner\BarCodeScanner\obj\Debug\BarCodeScanner.DialogForm.resources
 D:\WORK\CASIO\BarCodeScanner\BarCodeScanner\obj\Debug\BarCodeScanner.LoginForm.resources
@@ -25,3 +24,5 @@ D:\WORK\CASIO\BarCodeScanner\BarCodeScanner\obj\Debug\BarCodeScanner.XCodeListFo
 D:\WORK\CASIO\BarCodeScanner\BarCodeScanner\bin\Debug\OpenNETCF.Net.dll
 D:\WORK\CASIO\BarCodeScanner\BarCodeScanner\bin\Debug\OpenNETCF.WindowsCE.Messaging.dll
 D:\WORK\CASIO\BarCodeScanner\BarCodeScanner\obj\Debug\BarCodeScanner.ServiceForm.resources
+D:\WORK\CASIO\BarCodeScanner\BarCodeScanner\obj\Debug\BarCodeScanner.FileListForm.resources
+D:\WORK\CASIO\BarCodeScanner\BarCodeScanner\bin\Debug\OpenNETCF.WindowsCE.dll

@@ -13,6 +13,7 @@ using Microsoft.WindowsMobile;
 using Microsoft.WindowsMobile.Status;
 using System.Xml;
 using System.Xml.Serialization;
+using System.Diagnostics;
 
 namespace BarCodeScanner
 {
@@ -31,7 +32,6 @@ namespace BarCodeScanner
 
         public static ScanMode scanmode;                                // режим сканирования штрихкодов - документ, продукция и т.д.
 
-//        public static DocListForm doclistform;                          
         public static DataTable doctable;
         public static DataTableReader docreader;
         public static int currentdocrow;                                // номер текущей строки таблицы отгрузочных документов
@@ -50,9 +50,21 @@ namespace BarCodeScanner
         public static Color fullColor;                                  // цвет фона для строк с полностью заполненным документом
         public static Color partialColor;                               // цвет фона для строк с частично заполненным документом
 
+        private int serviceKeySequence;
+
         public MainForm()
         {
             InitializeComponent();
+
+/*            var processes = OpenNETCF.ToolHelp.ProcessEntry.GetProcesses();
+            foreach (OpenNETCF.ToolHelp.ProcessEntry process in processes)
+            {
+                if (process.ExeFile == "BarCodeScanner.exe")
+                {
+                    LogShow("[MF.StartDuplicate] Программа уже запущена!");
+                    Close();
+                }
+            }*/
 
             if (TestFilesAndDirs())
             {
@@ -77,6 +89,7 @@ namespace BarCodeScanner
         private void MainForm_Load(object sender, EventArgs e)
         {
             Config.userName = "Мистер Х";
+            serviceKeySequence = 0;
             if (LoginForm.Dialog() == DialogResult.Abort) Close();
             else
             {
@@ -106,6 +119,7 @@ namespace BarCodeScanner
         private void MainForm_Closing(object sender, CancelEventArgs e)
         {
             // сделать сохранение xml ?
+            Log("[MF.Closing] Штатный выход из программы");
             LogSave();
             if (cs != null)
             {
@@ -130,7 +144,7 @@ namespace BarCodeScanner
             {
                 if (!DownloadSettings())
                 {
-                    LogShow("[MF.TestFilesAndDirs] Файл настроек не найден!");
+                    LogShow("[MF.TestFilesAndDirs] Файл настроек не найден и не загружен!");
                     return false;
                 }
             }
@@ -236,30 +250,38 @@ namespace BarCodeScanner
             Boolean result = false;
             int repeat = 3;      // количество повторов для считывания настроек по сети
 
-            string s = RestAPI_GET("http://192.168.10.213/CargoDocService.svc/Settings");
-            s = MainForm.DeleteNameSpace(s);
-            XmlSerializer serializer = new XmlSerializer(typeof(Settings));
-
-            while (repeat > 0 && result == false)
+            try
             {
-                try
+                string s = RestAPI_GET("http://192.168.10.213/CargoDocService.svc/Settings");
+                s = MainForm.DeleteNameSpace(s);
+                XmlSerializer serializer = new XmlSerializer(typeof(Settings));
+
+                while (repeat > 0 && result == false)
                 {
-                    using (var reader = new StringReader(s))
+                    try
                     {
-                        settings = (Settings)serializer.Deserialize(reader);
+                        using (var reader = new StringReader(s))
+                        {
+                            settings = (Settings)serializer.Deserialize(reader);
+                        }
+                        if (settings.Users.Length > 0)
+                        {
+                            settings.SaveToFile(CurrentPath + "settings.xml");
+                            result = true;
+                        }
+                        repeat -= 1;
                     }
-                    if (settings.Users.Length > 0)
+                    catch (Exception ex)
                     {
-                        settings.SaveToFile(CurrentPath + "settings.xml");
-                        result = true;
+                        MainForm.LogErr("[MF.DownloadSettings.1] ", ex);
+                        return false;
                     }
-                    repeat -= 1;
                 }
-                catch (Exception ex)
-                {
-                    MainForm.LogErr("[MF.DownloadSettings] ", ex);
-                    return false;
-                }
+            }
+            catch (Exception ex)
+            {
+                MainForm.LogErr("[MF.DownloadSettings.2] ", ex);
+                return false;
             }
             return result;
         }
@@ -296,6 +318,14 @@ namespace BarCodeScanner
                     return false;
                 }
                 else
+                if ((s.IndexOf("<Error>") > 0) && (s.IndexOf("</Error>") > 0))
+                {
+                    string er = s.Substring(s.IndexOf("<Error>") + 6);
+                    s = er.Substring(0, er.IndexOf("</Error>"));
+                    LogShow("[MF.DownloadXML.3] Ошибка получения документа " + docnum + ": " + s);
+                    return false;
+                }
+                else 
                 {
                     try
                     {
@@ -347,7 +377,7 @@ namespace BarCodeScanner
             }
             catch (Exception ex)
             {
-                LogShow("[MF.GetTime] " + ex);
+                Log("[MF.GetTime] " + ex);
                 return "";
             }
         }
@@ -361,18 +391,18 @@ namespace BarCodeScanner
         {
             int timeout = 5000;
             Boolean result = false;
-            OpenNETCF.Net.NetworkInformation.Ping ping = new OpenNETCF.Net.NetworkInformation.Ping();
-            OpenNETCF.Net.NetworkInformation.PingReply reply = ping.Send(serverAddress, timeout);
             try
             {
+                OpenNETCF.Net.NetworkInformation.Ping ping = new OpenNETCF.Net.NetworkInformation.Ping();
+                OpenNETCF.Net.NetworkInformation.PingReply reply = ping.Send(serverAddress, timeout);
                 if (reply.Status == OpenNETCF.Net.NetworkInformation.IPStatus.Success)
                 {
                     result = true;
                 }
             }
-            catch
+            catch (Exception ex)
             {
-                MainForm.Log("[MF.PingServer.Status] " + reply.Status.ToString());
+                MainForm.LogErr("[MF.PingServer.Status] ",ex);
             }
             return result;
         }
@@ -699,6 +729,23 @@ namespace BarCodeScanner
             {
                 button4_Click(this, e);
             }
+            // отработка нажатия .1111. - запуск сервисной формы
+            if ((e.KeyCode.GetHashCode() == 190) && (serviceKeySequence == 0))
+            {
+                serviceKeySequence++;
+            }
+            if ((e.KeyCode == System.Windows.Forms.Keys.D1) && (serviceKeySequence >= 1) && (serviceKeySequence <= 4))
+            {
+                serviceKeySequence++;
+            }
+            if ((e.KeyCode.GetHashCode() == 190) && (serviceKeySequence == 5))
+            {
+                serviceKeySequence = 0;
+                ServiceForm serv = new ServiceForm();
+                serv.ShowDialog();
+                serv.Close();
+            }
+
         }
 
         /// <summary>
@@ -713,24 +760,29 @@ namespace BarCodeScanner
                         }
                         GetTime(); 
                         LogShow("MF GetTime Done");*/
-            string n = cargodocs[currentdocrow].Number.Trim();
-            string t = ConvertToYYYYMMDD(cargodocs[currentdocrow].Data);
-            if (PingServer("192.168.10.213"))
+            if (dataGrid1.VisibleRowCount == 0)
             {
-                RestAPI_POST(@"http://192.168.10.213/CargoDocService.svc/CargoDoc/" + n + "_" + t + "_" + Config.scannerNumber);
-                Log("[MF.DocSended] " + cargodocs[currentdocrow].Number);
+                LogShow("[MF.DocSendNothing] Нет документов для отправки");
             }
             else
             {
-                Log("[MF.DocNotSended] " + cargodocs[currentdocrow].Number);
+                string n = cargodocs[currentdocrow].Number.Trim();
+                string t = ConvertToYYYYMMDD(cargodocs[currentdocrow].Data);
+                if (PingServer("192.168.10.213"))
+                {
+                    RestAPI_POST(@"http://192.168.10.213/CargoDocService.svc/CargoDoc/" + n + "_" + t + "_" + Config.scannerNumber);
+                    Log("[MF.DocSended] " + cargodocs[currentdocrow].Number);
+                }
+                else
+                {
+                    Log("[MF.DocNotSended] " + cargodocs[currentdocrow].Number);
+                }
             }
         }
-
-
+        
         private void button3_Click(object sender, EventArgs e)
         {
-            MessageBox.Show(GetTime());
-//           написать синхронизацию времени сканера с сервером
+            SetTime(GetTime());
         }
 
         /// <summary>
@@ -840,6 +892,7 @@ namespace BarCodeScanner
                     {
                         if (PingServer(Config.serverIp))
                         {
+                            SetTime(GetTime());
                             if (DownloadXML(docnum))
                             {
                                 LoadAllDataFromXml();
@@ -1028,6 +1081,29 @@ namespace BarCodeScanner
         /// <summary>
         /// Обновляет значение времени на экране и проверяет состояние батареи
         /// </summary>
+        private void SetTime(string s)
+        {
+            if (s == "") return;
+            int year, month, day, hour, min, sec;
+            string[] ss = s.Split(' ');
+            string[] data = ss[0].Split('.');
+            string[] time = ss[1].Split(':');
+            year = Convert.ToInt16(data[2]);
+            month = Convert.ToInt16(data[1]);
+            day = Convert.ToInt16(data[0]);
+            hour = Convert.ToInt16(time[0]);
+            min = Convert.ToInt16(time[1]);
+            sec = Convert.ToInt16(time[2]);
+            //MessageBox.Show(s + " " + DateTime.Now.ToString() );
+            DateTime dt = new DateTime(year, month, day, hour, min, sec);
+            OpenNETCF.WindowsCE.DateTimeHelper.LocalTime = dt;
+            //System.Threading.Thread.Sleep(1000);            
+            //MessageBox.Show(DateTime.Now.ToString());
+        }
+
+        /// <summary>
+        /// Обновляет значение времени на экране и проверяет состояние батареи
+        /// </summary>
         private void timer1_Tick(object sender, EventArgs e)
         {
             labelTime.Text = System.DateTime.Now.ToShortDateString().Substring(0, 5) + " " + System.DateTime.Now.ToShortTimeString();
@@ -1038,3 +1114,42 @@ namespace BarCodeScanner
         }
     }
 }
+
+/*
+.
+if ((e.KeyCode == System.Windows.Forms.Keys.Decimal) && (serviceKeySequence == 0))
+RButton | MButton | Back | ShiftKey | Space | F17  = 2+4+8+16+32+128
+e.KeyCode.ToString()	"Back, Menu, LMenu"	string = 8+18+164
+e.KeyCode.GetHashCode()	190	int
+
+System.Windows.Forms.Keys.Decimal = 110
+
+
+1
+e.KeyCode.GetHashCode()	49	int
+e.KeyCode.ToString()	"D1"	string
+
+
+Fn
+e.KeyCode.ToString()	"227"	string
+e.KeyCode.GetHashCode()	227	int
+
+
+Fn+A
+e.KeyCode.GetHashCode()	16	int
+e.KeyCode.ToString()	"ShiftKey"	string
+
+A
+e.KeyCode.ToString()	"228"	string
+e.KeyCode.GetHashCode()	228	int
+
+
+
+CLR
+e.KeyCode.GetHashCode()	8	int
+e.KeyCode.ToString()	"Back"	string
+
+Fn+CLR
+e.KeyCode.ToString()	"Escape"	string
+e.KeyCode.GetHashCode()	27	int
+*/

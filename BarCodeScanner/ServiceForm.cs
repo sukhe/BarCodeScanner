@@ -53,20 +53,22 @@ namespace BarCodeScanner
 
         private void button2_Click(object sender, EventArgs e)
         {
-            MessageBox.Show("Кнопка F2 ещё не готова");
+            FileListForm flf = new FileListForm();
+            flf.ShowDialog();
+            flf.Close();
         }
 
         private void button3_Click(object sender, EventArgs e)
         {
             listBox1.Items.Clear();
             string line;
-
             System.IO.StreamReader file = new System.IO.StreamReader(MainForm.CurrentPath + "log.txt");
             while ((line = file.ReadLine()) != null)
             {
                 listBox1.Items.Add(line);
             }
             listBox1.Focus();
+            file.Close();
         }
 
         private void button4_Click(object sender, EventArgs e)

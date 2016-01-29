@@ -76,6 +76,7 @@ namespace BarCodeScanner
 
                 scanningThread = new Thread(GetScannerStatusWorker) {IsBackground = true};
                 scanningThread.Start();
+                scanningThread.Name = "BarCodeScannerBackground";
             }
         }
 
@@ -136,7 +137,7 @@ namespace BarCodeScanner
                         throw new Exception("[CS01] Error end");
 //                        break;
                     case (OBReadLibNet.Def.OBR_PON):
-                        throw new Exception("[CS02] Already open / Перезагрузите сканер");
+                        throw new Exception("[CS02] Already open \n Перезагрузите сканер кнопкой RESET сзади");
 //                        break;
                     case (OBReadLibNet.Def.OBR_POF):
                         throw new Exception("[CS03] Not open");

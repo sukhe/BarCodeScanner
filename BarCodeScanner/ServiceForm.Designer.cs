@@ -41,7 +41,7 @@
             this.button4 = new System.Windows.Forms.Button();
             this.panel2 = new System.Windows.Forms.Panel();
             this.listBox1 = new System.Windows.Forms.ListBox();
-            this.documentList1 = new Microsoft.WindowsCE.Forms.DocumentList();
+            this.hScrollBar1 = new System.Windows.Forms.HScrollBar();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             this.SuspendLayout();
@@ -166,7 +166,7 @@
             // 
             // panel2
             // 
-            this.panel2.Controls.Add(this.documentList1);
+            this.panel2.Controls.Add(this.hScrollBar1);
             this.panel2.Controls.Add(this.listBox1);
             this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel2.Location = new System.Drawing.Point(0, 136);
@@ -175,19 +175,20 @@
             // 
             // listBox1
             // 
-            this.listBox1.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.listBox1.Location = new System.Drawing.Point(0, 86);
+            this.listBox1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.listBox1.Location = new System.Drawing.Point(0, 0);
             this.listBox1.Name = "listBox1";
-            this.listBox1.Size = new System.Drawing.Size(240, 72);
+            this.listBox1.Size = new System.Drawing.Size(240, 156);
             this.listBox1.TabIndex = 5;
             // 
-            // documentList1
+            // hScrollBar1
             // 
-            this.documentList1.Location = new System.Drawing.Point(0, 0);
-            this.documentList1.Name = "documentList1";
-            this.documentList1.SelectedDirectory = "\\Program Files\\barcodescanner\\doc";
-            this.documentList1.Size = new System.Drawing.Size(240, 86);
-            this.documentList1.TabIndex = 6;
+            this.hScrollBar1.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.hScrollBar1.Location = new System.Drawing.Point(0, 148);
+            this.hScrollBar1.Name = "hScrollBar1";
+            this.hScrollBar1.Size = new System.Drawing.Size(240, 10);
+            this.hScrollBar1.SmallChange = 5;
+            this.hScrollBar1.TabIndex = 6;
             // 
             // ServiceForm
             // 
@@ -223,6 +224,6 @@
         private System.Windows.Forms.ListBox listBox1;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Button button5;
-        private Microsoft.WindowsCE.Forms.DocumentList documentList1;
+        private System.Windows.Forms.HScrollBar hScrollBar1;
     }
 }
