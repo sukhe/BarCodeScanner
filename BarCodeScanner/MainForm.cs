@@ -768,14 +768,15 @@ namespace BarCodeScanner
             {
                 string n = cargodocs[currentdocrow].Number.Trim();
                 string t = ConvertToYYYYMMDD(cargodocs[currentdocrow].Data);
-                if (PingServer("192.168.10.213"))
+//                if (PingServer("192.168.10.213"))
+                try
                 {
                     RestAPI_POST(@"http://192.168.10.213/CargoDocService.svc/CargoDoc/" + n + "_" + t + "_" + Config.scannerNumber);
                     Log("[MF.DocSended] " + cargodocs[currentdocrow].Number);
                 }
-                else
+                catch (Exception ex)
                 {
-                    Log("[MF.DocNotSended] " + cargodocs[currentdocrow].Number);
+                    LogErrShow("[MF.DocNotSended] Документ №" + cargodocs[currentdocrow].Number + " не отправлен ", ex);
                 }
             }
         }
@@ -890,7 +891,7 @@ namespace BarCodeScanner
                     }
                     else
                     {
-                        if (PingServer(Config.serverIp))
+//                        if (PingServer(Config.serverIp))
                         {
                             SetTime(GetTime());
                             if (DownloadXML(docnum))
@@ -899,10 +900,10 @@ namespace BarCodeScanner
                                 ReloadDocTable();
                             }
                         }
-                        else
+/*                        else
                         {
                             LogShow("[MF.BarCodeProcessing] Нет связи с сервером!");
-                        }
+                        }*/
                     }
                     break;
                 case (ScanMode.BarCod):
@@ -920,8 +921,9 @@ namespace BarCodeScanner
 
         /// <summary>
         /// Добавление в лог-файл строки с отметкой времени плюс распарсенного сообщения об ошибке
+        /// Сообщение об ошибке - на экран
         /// </summary>
-        public static void LogErr(string Label, Exception ex)
+        public static void LogErrShow(string Label, Exception ex)
         {
             if (ex.InnerException == null)
             {
@@ -932,6 +934,21 @@ namespace BarCodeScanner
             {
                 MainForm.log.Add(System.DateTime.Now.ToString() + " " + Label + " " + ex.Message + " " + ex.InnerException.Message);
                 MessageBox.Show(Label + " " + ex.Message + " " + ex.InnerException.Message);
+            }
+        }
+
+        /// <summary>
+        /// Добавление в лог-файл строки с отметкой времени плюс распарсенного сообщения об ошибке
+        /// </summary>
+        public static void LogErr(string Label, Exception ex)
+        {
+            if (ex.InnerException == null)
+            {
+                MainForm.log.Add(System.DateTime.Now.ToString() + " " + Label + " " + ex.Message);
+            }
+            else
+            {
+                MainForm.log.Add(System.DateTime.Now.ToString() + " " + Label + " " + ex.Message + " " + ex.InnerException.Message);
             }
         }
 
