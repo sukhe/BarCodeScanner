@@ -780,6 +780,11 @@ namespace BarCodeScanner
                 }
             }
         }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+//
+        }
         
         private void button3_Click(object sender, EventArgs e)
         {
@@ -972,7 +977,7 @@ namespace BarCodeScanner
         /// <summary>
         /// Сохранение лог-файла на диск
         /// </summary>
-        private void LogSave()
+        public static void LogSave()
         {
             using (StreamWriter w = File.AppendText(CurrentPath + "log.txt"))
             {
@@ -1129,6 +1134,7 @@ namespace BarCodeScanner
                 MessageBox.Show("Низкий заряд батареи. Поставьте сканер на подзарядку.", "Внимание!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button1);
             };
         }
+
     }
 }
 

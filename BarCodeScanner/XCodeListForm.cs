@@ -126,32 +126,40 @@ namespace BarCodeScanner
             int i = dataGrid1.CurrentRowIndex;
             string barcod = MainForm.xcodetable.Rows[i].Field<string>(0);
             string data = MainForm.xcodetable.Rows[i].Field<string>(5);
+            string dfio = MainForm.xcodetable.Rows[i].Field<string>(4);
             MainForm.scanmode = ScanMode.Nothing;
-            if (DialogForm.Dialog("Удалить штрих-код ",barcod, "Удалить?", "        Да", "        Нет") == DialogResult.Retry)
+            if (dfio != "")
             {
-                XCode x = new XCode();
-
-                int j = 0;
-                foreach (XCode z in MainForm.cargodocs[MainForm.currentdocrow].XCodes)
+                if (DialogForm.Dialog("Удалить штрих-код ", barcod, "Удалить?", "        Да", "        Нет") == DialogResult.Retry)
                 {
-                    if (z.Data == data && z.ScanCode == barcod)
+                    XCode x = new XCode();
+
+                    int j = 0;
+                    foreach (XCode z in MainForm.cargodocs[MainForm.currentdocrow].XCodes)
                     {
-                        x = MainForm.cargodocs[MainForm.currentdocrow].XCodes[j];
-                        break;
+                        if (z.Data == data && z.ScanCode == barcod)
+                        {
+                            x = MainForm.cargodocs[MainForm.currentdocrow].XCodes[j];
+                            break;
+                        }
+                        j++;
                     }
-                    j++;
+
+                    x.DData = MainForm.ConvertToFullDataTime(System.DateTime.Now.ToString());
+                    x.DFio = Config.userName;
+                    //x.Fio = System.DateTime.Now.ToShortTimeString();
+
+                    if (MainForm.xcodelistform != null && MainForm.xcodelistform.Visible)
+                    {
+                        MainForm.xcodetable.AcceptChanges();
+                        MainForm.xcodelistform.ReloadXCodeTable();
+                    }
+
                 }
-
-                x.DData = MainForm.ConvertToFullDataTime(System.DateTime.Now.ToString());
-                x.DFio = Config.userName;
-                x.Fio = System.DateTime.Now.ToShortTimeString();
-
-                if (MainForm.xcodelistform != null && MainForm.xcodelistform.Visible)
-                {
-                    MainForm.xcodetable.AcceptChanges();
-                    MainForm.xcodelistform.ReloadXCodeTable();
-                }
-
+            }
+            else
+            {
+                MessageBox.Show("Этот штрих-код уже удалён");
             }
             MainForm.scanmode = ScanMode.BarCod;
         }

@@ -7,6 +7,7 @@ using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
 using System.IO;
+using System.Diagnostics;
 
 namespace BarCodeScanner
 {
@@ -60,7 +61,7 @@ namespace BarCodeScanner
 
         private void button3_Click(object sender, EventArgs e)
         {
-            listBox1.Items.Clear();
+/*            listBox1.Items.Clear();
             string line;
             System.IO.StreamReader file = new System.IO.StreamReader(MainForm.CurrentPath + "log.txt");
             while ((line = file.ReadLine()) != null)
@@ -68,7 +69,21 @@ namespace BarCodeScanner
                 listBox1.Items.Add(line);
             }
             listBox1.Focus();
-            file.Close();
+            file.Close();*/
+
+            MainForm.LogSave();
+            ProcessStartInfo processStartInfo = new ProcessStartInfo();
+            processStartInfo.FileName = @"\FlashDisk\Program Files\Notepad\Notepad.exe";
+            processStartInfo.Arguments = @"\Program Files\barcodescanner\log.txt";
+            try
+            {
+                Process.Start(processStartInfo);
+            }
+            catch (Exception f)
+            {
+                MessageBox.Show(f.ToString());
+            }
+
         }
 
         private void button4_Click(object sender, EventArgs e)

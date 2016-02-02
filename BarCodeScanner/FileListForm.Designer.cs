@@ -28,24 +28,16 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.documentList1 = new Microsoft.WindowsCE.Forms.DocumentList();
             this.panel1 = new System.Windows.Forms.Panel();
             this.label5 = new System.Windows.Forms.Label();
             this.button1 = new System.Windows.Forms.Button();
             this.label2 = new System.Windows.Forms.Label();
             this.button4 = new System.Windows.Forms.Button();
             this.panel2 = new System.Windows.Forms.Panel();
+            this.dataGrid1 = new System.Windows.Forms.DataGrid();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             this.SuspendLayout();
-            // 
-            // documentList1
-            // 
-            this.documentList1.Filter = " |*.xml";
-            this.documentList1.Location = new System.Drawing.Point(0, 0);
-            this.documentList1.Name = "documentList1";
-            this.documentList1.Size = new System.Drawing.Size(240, 264);
-            this.documentList1.TabIndex = 0;
             // 
             // panel1
             // 
@@ -99,11 +91,20 @@
             // 
             // panel2
             // 
-            this.panel2.Controls.Add(this.documentList1);
+            this.panel2.Controls.Add(this.dataGrid1);
             this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel2.Location = new System.Drawing.Point(0, 0);
             this.panel2.Name = "panel2";
             this.panel2.Size = new System.Drawing.Size(240, 264);
+            // 
+            // dataGrid1
+            // 
+            this.dataGrid1.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(128)))), ((int)(((byte)(128)))));
+            this.dataGrid1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.dataGrid1.Location = new System.Drawing.Point(0, 0);
+            this.dataGrid1.Name = "dataGrid1";
+            this.dataGrid1.Size = new System.Drawing.Size(240, 264);
+            this.dataGrid1.TabIndex = 0;
             // 
             // FileListForm
             // 
@@ -114,8 +115,10 @@
             this.Controls.Add(this.panel2);
             this.Controls.Add(this.panel1);
             this.KeyPreview = true;
+            this.MinimizeBox = false;
             this.Name = "FileListForm";
             this.Text = "Файлы документов";
+            this.Load += new System.EventHandler(this.FileListForm_Load);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.FileListForm_KeyDown);
             this.panel1.ResumeLayout(false);
             this.panel2.ResumeLayout(false);
@@ -125,12 +128,12 @@
 
         #endregion
 
-        private Microsoft.WindowsCE.Forms.DocumentList documentList1;
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Button button4;
         private System.Windows.Forms.Panel panel2;
+        private System.Windows.Forms.DataGrid dataGrid1;
     }
 }
