@@ -250,40 +250,48 @@ namespace BarCodeScanner
             Boolean result = false;
             int repeat = 3;      // количество повторов для считывания настроек по сети
 
-            try
+            if (PingServer("192.168.10.213"))
             {
-                string s = RestAPI_GET("http://192.168.10.213/CargoDocService.svc/Settings");
-                s = MainForm.DeleteNameSpace(s);
-                XmlSerializer serializer = new XmlSerializer(typeof(Settings));
-
-                while (repeat > 0 && result == false)
+                try
                 {
-                    try
+                    string s = RestAPI_GET("http://192.168.10.213/CargoDocService.svc/Settings");
+                    s = MainForm.DeleteNameSpace(s);
+                    XmlSerializer serializer = new XmlSerializer(typeof(Settings));
+
+                    while (repeat > 0 && result == false)
                     {
-                        using (var reader = new StringReader(s))
+                        try
                         {
-                            settings = (Settings)serializer.Deserialize(reader);
+                            using (var reader = new StringReader(s))
+                            {
+                                settings = (Settings)serializer.Deserialize(reader);
+                            }
+                            if (settings.Users.Length > 0)
+                            {
+                                settings.SaveToFile(CurrentPath + "settings.xml");
+                                result = true;
+                            }
+                            repeat -= 1;
                         }
-                        if (settings.Users.Length > 0)
+                        catch (Exception ex)
                         {
-                            settings.SaveToFile(CurrentPath + "settings.xml");
-                            result = true;
+                            MainForm.LogErr("[MF.DownloadSettings.1] ", ex);
+                            return false;
                         }
-                        repeat -= 1;
-                    }
-                    catch (Exception ex)
-                    {
-                        MainForm.LogErr("[MF.DownloadSettings.1] ", ex);
-                        return false;
                     }
                 }
+                catch (Exception ex)
+                {
+                    MainForm.LogErr("[MF.DownloadSettings.2] ", ex);
+                    return false;
+                }
+                return result;
             }
-            catch (Exception ex)
+            else
             {
-                MainForm.LogErr("[MF.DownloadSettings.2] ", ex);
+                MainForm.LogShow("Нет связи с сервером");
                 return false;
             }
-            return result;
         }
 
         /// <summary>
@@ -294,65 +302,74 @@ namespace BarCodeScanner
         {
             //            if (GetTime()!="") 
             //string docnum = barcod.Replace(" ", "_") + "_" + Config.scannerNumber;
-            try
+            if (PingServer("192.168.10.213"))
             {
-                string s;
-                //string docnum = barcod.Replace(" ", "_") + "_" + Config.scannerNumber;
-                int i = 0;
-                do
+                try
                 {
-                    s = RestAPI_GET("http://192.168.10.213/CargoDocService.svc/CargoDoc/" + docnum);
-                    s = DeleteNameSpace(s);
-                    s = DeleteNil(s);
+                    string s;
+                    //string docnum = barcod.Replace(" ", "_") + "_" + Config.scannerNumber;
+                    int i = 0;
+//                    GetTime();
+                    do
+                    {
+                        s = RestAPI_GET("http://192.168.10.213/CargoDocService.svc/CargoDoc/" + docnum);
+                        s = DeleteNameSpace(s);
+                        s = DeleteNil(s);
+                        if (s == "<CargoDoc>")
+                        {
+                            i++;
+                            System.Threading.Thread.Sleep(1000);
+                        }
+                        else i = 3;
+                    } while (i < 3);
+
                     if (s == "<CargoDoc>")
                     {
-                        i++;
-                        System.Threading.Thread.Sleep(1000);
+                        LogShow("[MF.DownloadXML.1] Получен пустой документ " + docnum);
+                        return false;
                     }
-                    else i = 3;
-                } while (i < 3);
-
-                if (s == "<CargoDoc>")
-                {
-                    LogShow("[MF.DownloadXML.1] Получен пустой документ " + docnum);
-                    return false;
-                }
-                else
-                if ((s.IndexOf("<Error>") > 0) && (s.IndexOf("</Error>") > 0))
-                {
-                    string er = s.Substring(s.IndexOf("<Error>") + 6);
-                    s = er.Substring(0, er.IndexOf("</Error>"));
-                    LogShow("[MF.DownloadXML.3] Ошибка получения документа " + docnum + ": " + s);
-                    return false;
-                }
-                else 
-                {
-                    try
-                    {
-                        XmlSerializer serializer = new XmlSerializer(typeof(CargoDoc));
-                        CargoDoc cd = new CargoDoc();
-                        using (var reader = new StringReader(s))
+                    else
+                        if ((s.IndexOf("<Error>") > 0) && (s.IndexOf("</Error>") > 0))
                         {
-                            cd = (CargoDoc)serializer.Deserialize(reader);
-                            cd.SaveToFile(CurrentPath + @"doc\" + docnum + ".xml");
+                            string er = s.Substring(s.IndexOf("<Error>") + 7);
+                            s = er.Substring(0, er.IndexOf("</Error>"));
+                            LogShow("[MF.DownloadXML.3] Ошибка получения документа " + docnum + ": " + s);
+                            return false;
                         }
-                    }
-                    catch (Exception ex)
-                    {
-                        LogErr("[MF.DownloadXML.2] Документ получен с ошибками ", ex);
-                    }
+                        else
+                        {
+                            try
+                            {
+                                XmlSerializer serializer = new XmlSerializer(typeof(CargoDoc));
+                                CargoDoc cd = new CargoDoc();
+                                using (var reader = new StringReader(s))
+                                {
+                                    cd = (CargoDoc)serializer.Deserialize(reader);
+                                    cd.SaveToFile(CurrentPath + @"doc\" + docnum + ".xml");
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                LogErr("[MF.DownloadXML.2] Документ получен с ошибками ", ex);
+                            }
 
-/*                    using (FileStream fs = File.OpenWrite(CurrentPath + @"doc\" + docnum + ".xml"))
-                    {
-                        Byte[] info = new UTF8Encoding(true).GetBytes(s);
-                        fs.Write(info, 0, info.Length);
-                    }*/
+                            /*                    using (FileStream fs = File.OpenWrite(CurrentPath + @"doc\" + docnum + ".xml"))
+                                                {
+                                                    Byte[] info = new UTF8Encoding(true).GetBytes(s);
+                                                    fs.Write(info, 0, info.Length);
+                                                }*/
+                        }
+                    return true;
                 }
-                return true;
+                catch (Exception ex)
+                {
+                    LogErr("[MF.DownloadXML.4]", ex);
+                    return false;
+                }
             }
-            catch (Exception ex)
+            else
             {
-                LogErr("[MF.DownloadXML.3]", ex);
+                MainForm.LogShow("[MF.DownloadXML.5] Нет связи с сервером");
                 return false;
             }
         }
@@ -487,6 +504,7 @@ namespace BarCodeScanner
                         {
                             Log("[MF.RestAPI_POST.Result] " + sb);
                             MessageBox.Show("Отправлено " + proto.Message + " штрихкодов по документу " + cargodocs[currentdocrow].Number.Trim());
+                            sb = "->" + proto.Message;
                         }
                         else
                         {
@@ -744,6 +762,10 @@ namespace BarCodeScanner
                 ServiceForm serv = new ServiceForm();
                 serv.ShowDialog();
                 serv.Close();
+                LoadAllDataFromXml();
+                GetCustomers();
+                currentdoccol = dataGrid1.CurrentCell.ColumnNumber;
+                currentdocrow = dataGrid1.CurrentCell.RowNumber;
             }
 
         }
@@ -762,21 +784,56 @@ namespace BarCodeScanner
                         LogShow("MF GetTime Done");*/
             if (dataGrid1.VisibleRowCount == 0)
             {
-                LogShow("[MF.DocSendNothing] Нет документов для отправки");
+                LogShow("[MF.DocSendNothing]\n Нет документов для отправки");
             }
             else
             {
+//                GetTime();
                 string n = cargodocs[currentdocrow].Number.Trim();
                 string t = ConvertToYYYYMMDD(cargodocs[currentdocrow].Data);
-//                if (PingServer("192.168.10.213"))
-                try
+                string x = n + "_" + t + "_" + Config.scannerNumber;
+                string z = "";
+                if (PingServer("192.168.10.213"))
                 {
-                    RestAPI_POST(@"http://192.168.10.213/CargoDocService.svc/CargoDoc/" + n + "_" + t + "_" + Config.scannerNumber);
-                    Log("[MF.DocSended] " + cargodocs[currentdocrow].Number);
+                    try
+                    {
+                        z = RestAPI_POST(@"http://192.168.10.213/CargoDocService.svc/CargoDoc/" + x);
+                        if (z.Substring(0, 2) == "->")
+                        {
+                            z = z.Remove(0, 2);
+                            //Log("[MF.DocSended] " + cargodocs[currentdocrow].Number);
+                            //Log("[MF.DocSended] " + z);
+                            if (Convert.ToInt16(z) == Convert.ToInt16(cargodocs[currentdoccol].ScannedBar))
+                            {
+                                Log("[MF.DocSended] " + z);
+                                try
+                                {
+                                    File.Delete(CurrentPath + @"doc\" + x + ".xml");
+                                    LoadAllDataFromXml();
+                                    GetCustomers();
+                                    currentdoccol = dataGrid1.CurrentCell.ColumnNumber;
+                                    currentdocrow = dataGrid1.CurrentCell.RowNumber;
+                                }
+                                catch (Exception ex)
+                                {
+                                    LogErrShow("[MF.DocNotDeleted] Документ №" + cargodocs[currentdocrow].Number + " не удалён", "Документ №" + cargodocs[currentdocrow].Number + " не удалён", ex);
+                                }
+                            }
+                            else 
+                            {
+                                LogShow("[MF.NotEqualQuantity] Сервер принял " + z + " штрихкодов, а отсканировано " + cargodocs[currentdoccol].ScannedBar);
+                            }
+
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        LogErrShow("[MF.DocNotSended] Документ №" + cargodocs[currentdocrow].Number + " не отправлен ", "Документ №" + cargodocs[currentdocrow].Number + " не отправлен ", ex);
+                    }
                 }
-                catch (Exception ex)
+                else
                 {
-                    LogErrShow("[MF.DocNotSended] Документ №" + cargodocs[currentdocrow].Number + " не отправлен ", ex);
+                    LogShow("[MF.DocNotSendPing] Нет связи с сервером");
                 }
             }
         }
@@ -928,41 +985,40 @@ namespace BarCodeScanner
         /// Добавление в лог-файл строки с отметкой времени плюс распарсенного сообщения об ошибке
         /// Сообщение об ошибке - на экран
         /// </summary>
-        public static void LogErrShow(string Label, Exception ex)
+        public static void LogErrShow(string LogString, string MessageString, Exception ex)
         {
             if (ex.InnerException == null)
             {
-                MainForm.log.Add(System.DateTime.Now.ToString() + " " + Label + " " + ex.Message);
-                MessageBox.Show(Label + " " + ex.Message);
+                MainForm.log.Add(System.DateTime.Now.ToString() + " " + LogString + " " + ex.Message);
             }
             else
             {
-                MainForm.log.Add(System.DateTime.Now.ToString() + " " + Label + " " + ex.Message + " " + ex.InnerException.Message);
-                MessageBox.Show(Label + " " + ex.Message + " " + ex.InnerException.Message);
+                MainForm.log.Add(System.DateTime.Now.ToString() + " " + LogString + " " + ex.Message + " " + ex.InnerException.Message);
             }
+            MessageBox.Show(MessageString);
         }
 
         /// <summary>
         /// Добавление в лог-файл строки с отметкой времени плюс распарсенного сообщения об ошибке
         /// </summary>
-        public static void LogErr(string Label, Exception ex)
+        public static void LogErr(string LogString, Exception ex)
         {
             if (ex.InnerException == null)
             {
-                MainForm.log.Add(System.DateTime.Now.ToString() + " " + Label + " " + ex.Message);
+                MainForm.log.Add(System.DateTime.Now.ToString() + " " + LogString + " " + ex.Message);
             }
             else
             {
-                MainForm.log.Add(System.DateTime.Now.ToString() + " " + Label + " " + ex.Message + " " + ex.InnerException.Message);
+                MainForm.log.Add(System.DateTime.Now.ToString() + " " + LogString + " " + ex.Message + " " + ex.InnerException.Message);
             }
         }
 
         /// <summary>
         /// Добавление в лог-файл строки с отметкой времени
         /// </summary>
-        public static void Log(string Label)
+        public static void Log(string LogString)
         {
-            MainForm.log.Add(System.DateTime.Now.ToString() + " " + Label);
+            MainForm.log.Add(System.DateTime.Now.ToString() + " " + LogString);
         }
 
         /// <summary>

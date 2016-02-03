@@ -166,7 +166,6 @@ namespace BarCodeScanner
 
         private void button4_Click(object sender, EventArgs e)
         {
-
             MainForm.productlistform.ReloadProductTable();
             Close();
         }
