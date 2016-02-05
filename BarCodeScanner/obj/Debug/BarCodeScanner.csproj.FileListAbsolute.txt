@@ -26,3 +26,4 @@ D:\WORK\CASIO\BarCodeScanner\BarCodeScanner\bin\Debug\Штрихкоды.exe
 D:\WORK\CASIO\BarCodeScanner\BarCodeScanner\bin\Debug\Штрихкоды.pdb
 D:\WORK\CASIO\BarCodeScanner\BarCodeScanner\obj\Debug\Штрихкоды.exe
 D:\WORK\CASIO\BarCodeScanner\BarCodeScanner\obj\Debug\Штрихкоды.pdb
+D:\WORK\CASIO\BarCodeScanner\BarCodeScanner\obj\Debug\BarCodeScanner.XCodeInfoForm.resources

@@ -157,6 +157,9 @@
     <EmbeddedResource Include="ServiceForm.resx">
       <DependentUpon>ServiceForm.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="XCodeInfoForm.resx">
+      <DependentUpon>XCodeInfoForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="XCodeListForm.resx">
       <DependentUpon>XCodeListForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -182,6 +185,12 @@
     </Compile>
     <Compile Include="ServiceForm.Designer.cs">
       <DependentUpon>ServiceForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="XCodeInfoForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="XCodeInfoForm.Designer.cs">
+      <DependentUpon>XCodeInfoForm.cs</DependentUpon>
     </Compile>
     <Compile Include="XCodeListForm.cs">
       <SubType>Form</SubType>
@@ -242,9 +251,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Icon1.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Icon1.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CompactFramework.CSharp.targets" />
   <ProjectExtensions>

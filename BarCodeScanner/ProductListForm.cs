@@ -13,8 +13,7 @@ namespace BarCodeScanner
     {
 
         public static int currentproductrow;
-/*        private Color fullColor;
-        private Color partialColor; */
+        private int zizin;
 
         public ProductListForm()
         {
@@ -26,6 +25,8 @@ namespace BarCodeScanner
             partialColor = new Color();
             partialColor = Color.FromArgb(255, 127, 127);
             fullColor = Color.FromArgb(127, 255, 127); */
+
+            zizin = 0;
 
             dataGrid1.Focus();
         }
@@ -116,7 +117,7 @@ namespace BarCodeScanner
                 q += Convert.ToInt16(p.Quantity);
                 foreach (XCode x in MainForm.cargodocs[MainForm.currentdocrow].XCodes)
                 {
-                    if (pid == x.PID) i++;
+                    if (pid == x.PID && x.DData == "") i++;
                 }
                 b += i;
                 p.ScannedBar = i.ToString();
@@ -209,7 +210,38 @@ namespace BarCodeScanner
             {
                 button4_Click(this, e);
             }
+            if ((e.KeyCode == System.Windows.Forms.Keys.D1))
+            {
+                //button1_Click(this, e);
+                MainForm.ScanBarCode(MainForm.producttable.Rows[currentproductrow].Field<string>(0)+"01160000"+zizi(++zizin));
+            }
+            if ((e.KeyCode == System.Windows.Forms.Keys.D2))
+            {
+                Calib.SystemLibNet.Api.SysPlayBuzzer(Calib.SystemLibNet.Def.B_ALARM, Calib.SystemLibNet.Def.BUZ_DEFAULT, Calib.SystemLibNet.Def.BUZ_DEFAULT);
+            }
+            if ((e.KeyCode == System.Windows.Forms.Keys.D9))
+            {
+                Calib.SystemLibNet.Api.SysPlayBuzzer(Calib.SystemLibNet.Def.B_WARNING, Calib.SystemLibNet.Def.BUZ_DEFAULT, Calib.SystemLibNet.Def.BUZ_DEFAULT);
+            }
+            if ((e.KeyCode == System.Windows.Forms.Keys.D8))
+            {
+                MainForm.Speaker();
+                MainForm.Vibration();
+                System.Threading.Thread.Sleep(100);
+                MainForm.Speaker();
+                MainForm.Vibration();
+                System.Threading.Thread.Sleep(100);
+                MainForm.Speaker();                   
+                MainForm.Vibration();
+            }
+        }
 
+        private string zizi(int i)
+        {
+            string s = i.ToString();
+            if (s.Length == 1)
+                return "0" + s;
+            else return s;
         }
 
         private void button4_Click(object sender, EventArgs e)

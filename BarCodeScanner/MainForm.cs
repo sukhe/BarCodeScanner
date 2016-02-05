@@ -76,6 +76,8 @@ namespace BarCodeScanner
                 cs.Open();
                 addBarCode = new AddScan(BarCodeProcessing); // назначение делегата для потокобезопасного вызова процедуры
 
+                //SystemLibNet.Api.SysSetBuzzerVolume(SystemLibNet.Def.B_SCANEND, SystemLibNet.Def.BUZZERVOLUME_MAX);
+
                 dataGrid1.Focus();
             }
             else Close();
@@ -863,30 +865,34 @@ namespace BarCodeScanner
         /// <summary>
         /// Добавление отсканированного штрих-кода в таблицу на экране и стуктуры в памяти
         /// </summary>
-        public void ScanBarCode(string barcod)
+        public static void ScanBarCode(string barcod)
         {
             string bar = barcod.Substring(0, 5);
             Boolean find_product = false;
             int i = 0;
             try
             {
-                foreach (Product p in cargodocs[currentdocrow].TotalProducts)
+                // Ищем в документе продукцию, соответствующую штрихкоду
+                foreach (Product p in MainForm.cargodocs[MainForm.currentdocrow].TotalProducts)
                 {
                     if (p.PID == bar)
                     {
                         find_product = true;
+
+                        // Если уже набрано нужное количество штрихкодов - не даём добавлять
                         if (Convert.ToInt16(p.ScannedBar) > Convert.ToInt16(p.Quantity))
                         {
-                            LogShow("Превышение количества продукции с кодом " + bar);
+                            MainForm.LogShow("Не добавлено! Уже достаточно продукции с кодом " + bar);
                         }
                         else
                         {
                             if (Convert.ToInt16(p.ScannedBar) == Convert.ToInt16(p.Quantity))
                             {
-                                LogShow("Достигнуто нужное количество продукции с кодом " + bar);
+                                MainForm.LogShow("Последний добавляемый штрихкод с кодом " + bar); // предупреждаем
                             }
-                            cargodocs[currentdocrow].TotalProducts[i].ScannedBar = (Convert.ToInt16(p.ScannedBar) + 1).ToString();
-                            producttable.Rows[currentdocrow].ItemArray[3] = (Convert.ToInt16(p.ScannedBar) + 1).ToString();
+                            MainForm.cargodocs[MainForm.currentdocrow].TotalProducts[i].ScannedBar = (Convert.ToInt16(p.ScannedBar) + 1).ToString();
+                            MainForm.cargodocs[MainForm.currentdocrow].ScannedBar = (Convert.ToInt16(MainForm.cargodocs[MainForm.currentdocrow].ScannedBar) + 1).ToString();
+                            MainForm.producttable.Rows[MainForm.currentdocrow].ItemArray[3] = (Convert.ToInt16(p.ScannedBar) + 1).ToString();
 
                             XCode x = new XCode();
 
@@ -901,27 +907,28 @@ namespace BarCodeScanner
                             x.ScannerID = Config.scannerNumber;
 
                             var xl = new List<XCode>();
-                            xl.AddRange(cargodocs[currentdocrow].XCodes);
+                            xl.AddRange(MainForm.cargodocs[MainForm.currentdocrow].XCodes);
                             xl.Add(x);
-                            cargodocs[currentdocrow].XCodes = xl.ToArray();
-                                
-                            if (xcodelistform != null && xcodelistform.Visible)
+                            MainForm.cargodocs[MainForm.currentdocrow].XCodes = xl.ToArray();
+
+                            if (MainForm.xcodelistform != null && MainForm.xcodelistform.Visible)
                             {
-                                xcodetable.AcceptChanges();
-                                xcodelistform.ReloadXCodeTable();
+                                MainForm.xcodetable.AcceptChanges();
+                                MainForm.xcodelistform.ReloadXCodeTable();
                             }
-                            else productlistform.ReloadProductTable();
+                            else MainForm.productlistform.ReloadProductTable();
+                            i++;
                             break;
                         }
                     }
-                    i++;
+
                 }
             }
             catch (Exception ex)
             {
-                LogErr("[MF.ScanBarCode]", ex);
+                MainForm.LogErr("[MF.ScanBarCode]", ex);
             }
-            if (!find_product) LogShow("В этом заказе нет продукции с кодом " + bar);
+            if (!find_product) MainForm.LogShow("В этом заказе нет продукции с кодом " + bar);
         }
 
         /// <summary>
@@ -980,6 +987,16 @@ namespace BarCodeScanner
 
         # region Log - протоколирование событий
 
+        public static void Vibration()
+        {
+            Calib.SystemLibNet.Api.SysPlayVibrator(Calib.SystemLibNet.Def.B_ALARM, Calib.SystemLibNet.Def.VIBRATOR_DEFAULT, Calib.SystemLibNet.Def.VIBRATOR_DEFAULT, Calib.SystemLibNet.Def.VIBRATOR_DEFAULT);
+        }
+
+        public static void Speaker()
+        {
+            //Calib.SystemLibNet.Api.SysPlayBuzzer(Calib.SystemLibNet.Def.B_ALARM, Calib.SystemLibNet.Def.BUZ_DEFAULT, Calib.SystemLibNet.Def.BUZ_DEFAULT);
+            Calib.SystemLibNet.Api.SysPlayBuzzer(Calib.SystemLibNet.Def.B_WARNING, Calib.SystemLibNet.Def.BUZ_DEFAULT, Calib.SystemLibNet.Def.BUZ_DEFAULT);
+        }
 
         /// <summary>
         /// Добавление в лог-файл строки с отметкой времени плюс распарсенного сообщения об ошибке
@@ -1061,7 +1078,7 @@ namespace BarCodeScanner
             }
             catch
             {
-                ss = "01.01.01";
+                ss = "";
             }
             return ss;
         }
@@ -1079,7 +1096,7 @@ namespace BarCodeScanner
             }
             catch
             {
-                ss = "01.01.01";
+                ss = "";
             }
             return ss;
         }
@@ -1097,7 +1114,7 @@ namespace BarCodeScanner
             }
             catch
             {
-                ss = "01.01.01";
+                ss = "";
             }
             return ss;
         }

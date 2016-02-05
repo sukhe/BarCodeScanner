@@ -11,14 +11,16 @@ namespace BarCodeScanner
 {
     public partial class XCodeListForm : Form
     {
-/*        private Color fullColor;
-        private Color partialColor;*/
+
+        private int zizin;
+        public static int currentxcoderow;
 
         public XCodeListForm()
         {
             InitializeComponent();
             label1.Text = MainForm.cargodocs[MainForm.currentdocrow].Partner.Trim() + " " + MainForm.cargodocs[MainForm.currentdocrow].Number.Trim();
             MainForm.scanmode = ScanMode.BarCod;
+            zizin = 0;
             dataGrid1.Focus();
         }
 
@@ -35,14 +37,21 @@ namespace BarCodeScanner
             MainForm.xcodetable.Rows.Clear();
             label1.Text = MainForm.producttable.Rows[ProductListForm.currentproductrow].Field<string>(1);
             string pid = MainForm.producttable.Rows[ProductListForm.currentproductrow].Field<string>(0);
-
+            int i = 0;
             foreach (XCode x in MainForm.cargodocs[MainForm.currentdocrow].XCodes)
             {
                 if (pid==x.PID)
                 {
                     MainForm.xcodetable.Rows.Add(new object[] { x.ScanCode, MainForm.ConvertToDDMMYY(x.Data), x.Fio, x.DData, x.DFio, x.Data });
+                    if (x.DData == "") i++;
                 }
             }
+            label2.Text = MainForm.producttable.Rows[ProductListForm.currentproductrow].Field<string>(2) + "/" + i.ToString();
+            if (i == 0) label2.BackColor = Color.White;
+            else 
+                if (i < Convert.ToInt16(MainForm.producttable.Rows[ProductListForm.currentproductrow].Field<string>(2))) 
+                     label2.BackColor = MainForm.partialColor;
+                else label2.BackColor = MainForm.fullColor;
             MainForm.xcodetable.AcceptChanges();
         }
 
@@ -128,7 +137,7 @@ namespace BarCodeScanner
             string data = MainForm.xcodetable.Rows[i].Field<string>(5);
             string dfio = MainForm.xcodetable.Rows[i].Field<string>(4);
             MainForm.scanmode = ScanMode.Nothing;
-            if (dfio != "")
+            if (MainForm.xcodetable.Rows[i].Field<string>(3) == "")
             {
                 if (DialogForm.Dialog("Удалить штрих-код ", barcod, "Удалить?", "        Да", "        Нет") == DialogResult.Retry)
                 {
@@ -154,7 +163,7 @@ namespace BarCodeScanner
                         MainForm.xcodetable.AcceptChanges();
                         MainForm.xcodelistform.ReloadXCodeTable();
                     }
-
+                    currentxcoderow = dataGrid1.CurrentCell.RowNumber;
                 }
             }
             else
@@ -180,7 +189,24 @@ namespace BarCodeScanner
             {
                 button4_Click(this, e);
             }
+            if ((e.KeyCode == System.Windows.Forms.Keys.Enter))
+            {
+                XCodeInfoForm xcodeinfo = new XCodeInfoForm();
+                xcodeinfo.ShowDialog();
+            }
+            if ((e.KeyCode == System.Windows.Forms.Keys.D1))
+            {
+                MainForm.ScanBarCode(MainForm.producttable.Rows[ProductListForm.currentproductrow].Field<string>(0) + "01160000" + zizi(++zizin));
+            }
 
+        }
+
+        private string zizi(int i)
+        {
+            string s = i.ToString();
+            if (s.Length == 1)
+                return "0" + s;
+            else return s;
         }
 
         // разукрашивание ячеек в нужный цвет
@@ -233,6 +259,11 @@ namespace BarCodeScanner
                 e.BackBrush = new SolidBrush(Color.White);
             else
                 e.BackBrush = new SolidBrush(MainForm.partialColor);
+        }
+
+        private void dataGrid1_CurrentCellChanged(object sender, EventArgs e)
+        {
+            currentxcoderow = dataGrid1.CurrentCell.RowNumber;
         }
     }
 }
