@@ -206,7 +206,8 @@
     <None Include="CargoDocs.xsd">
       <Generator>MSDataSetGenerator</Generator>
       <LastGenOutput>CargoDocs.Designer.cs</LastGenOutput>
-      <SubType>Designer</SubType>
+      <SubType>
+      </SubType>
     </None>
     <None Include="CargoDocs.xss">
       <DependentUpon>CargoDocs.xsd</DependentUpon>

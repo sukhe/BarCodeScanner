@@ -29,7 +29,7 @@ namespace BarCodeScanner
         {
 //            MessageBox.Show(documentList1.SelectedDirectory.ToString());
             File.Delete(MainForm.CurrentPath + @"doc\" + filetable.Rows[dataGrid1.CurrentRowIndex].Field<string>(0));
-            LoadFileTable();
+            LoadFileTable(false);
         }
 
         private void button4_Click(object sender, EventArgs e)
@@ -80,12 +80,13 @@ namespace BarCodeScanner
         private void FileListForm_Load(object sender, EventArgs e)
         {
             dataGrid1.DataSource = filetable;
-            LoadFileTable();
+            LoadFileTable(true);
         }
 
-        private void LoadFileTable()
+        private void LoadFileTable(Boolean firstCall)
         {
             MainForm.doclist = Directory.GetFiles(MainForm.CurrentPath + "doc", "*_*_*.xml");
+            filetable.Clear();
             if (MainForm.doclist.Length > 0)
             {
 
@@ -102,7 +103,7 @@ namespace BarCodeScanner
                 DirectoryInfo di = new DirectoryInfo(MainForm.CurrentPath + "doc");
                 FileInfo[] fileinfo = di.GetFiles("*_*_*.xml");
 
-                filetable.Clear();
+//                filetable.Clear();
 
                 foreach (FileInfo fi in fileinfo)
                 {
@@ -136,7 +137,8 @@ namespace BarCodeScanner
             }
             else
             {
-                MessageBox.Show("Нет загруженных документов");
+                if (firstCall) MessageBox.Show("Нет загруженных документов");
+                else MessageBox.Show("Все документы удалены");
             }
         }
 

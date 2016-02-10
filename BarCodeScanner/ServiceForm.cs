@@ -8,6 +8,7 @@ using System.Text;
 using System.Windows.Forms;
 using System.IO;
 using System.Diagnostics;
+using Microsoft.WindowsMobile.Status;
 
 namespace BarCodeScanner
 {
@@ -33,10 +34,44 @@ namespace BarCodeScanner
                 listBox1.Items.Add("Отсутствует связь с сервером " + Config.serverIp);
             }
 
+            if ((SystemState.PowerBatteryState & BatteryState.Charging) != BatteryState.Charging)
+            {
+                listBox1.Items.Add("Заряд батареи " + Battery());
+
+                if ((SystemState.PowerBatteryState & BatteryState.NotPresent) == BatteryState.NotPresent)
+                    listBox1.Items.Add("Батарея отстутствует или неисправна");
+
+                if ((SystemState.PowerBatteryState & BatteryState.Critical) == BatteryState.Critical)
+                    listBox1.Items.Add("Критическое состояние батареи");
+            }
+
             MainForm.doclist = Directory.GetFiles(MainForm.CurrentPath + "doc", "*_*_*.xml");
 
             listBox1.Items.Add("Количество документов " + MainForm.doclist.Length.ToString());
         }
+
+        private string Battery()
+        {
+            switch (Microsoft.WindowsMobile.Status.SystemState.PowerBatteryStrength) {
+                case BatteryLevel.VeryHigh:
+                    return "81-100%";
+                    break;
+                case BatteryLevel.High:
+                    return "61-80%";
+                    break;
+                case BatteryLevel.Medium:
+                    return "41-60%";
+                    break;
+                case BatteryLevel.Low:
+                    return "21-40%";
+                    break;
+                default: // VeryLow
+                    return "0-20%";
+                    break;
+            }
+        }
+
+        // (SystemState.PowerBatteryState == BatteryState.Critical)
 
         private void button1_Click(object sender, EventArgs e)
         {
@@ -88,6 +123,7 @@ namespace BarCodeScanner
 
         private void button4_Click(object sender, EventArgs e)
         {
+            MainForm.scanmode = ScanMode.Doc;
             Close();
         }
 

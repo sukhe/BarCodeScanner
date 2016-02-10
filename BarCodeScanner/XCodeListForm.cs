@@ -67,7 +67,7 @@ namespace BarCodeScanner
                 DataColumn FullData = MainForm.xcodetable.Columns.Add("ПолнДат", typeof(string));
 
                 // Set the ID column as the primary key column.
-                MainForm.xcodetable.PrimaryKey = new DataColumn[] { FullData, BarCod };
+                //MainForm.xcodetable.PrimaryKey = new DataColumn[] { FullData, BarCod };
             }
 
             ReloadXCodeTable();
@@ -191,8 +191,11 @@ namespace BarCodeScanner
             }
             if ((e.KeyCode == System.Windows.Forms.Keys.Enter))
             {
-                XCodeInfoForm xcodeinfo = new XCodeInfoForm();
-                xcodeinfo.ShowDialog();
+                if (dataGrid1.VisibleRowCount != 0)
+                {
+                    XCodeInfoForm xcodeinfo = new XCodeInfoForm();
+                    xcodeinfo.ShowDialog();
+                }
             }
             if ((e.KeyCode == System.Windows.Forms.Keys.D1))
             {

@@ -215,7 +215,7 @@ namespace BarCodeScanner
                 //button1_Click(this, e);
                 MainForm.ScanBarCode(MainForm.producttable.Rows[currentproductrow].Field<string>(0)+"01160000"+zizi(++zizin));
             }
-            if ((e.KeyCode == System.Windows.Forms.Keys.D2))
+/*            if ((e.KeyCode == System.Windows.Forms.Keys.D2))
             {
                 Calib.SystemLibNet.Api.SysPlayBuzzer(Calib.SystemLibNet.Def.B_ALARM, Calib.SystemLibNet.Def.BUZ_DEFAULT, Calib.SystemLibNet.Def.BUZ_DEFAULT);
             }
@@ -233,7 +233,7 @@ namespace BarCodeScanner
                 System.Threading.Thread.Sleep(100);
                 MainForm.Speaker();                   
                 MainForm.Vibration();
-            }
+            }*/
         }
 
         private string zizi(int i)

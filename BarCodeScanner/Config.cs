@@ -11,9 +11,10 @@ namespace BarCodeScanner
         public static string scannerIp = "";
         public static string scannerMac = "";
         public static string userName = "";
-        public static string batterylevel = "";
+//        public static string batterylevel = "";
         public static Boolean superuser = false;
         public static string serverIp = "";
+        public static Boolean notping = true;
     }
 
     public enum ScanMode { Doc, BarCod, DelBarCod, Nothing }
