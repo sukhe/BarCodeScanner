@@ -107,6 +107,12 @@
     <Compile Include="FileListForm.Designer.cs">
       <DependentUpon>FileListForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="FromToForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FromToForm.Designer.cs">
+      <DependentUpon>FromToForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="ProductListForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -136,6 +142,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="FileListForm.resx">
       <DependentUpon>FileListForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FromToForm.resx">
+      <DependentUpon>FromToForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>

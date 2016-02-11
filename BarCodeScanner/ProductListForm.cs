@@ -109,7 +109,8 @@ namespace BarCodeScanner
             int i;
             int q = 0;
             int b = 0;
-            MainForm.producttable.Rows.Clear();
+            MainForm.producttable.Clear();
+//            MainForm.producttable.Rows.Clear();
             foreach (Product p in MainForm.cargodocs[MainForm.currentdocrow].TotalProducts)
             {
                 pid = p.PID;

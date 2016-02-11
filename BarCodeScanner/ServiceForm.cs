@@ -55,19 +55,14 @@ namespace BarCodeScanner
             switch (Microsoft.WindowsMobile.Status.SystemState.PowerBatteryStrength) {
                 case BatteryLevel.VeryHigh:
                     return "81-100%";
-                    break;
                 case BatteryLevel.High:
                     return "61-80%";
-                    break;
                 case BatteryLevel.Medium:
                     return "41-60%";
-                    break;
                 case BatteryLevel.Low:
                     return "21-40%";
-                    break;
                 default: // VeryLow
                     return "0-20%";
-                    break;
             }
         }
 

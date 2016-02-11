@@ -830,6 +830,7 @@ namespace BarCodeScanner
             }
             if ((e.KeyCode == System.Windows.Forms.Keys.F2))
             {
+                panel3_Click(this, e);
             }
             if ((e.KeyCode == System.Windows.Forms.Keys.F3))
             {
@@ -863,21 +864,25 @@ namespace BarCodeScanner
 
         }
 
-
         private void button1_Click(object sender, EventArgs e)
         {
+            MainForm.scanmode = ScanMode.Nothing;
             UploadXML();
+            MainForm.scanmode = ScanMode.Doc;
         }
 
-        private void button2_Click(object sender, EventArgs e)
+        private void panel3_Click(object sender, EventArgs e)
         {
-//
+            MainForm.scanmode = ScanMode.Nothing;
+            FromToForm f = new FromToForm();
+            f.ShowDialog();
+            MainForm.scanmode = ScanMode.Doc;
         }
-        
-        private void button3_Click(object sender, EventArgs e)
+       
+/*        private void button3_Click(object sender, EventArgs e)
         {
             SetTime(GetTime());
-        }
+        } */
 
         /// <summary>
         /// Выход из программы
@@ -965,13 +970,13 @@ namespace BarCodeScanner
                             {
                                 MainForm.xcodetable.AcceptChanges();
                                 MainForm.xcodelistform.ReloadXCodeTable();
-//                                MainForm.xcodetable.AcceptChanges();
+                                MainForm.xcodetable.AcceptChanges();
                             }
                             else
                             {
                                 MainForm.producttable.AcceptChanges();
                                 MainForm.productlistform.ReloadProductTable();
-//                                MainForm.producttable.AcceptChanges();
+                                MainForm.producttable.AcceptChanges();
                             }
                             i++;
                             break;

@@ -15,6 +15,9 @@ namespace BarCodeScanner
         public static Boolean superuser = false;
         public static string serverIp = "";
         public static Boolean notping = true;
+        public static string transfer = "";
+        public static string transferFrom = "";
+        public static string transferTo = "";
     }
 
     public enum ScanMode { Doc, BarCod, DelBarCod, Nothing }
