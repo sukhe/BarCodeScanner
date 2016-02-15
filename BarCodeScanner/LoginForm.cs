@@ -25,6 +25,18 @@ namespace BarCodeScanner
         {
             Config.userName = "";
 
+/*            try
+            {
+                string p = pwd.Substring(0, 6);
+                double d = Math.Sqrt(Convert.ToInt64(p) * 171587);
+                pwd = Math.Floor(Math.Sqrt(i * 171587)).ToString(); // дополнить спереди нулями
+                    //=ЦЕЛОЕ(КОРЕНЬ(A11*171587))
+            }
+            catch
+            {
+                return false;
+            } */
+
             foreach (User u in MainForm.settings.Users)
             {
                 if (u.Pwd == pwd)
@@ -66,7 +78,7 @@ namespace BarCodeScanner
                 }
                 else
                 {
-                    if (Config.userName == "Superuser")
+/*                    if (Config.userName == "Superuser")
                     {
                         Config.userName = "";
                         if (DialogForm.Dialog("Войти в программу?", "", "Вопрос", "              Да", "          Нет") == DialogResult.Retry)
@@ -80,7 +92,7 @@ namespace BarCodeScanner
                         }
                     }
                     else
-                    {
+                    {*/
                         if (DialogForm.Dialog("Неверный пароль", "", "Ошибка!", "           Повторить", "         Выход") == DialogResult.Retry)
                         {
                             textBox1.Text = "";
@@ -90,7 +102,7 @@ namespace BarCodeScanner
                             LoginResult = DialogResult.Abort;
                             Close();
                         }
-                    }
+//                    }
                 }
             }
         }

@@ -877,6 +877,8 @@ namespace BarCodeScanner
             FromToForm f = new FromToForm();
             f.ShowDialog();
             MainForm.scanmode = ScanMode.Doc;
+            labelFrom.Text = Config.transferFrom;
+            labelTo.Text = Config.transferTo;
         }
        
 /*        private void button3_Click(object sender, EventArgs e)

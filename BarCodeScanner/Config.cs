@@ -18,6 +18,8 @@ namespace BarCodeScanner
         public static string transfer = "";
         public static string transferFrom = "";
         public static string transferTo = "";
+        public static string transferFromLid = "";
+        public static string transferToLid = "";
     }
 
     public enum ScanMode { Doc, BarCod, DelBarCod, Nothing }

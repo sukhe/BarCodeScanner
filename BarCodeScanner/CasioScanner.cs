@@ -58,8 +58,8 @@ namespace BarCodeScanner
 /*                result = OBReadLibNet.Api.OBRSetBuzzer(OBReadLibNet.Def.OBR_BUZON); //enable sound notification
                 CheckCasioResult(result);*/
 
-/*                result = OBReadLibNet.Api.OBRSetVibrator(OBReadLibNet.Def.OBR_VIBON); //enable vibration notification
-                CheckCasioResult(result);*/
+                result = OBReadLibNet.Api.OBRSetVibrator(OBReadLibNet.Def.OBR_VIBOFF); //enable vibration notification
+                CheckCasioResult(result);
 
 /*                if (Handle == null)
                 {*/
