@@ -41,12 +41,20 @@
             this.button4 = new System.Windows.Forms.Button();
             this.panel2 = new System.Windows.Forms.Panel();
             this.listBox1 = new System.Windows.Forms.ListBox();
+            this.button6 = new System.Windows.Forms.Button();
+            this.label3 = new System.Windows.Forms.Label();
+            this.button7 = new System.Windows.Forms.Button();
+            this.label4 = new System.Windows.Forms.Label();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             this.SuspendLayout();
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.label4);
+            this.panel1.Controls.Add(this.button7);
+            this.panel1.Controls.Add(this.label3);
+            this.panel1.Controls.Add(this.button6);
             this.panel1.Controls.Add(this.label2);
             this.panel1.Controls.Add(this.button5);
             this.panel1.Controls.Add(this.label7);
@@ -60,14 +68,14 @@
             this.panel1.Dock = System.Windows.Forms.DockStyle.Top;
             this.panel1.Location = new System.Drawing.Point(0, 0);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(240, 136);
+            this.panel1.Size = new System.Drawing.Size(240, 170);
             // 
             // label2
             // 
             this.label2.BackColor = System.Drawing.Color.Black;
             this.label2.Font = new System.Drawing.Font("Tahoma", 11F, System.Drawing.FontStyle.Bold);
             this.label2.ForeColor = System.Drawing.Color.Yellow;
-            this.label2.Location = new System.Drawing.Point(3, 80);
+            this.label2.Location = new System.Drawing.Point(3, 75);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(35, 20);
             this.label2.Text = "CLR";
@@ -75,11 +83,11 @@
             // 
             // button5
             // 
-            this.button5.Location = new System.Drawing.Point(0, 78);
+            this.button5.Location = new System.Drawing.Point(0, 73);
             this.button5.Name = "button5";
             this.button5.Size = new System.Drawing.Size(240, 24);
             this.button5.TabIndex = 3;
-            this.button5.Text = "       Очистить лог";
+            this.button5.Text = "      Очистить лог";
             this.button5.Click += new System.EventHandler(this.button5_Click);
             // 
             // label7
@@ -88,7 +96,7 @@
             this.label7.Enabled = false;
             this.label7.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold);
             this.label7.ForeColor = System.Drawing.Color.White;
-            this.label7.Location = new System.Drawing.Point(3, 55);
+            this.label7.Location = new System.Drawing.Point(3, 51);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(35, 20);
             this.label7.Text = "F3";
@@ -100,7 +108,7 @@
             this.label6.Enabled = false;
             this.label6.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold);
             this.label6.ForeColor = System.Drawing.Color.White;
-            this.label6.Location = new System.Drawing.Point(3, 30);
+            this.label6.Location = new System.Drawing.Point(3, 27);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(35, 20);
             this.label6.Text = "F2";
@@ -111,7 +119,7 @@
             this.label5.BackColor = System.Drawing.Color.Red;
             this.label5.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold);
             this.label5.ForeColor = System.Drawing.Color.White;
-            this.label5.Location = new System.Drawing.Point(3, 5);
+            this.label5.Location = new System.Drawing.Point(3, 3);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(35, 20);
             this.label5.Text = "F1";
@@ -119,7 +127,7 @@
             // 
             // button3
             // 
-            this.button3.Location = new System.Drawing.Point(0, 53);
+            this.button3.Location = new System.Drawing.Point(0, 49);
             this.button3.Name = "button3";
             this.button3.Size = new System.Drawing.Size(240, 24);
             this.button3.TabIndex = 2;
@@ -128,7 +136,7 @@
             // 
             // button2
             // 
-            this.button2.Location = new System.Drawing.Point(0, 28);
+            this.button2.Location = new System.Drawing.Point(0, 25);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(240, 24);
             this.button2.TabIndex = 1;
@@ -137,7 +145,7 @@
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(0, 3);
+            this.button1.Location = new System.Drawing.Point(0, 1);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(240, 24);
             this.button1.TabIndex = 0;
@@ -148,7 +156,7 @@
             // 
             this.label1.BackColor = System.Drawing.Color.Yellow;
             this.label1.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold);
-            this.label1.Location = new System.Drawing.Point(3, 105);
+            this.label1.Location = new System.Drawing.Point(3, 147);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(35, 20);
             this.label1.Text = "F4";
@@ -156,28 +164,68 @@
             // 
             // button4
             // 
-            this.button4.Location = new System.Drawing.Point(0, 103);
+            this.button4.Location = new System.Drawing.Point(0, 145);
             this.button4.Name = "button4";
             this.button4.Size = new System.Drawing.Size(240, 24);
             this.button4.TabIndex = 4;
-            this.button4.Text = "     Назад";
+            this.button4.Text = "      Назад";
             this.button4.Click += new System.EventHandler(this.button4_Click);
             // 
             // panel2
             // 
             this.panel2.Controls.Add(this.listBox1);
             this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel2.Location = new System.Drawing.Point(0, 136);
+            this.panel2.Location = new System.Drawing.Point(0, 170);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(240, 158);
+            this.panel2.Size = new System.Drawing.Size(240, 124);
             // 
             // listBox1
             // 
             this.listBox1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.listBox1.Location = new System.Drawing.Point(0, 0);
             this.listBox1.Name = "listBox1";
-            this.listBox1.Size = new System.Drawing.Size(240, 156);
+            this.listBox1.Size = new System.Drawing.Size(240, 114);
             this.listBox1.TabIndex = 5;
+            // 
+            // button6
+            // 
+            this.button6.Location = new System.Drawing.Point(0, 97);
+            this.button6.Name = "button6";
+            this.button6.Size = new System.Drawing.Size(240, 24);
+            this.button6.TabIndex = 8;
+            this.button6.Text = "       Получить время";
+            this.button6.Click += new System.EventHandler(this.button6_Click);
+            // 
+            // label3
+            // 
+            this.label3.BackColor = System.Drawing.Color.Black;
+            this.label3.Font = new System.Drawing.Font("Tahoma", 11F, System.Drawing.FontStyle.Bold);
+            this.label3.ForeColor = System.Drawing.Color.White;
+            this.label3.Location = new System.Drawing.Point(3, 99);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(35, 20);
+            this.label3.Text = ".";
+            this.label3.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+            // 
+            // button7
+            // 
+            this.button7.Location = new System.Drawing.Point(0, 121);
+            this.button7.Name = "button7";
+            this.button7.Size = new System.Drawing.Size(240, 24);
+            this.button7.TabIndex = 11;
+            this.button7.Text = "       Тест связи с 1С";
+            this.button7.Click += new System.EventHandler(this.button7_Click);
+            // 
+            // label4
+            // 
+            this.label4.BackColor = System.Drawing.Color.Black;
+            this.label4.Font = new System.Drawing.Font("Tahoma", 11F, System.Drawing.FontStyle.Bold);
+            this.label4.ForeColor = System.Drawing.Color.Yellow;
+            this.label4.Location = new System.Drawing.Point(3, 123);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(35, 20);
+            this.label4.Text = "0";
+            this.label4.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             // 
             // ServiceForm
             // 
@@ -213,5 +261,9 @@
         private System.Windows.Forms.ListBox listBox1;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Button button5;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Button button6;
+        private System.Windows.Forms.Button button7;
+        private System.Windows.Forms.Label label4;
     }
 }

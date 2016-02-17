@@ -82,7 +82,6 @@
             // label7
             // 
             this.label7.BackColor = System.Drawing.Color.Green;
-            this.label7.Enabled = false;
             this.label7.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold);
             this.label7.ForeColor = System.Drawing.Color.White;
             this.label7.Location = new System.Drawing.Point(123, 36);
@@ -104,11 +103,14 @@
             // 
             // button3
             // 
+            this.button3.Enabled = false;
             this.button3.Location = new System.Drawing.Point(120, 34);
             this.button3.Name = "button3";
             this.button3.Size = new System.Drawing.Size(120, 24);
             this.button3.TabIndex = 4;
             this.button3.Text = "         Тип";
+            this.button3.Visible = false;
+            this.button3.Click += new System.EventHandler(this.button3_Click);
             // 
             // button1
             // 

@@ -101,6 +101,12 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>customtime.xsd</DependentUpon>
     </Compile>
+    <Compile Include="DocNumEnter.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="DocNumEnter.Designer.cs">
+      <DependentUpon>DocNumEnter.cs</DependentUpon>
+    </Compile>
     <Compile Include="FileListForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -140,6 +146,9 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="DocNumEnter.resx">
+      <DependentUpon>DocNumEnter.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="FileListForm.resx">
       <DependentUpon>FileListForm.cs</DependentUpon>
     </EmbeddedResource>

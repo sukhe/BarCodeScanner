@@ -51,6 +51,7 @@ namespace BarCodeScanner
         public static Color partialColor;                               // цвет фона для строк с частично заполненным документом
 
         private int serviceKeySequence;
+        private int manualDocNumEnter;
 
         public MainForm()
         {
@@ -91,7 +92,7 @@ namespace BarCodeScanner
         private void MainForm_Load(object sender, EventArgs e)
         {
             Config.userName = "Мистер Х";
-            Config.notping = true;
+//            Config.notping = true;
 
             serviceKeySequence = 0;
             if (LoginForm.Dialog() == DialogResult.Abort) Close();
@@ -264,7 +265,7 @@ namespace BarCodeScanner
             Boolean result = false;
             int repeat = 3;      // количество повторов для считывания настроек по сети
 
-            if (Config.notping || PingServer(Config.serverIp))
+            if (TestConnect1C())
             {
                 try
                 {
@@ -303,7 +304,7 @@ namespace BarCodeScanner
             }
             else
             {
-                MainForm.LogShow("Нет связи с сервером");
+                MainForm.LogShow("[MF.DownloadSettings.3] Нет связи с сервером");
                 return false;
             }
         }
@@ -316,7 +317,7 @@ namespace BarCodeScanner
         {
             //            if (GetTime()!="") 
             //string docnum = barcod.Replace(" ", "_") + "_" + Config.scannerNumber;
-            if (Config.notping || PingServer(Config.serverIp))
+            if (TestConnect1C())
             {
                 try
                 {
@@ -413,7 +414,7 @@ namespace BarCodeScanner
                 string z = "";
                 int xall = cargodocs[currentdocrow].XCodes.Length;
                 string xgood = cargodocs[currentdocrow].ScannedBar;
-                if (Config.notping || PingServer(Config.serverIp))
+                if (TestConnect1C())
                 { 
                 try
                 {
@@ -467,7 +468,7 @@ namespace BarCodeScanner
         /// Получение текущего времени с сервера
         /// </summary>
         /// <returns>Дата и время в текстовом виде -> 27.01.2016 14:46:38</returns>
-        private string GetTime()
+        public static string GetTime()
         {
             try
             {
@@ -485,6 +486,32 @@ namespace BarCodeScanner
             {
                 Log("[MF.GetTime] " + ex);
                 return "";
+            }
+        }
+
+        /// <summary>
+        /// Проверка связи с 1С
+        /// </summary>
+        /// <returns>true - связь есть, false - связи нет</returns>
+        public static Boolean TestConnect1C()
+        {
+            string ss;
+            try
+            {
+                string s = RestAPI_GET("http://" + Config.serverIp + "/CargoDocService.svc/Test1C");
+//                s = DeleteNameSpace(s);
+                if (s.IndexOf("<string>") >= 0)
+                {
+                    ss = s.Substring(s.IndexOf("<string>")+8);
+                    s = ss.Substring(0,ss.IndexOf("</string>"));
+                    if (s == "OK") return true;
+                    else return false;
+                } else return false; 
+            }
+            catch (Exception ex)
+            {
+                Log("[MF.TestConnect1C] " + ex);
+                return false;
             }
         }
 
@@ -527,6 +554,7 @@ namespace BarCodeScanner
                 request.Method = "GET";
                 request.Timeout = 5000;
                 request.ContentType = "text/xml;charset=utf-8";
+                request.Proxy = GlobalProxySelection.GetEmptyWebProxy();
 
                 HttpWebResponse response = (HttpWebResponse)request.GetResponse();
                 MainForm.Log("[MF.RestAPI_GET.Response]");
@@ -561,6 +589,7 @@ namespace BarCodeScanner
                 request.Method = "POST";
                 request.Timeout = 5000;
                 request.ContentType = "application/xml;charset=utf-8";
+                request.Proxy = GlobalProxySelection.GetEmptyWebProxy();
 
                 string postData = cargodocs[currentdocrow].Serialize();
                 byte[] byteArray = Encoding.UTF8.GetBytes(postData);
@@ -823,30 +852,44 @@ namespace BarCodeScanner
             {
                 MainForm.scanmode = ScanMode.BarCod;
                 dataGrid1_Click(sender, e);
+                serviceKeySequence = 0; 
+                manualDocNumEnter = 0;
             }
             if ((e.KeyCode == System.Windows.Forms.Keys.F1))
             {
                 button1_Click(this, e);
+                serviceKeySequence = 0;
+                manualDocNumEnter = 0;
             }
             if ((e.KeyCode == System.Windows.Forms.Keys.F2))
             {
                 panel3_Click(this, e);
+                serviceKeySequence = 0;
+                manualDocNumEnter = 0;
             }
             if ((e.KeyCode == System.Windows.Forms.Keys.F3))
             {
-            }
+                button3_Click(this, e);
+                serviceKeySequence = 0;
+                manualDocNumEnter = 0;
+            } 
             if ((e.KeyCode == System.Windows.Forms.Keys.F4))
             {
                 button4_Click(this, e);
+                serviceKeySequence = 0;
+                manualDocNumEnter = 0;
             }
+
             // отработка нажатия .1111. - запуск сервисной формы
             if ((e.KeyCode.GetHashCode() == 190) && (serviceKeySequence == 0))
             {
                 serviceKeySequence++;
+                manualDocNumEnter = 0;
             }
             if ((e.KeyCode == System.Windows.Forms.Keys.D1) && (serviceKeySequence >= 1) && (serviceKeySequence <= 4))
             {
                 serviceKeySequence++;
+                manualDocNumEnter = 0;
             }
             if ((e.KeyCode.GetHashCode() == 190) && (serviceKeySequence == 5))
             {
@@ -860,8 +903,28 @@ namespace BarCodeScanner
                 currentdoccol = dataGrid1.CurrentCell.ColumnNumber;
                 currentdocrow = dataGrid1.CurrentCell.RowNumber;
                 MainForm.scanmode = ScanMode.Doc;
+                manualDocNumEnter = 0;
             }
 
+            // отработка нажатия 000 - ручной ввод номера документа
+//            if (e.KeyCode == System.Windows.Forms.Keys.D0)
+            if (e.KeyCode.GetHashCode() == 228)
+                if (manualDocNumEnter < 4)
+                {
+                    manualDocNumEnter++;
+                    serviceKeySequence = 0;
+                }
+                else
+                {
+                    MainForm.scanmode = ScanMode.Nothing;
+                    manualDocNumEnter = 0;
+                    serviceKeySequence = 0;
+                    DocNumEnter doc = new DocNumEnter();
+                    doc.ShowDialog();
+                    doc.Close();
+                    //BarCodeProcessing(barcod);
+                    MainForm.scanmode = ScanMode.Doc;
+                }
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -958,8 +1021,8 @@ namespace BarCodeScanner
                             x.DFio = "";
                             x.PID = p.PID;
                             x.ScanCode = barcod;
-                            x.ScanFrom = "";
-                            x.ScanTo = "";
+                            x.ScanFrom = Config.transferFromLid;
+                            x.ScanTo = Config.transferToLid;
                             x.ScannerID = Config.scannerNumber;
 
                             var xl = new List<XCode>();
@@ -1006,8 +1069,9 @@ namespace BarCodeScanner
         /// Считанный штрих-код может быть штрих-кодом товара или штрих-кодом отгрузочного документа
         /// Здесь производится определение того, что это за штрих-код, и вызов соответствующих процедур
         /// </summary>
-        public void BarCodeProcessing(string barcod)
+        public void BarCodeProcessing(string code)
         {
+            string barcod = code.Substring(0, 15);
             switch (scanmode)
             {
                 case (ScanMode.Doc):
@@ -1023,8 +1087,8 @@ namespace BarCodeScanner
                     }
                     else
                     {
-                        if (Config.notping || PingServer(Config.serverIp))
-                        { 
+                        if (TestConnect1C()) 
+                        {
                             SetTime(GetTime());
                             if (DownloadXML(docnum))
                             {
@@ -1034,15 +1098,21 @@ namespace BarCodeScanner
                         }
                         else
                         {
-                            LogShow("[MF.BarCodeProcessing] Нет связи с сервером!");
+                            LogShow("[MF.BarCodeProcessing] 1C не отвечает!");
                         }
                     }
                     break;
                 case (ScanMode.BarCod):
-                    ScanBarCode(barcod);
+                    if (Config.transferFromLid == "" || Config.transferToLid == "")
+                    {
+                        Attention();
+                        LogShow("[MF.BarCodeProcessing] Не выбрано откуда/куда грузится товар. Штрихкод не добавлен");
+                    }
+                    else
+                        ScanBarCode(barcod);
                     break;
                 case (ScanMode.Nothing):
-                    MessageBox.Show(barcod);
+                    MessageBox.Show(code);
                     break;
             }
         }
@@ -1252,7 +1322,7 @@ namespace BarCodeScanner
         /// <summary>
         /// Обновляет значение времени на экране и проверяет состояние батареи
         /// </summary>
-        private void SetTime(string s)
+        public static void SetTime(string s)
         {
             if (s == "") return;
             int year, month, day, hour, min, sec;
@@ -1298,6 +1368,11 @@ namespace BarCodeScanner
                     MessageBox.Show("Низкий заряд батареи. Поставьте сканер на подзарядку.", "Внимание!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button1);
                 };
             }
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            //
         }
 
     }

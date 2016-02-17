@@ -58,9 +58,9 @@
             this.buttonClose.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
                         | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonClose.Location = new System.Drawing.Point(0, 264);
+            this.buttonClose.Location = new System.Drawing.Point(0, 270);
             this.buttonClose.Name = "buttonClose";
-            this.buttonClose.Size = new System.Drawing.Size(240, 30);
+            this.buttonClose.Size = new System.Drawing.Size(240, 24);
             this.buttonClose.TabIndex = 2;
             this.buttonClose.Text = "Выход";
             this.buttonClose.Click += new System.EventHandler(this.buttonClose_Click);
@@ -71,7 +71,7 @@
             this.label2.BackColor = System.Drawing.Color.Yellow;
             this.label2.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold);
             this.label2.ForeColor = System.Drawing.Color.Black;
-            this.label2.Location = new System.Drawing.Point(4, 269);
+            this.label2.Location = new System.Drawing.Point(3, 272);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(35, 20);
             this.label2.Text = "F4";

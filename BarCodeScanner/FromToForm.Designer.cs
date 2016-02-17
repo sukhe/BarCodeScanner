@@ -86,21 +86,21 @@
             // 
             this.listBox1.Location = new System.Drawing.Point(3, 23);
             this.listBox1.Name = "listBox1";
-            this.listBox1.Size = new System.Drawing.Size(234, 44);
+            this.listBox1.Size = new System.Drawing.Size(234, 58);
             this.listBox1.TabIndex = 1;
             this.listBox1.SelectedIndexChanged += new System.EventHandler(this.listBox1_SelectedIndexChanged);
             // 
             // label22
             // 
-            this.label22.Location = new System.Drawing.Point(65, 75);
+            this.label22.Location = new System.Drawing.Point(65, 87);
             this.label22.Name = "label22";
-            this.label22.Size = new System.Drawing.Size(169, 20);
+            this.label22.Size = new System.Drawing.Size(169, 16);
             this.label22.Text = "label22";
             // 
             // listBox2
             // 
             this.listBox2.Enabled = false;
-            this.listBox2.Location = new System.Drawing.Point(3, 95);
+            this.listBox2.Location = new System.Drawing.Point(3, 104);
             this.listBox2.Name = "listBox2";
             this.listBox2.Size = new System.Drawing.Size(234, 72);
             this.listBox2.TabIndex = 2;
@@ -108,33 +108,33 @@
             // 
             // label32
             // 
-            this.label32.Location = new System.Drawing.Point(65, 175);
+            this.label32.Location = new System.Drawing.Point(65, 178);
             this.label32.Name = "label32";
-            this.label32.Size = new System.Drawing.Size(169, 20);
+            this.label32.Size = new System.Drawing.Size(169, 16);
             this.label32.Text = "label32";
             // 
             // label21
             // 
             this.label21.Font = new System.Drawing.Font("Tahoma", 9F, System.Drawing.FontStyle.Bold);
-            this.label21.Location = new System.Drawing.Point(3, 75);
+            this.label21.Location = new System.Drawing.Point(3, 87);
             this.label21.Name = "label21";
-            this.label21.Size = new System.Drawing.Size(56, 20);
+            this.label21.Size = new System.Drawing.Size(56, 16);
             this.label21.Text = "Откуда";
             // 
             // label31
             // 
             this.label31.Font = new System.Drawing.Font("Tahoma", 9F, System.Drawing.FontStyle.Bold);
-            this.label31.Location = new System.Drawing.Point(3, 175);
+            this.label31.Location = new System.Drawing.Point(3, 178);
             this.label31.Name = "label31";
-            this.label31.Size = new System.Drawing.Size(56, 20);
+            this.label31.Size = new System.Drawing.Size(56, 16);
             this.label31.Text = "Куда";
             // 
             // label11
             // 
             this.label11.Font = new System.Drawing.Font("Tahoma", 9F, System.Drawing.FontStyle.Bold);
-            this.label11.Location = new System.Drawing.Point(3, 3);
+            this.label11.Location = new System.Drawing.Point(3, 6);
             this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(100, 20);
+            this.label11.Size = new System.Drawing.Size(68, 16);
             this.label11.Text = "Операция";
             // 
             // listBox3
@@ -148,9 +148,9 @@
             // 
             // label12
             // 
-            this.label12.Location = new System.Drawing.Point(77, 3);
+            this.label12.Location = new System.Drawing.Point(77, 6);
             this.label12.Name = "label12";
-            this.label12.Size = new System.Drawing.Size(157, 20);
+            this.label12.Size = new System.Drawing.Size(157, 16);
             this.label12.Text = "label12";
             // 
             // FromToForm

@@ -25,13 +25,22 @@ namespace BarCodeScanner
             try
             {
                 if (MainForm.PingServer(Config.serverIp))
-                    listBox1.Items.Add("Есть связь с сервером " + Config.serverIp);
+                    listBox1.Items.Add("Сервер " + Config.serverIp + " пингуется");
                 else
-                    listBox1.Items.Add("Нет связи с сервером " + Config.serverIp);
+                    listBox1.Items.Add("Сервер " + Config.serverIp + " не пингуется");
             }
             catch
             {
-                listBox1.Items.Add("Отсутствует связь с сервером " + Config.serverIp);
+                listBox1.Items.Add("Ошибка пинга сервера " + Config.serverIp);
+            }
+
+            try
+            {
+                listBox1.Items.Add(Test1C());
+            }
+            catch
+            {
+                listBox1.Items.Add("1С не отвечает на запросы");
             }
 
             if ((SystemState.PowerBatteryState & BatteryState.Charging) != BatteryState.Charging)
@@ -150,7 +159,40 @@ namespace BarCodeScanner
             {
                 button5_Click(this, e);
             }
+            if (e.KeyCode.GetHashCode() == 190)
+            {
+                button6_Click(this, e);
+            }
+            if (e.KeyCode == System.Windows.Forms.Keys.D0)
+            {
+                button7_Click(this, e);
+            }
 
+        }
+
+        private void button6_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                MainForm.SetTime(MainForm.GetTime());
+                MessageBox.Show("Время с сервера получено: " + DateTime.Now.ToString());
+            }
+            catch
+            {
+                MessageBox.Show("Не удалось получить всемя с сервера");
+            }
+        }
+
+        private string Test1C()
+        {
+            if (MainForm.TestConnect1C())
+                return "1С отвечает на запросы";
+            else return "1С не отвечает";
+        }
+
+        private void button7_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show(Test1C());
         }
 
     }
