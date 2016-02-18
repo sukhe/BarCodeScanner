@@ -42,7 +42,7 @@ namespace BarCodeScanner
             {
                 if (pid==x.PID)
                 {
-                    MainForm.xcodetable.Rows.Add(new object[] { x.ScanCode, MainForm.ConvertToDDMMYY(x.Data), x.Fio, x.DData, x.DFio, x.Data });
+                    MainForm.xcodetable.Rows.Add(new object[] { x.ScanCode, MainForm.ConvertToDDMMYY(x.Data), x.FIO, x.DData, x.DFIO, x.Data });
                     if (x.DData == "") i++;
                 }
             }
@@ -155,7 +155,7 @@ namespace BarCodeScanner
                     }
 
                     x.DData = MainForm.ConvertToFullDataTime(System.DateTime.Now.ToString());
-                    x.DFio = Config.userName;
+                    x.DFIO = Config.userName;
                     //x.Fio = System.DateTime.Now.ToShortTimeString();
 
                     if (MainForm.xcodelistform != null && MainForm.xcodelistform.Visible)

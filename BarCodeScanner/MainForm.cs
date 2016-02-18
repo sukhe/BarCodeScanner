@@ -1016,9 +1016,9 @@ namespace BarCodeScanner
                             XCode x = new XCode();
 
                             x.Data = ConvertToFullDataTime(System.DateTime.Now.ToString());
-                            x.Fio = Config.userName;
+                            x.FIO = Config.userName;
                             x.DData = "";
-                            x.DFio = "";
+                            x.DFIO = "";
                             x.PID = p.PID;
                             x.ScanCode = barcod;
                             x.ScanFrom = Config.transferFromLid;
@@ -1071,10 +1071,12 @@ namespace BarCodeScanner
         /// </summary>
         public void BarCodeProcessing(string code)
         {
-            string barcod = code.Substring(0, 15);
+            string barcod = "";
             switch (scanmode)
             {
                 case (ScanMode.Doc):
+                    if (code.Length > 15) barcod = code.Substring(0, 15);
+                    else barcod = code;
                     string docnum = barcod.Replace(" ", "_") + "_" + Config.scannerNumber;
                     //                    if (existDoc(CurrentPath + @"doc\" + barcod.Replace(" ", "_") + "_" + Config.scannerNumber + ".xml"))
                     if (doclist.Contains(CurrentPath + @"doc\" + docnum + ".xml"))
@@ -1103,13 +1105,18 @@ namespace BarCodeScanner
                     }
                     break;
                 case (ScanMode.BarCod):
+                    if (code.Length > 15)
+                        barcod = code.Substring(0, 15);
+                    else barcod = code;
                     if (Config.transferFromLid == "" || Config.transferToLid == "")
                     {
                         Attention();
                         LogShow("[MF.BarCodeProcessing] Не выбрано откуда/куда грузится товар. Штрихкод не добавлен");
                     }
                     else
+                    {
                         ScanBarCode(barcod);
+                    }
                     break;
                 case (ScanMode.Nothing):
                     MessageBox.Show(code);

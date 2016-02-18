@@ -1,70 +1,54 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<xs:schema id="CargoDoc" xmlns="" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata" xmlns:msprop="urn:schemas-microsoft-com:xml-msprop">
-  <xs:annotation>
-    <xs:appinfo source="urn:schemas-microsoft-com:xml-msdatasource">
-      <DataSource DefaultConnectionIndex="0" FunctionsComponentName="QueriesTableAdapter" Modifier="AutoLayout, AnsiClass, Class, Public" SchemaSerializationMode="IncludeSchema" xmlns="urn:schemas-microsoft-com:xml-msdatasource">
-        <Connections />
-        <Tables />
-        <Sources />
-      </DataSource>
-    </xs:appinfo>
-  </xs:annotation>
-  <xs:element name="CargoDoc" msprop:Generator_UserTableName="CargoDoc" msprop:Generator_RowDeletedName="CargoDocRowDeleted" msprop:Generator_TableClassName="CargoDocDataTable" msprop:Generator_RowChangedName="CargoDocRowChanged" msprop:Generator_RowClassName="CargoDocRow" msprop:Generator_RowChangingName="CargoDocRowChanging" msprop:Generator_RowEvArgName="CargoDocRowChangeEvent" msprop:Generator_RowEvHandlerName="CargoDocRowChangeEventHandler" msprop:Generator_TablePropName="CargoDoc" msprop:Generator_TableVarName="tableCargoDoc" msprop:Generator_RowDeletingName="CargoDocRowDeleting">
+<xs:schema id="NewDataSet" xmlns="" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+  <xs:element name="CargoDoc">
     <xs:complexType>
       <xs:sequence>
-        <xs:element name="Error" msprop:Generator_UserColumnName="Error" msprop:Generator_ColumnPropNameInRow="Error" msprop:Generator_ColumnVarNameInTable="columnError" msprop:Generator_ColumnPropNameInTable="ErrorColumn" type="xs:string" minOccurs="0" />
-        <xs:element name="Data" msprop:Generator_UserColumnName="Data" msprop:Generator_ColumnPropNameInRow="Data" msprop:Generator_ColumnVarNameInTable="columnData" msprop:Generator_ColumnPropNameInTable="DataColumn" type="xs:string" minOccurs="0" />
-        <xs:element name="UUID" msprop:Generator_UserColumnName="UUID" msprop:Generator_ColumnPropNameInRow="UUID" msprop:Generator_ColumnVarNameInTable="columnUUID" msprop:Generator_ColumnPropNameInTable="UUIDColumn" type="xs:string" minOccurs="0" />
-        <xs:element name="Number" msprop:Generator_UserColumnName="Number" msprop:Generator_ColumnPropNameInRow="Number" msprop:Generator_ColumnVarNameInTable="columnNumber" msprop:Generator_ColumnPropNameInTable="NumberColumn" type="xs:string" minOccurs="0" />
-        <xs:element name="Partner" msprop:Generator_UserColumnName="Partner" msprop:Generator_ColumnPropNameInRow="Partner" msprop:Generator_ColumnVarNameInTable="columnPartner" msprop:Generator_ColumnPropNameInTable="PartnerColumn" type="xs:string" minOccurs="0" />
-        <xs:element name="Quantity" msprop:Generator_UserColumnName="Quantity" msprop:Generator_ColumnPropNameInRow="Quantity" msprop:Generator_ColumnVarNameInTable="columnQuantity" msprop:Generator_ColumnPropNameInTable="QuantityColumn" type="xs:string" minOccurs="0" />
-        <xs:element name="ScannedBar" msprop:Generator_UserColumnName="ScannedBar" msprop:Generator_ColumnPropNameInRow="ScannedBar" msprop:Generator_ColumnVarNameInTable="columnScannedBar" msprop:Generator_ColumnPropNameInTable="ScannedBarColumn" type="xs:string" minOccurs="0" />
-        <xs:element name="ScannerID" msprop:Generator_UserColumnName="ScannerID" msprop:Generator_ColumnPropNameInRow="ScannerID" msprop:Generator_ColumnVarNameInTable="columnScannerID" msprop:Generator_ColumnPropNameInTable="ScannerIDColumn" type="xs:string" minOccurs="0" />
-        <xs:element name="TotalProducts" msprop:Generator_UserTableName="TotalProducts" msprop:Generator_RowDeletedName="TotalProductsRowDeleted" msprop:Generator_TableClassName="TotalProductsDataTable" msprop:Generator_RowChangedName="TotalProductsRowChanged" msprop:Generator_RowClassName="TotalProductsRow" msprop:Generator_RowChangingName="TotalProductsRowChanging" msprop:Generator_RowEvArgName="TotalProductsRowChangeEvent" msprop:Generator_RowEvHandlerName="TotalProductsRowChangeEventHandler" msprop:Generator_TablePropName="TotalProducts" msprop:Generator_TableVarName="tableTotalProducts" msprop:Generator_RowDeletingName="TotalProductsRowDeleting" minOccurs="0" maxOccurs="unbounded">
+        <xs:element name="Error" type="xs:string" minOccurs="0" />
+        <xs:element name="Data" type="xs:string" minOccurs="0" />
+        <xs:element name="UUID" type="xs:string" minOccurs="0" />
+        <xs:element name="Number" type="xs:string" minOccurs="0" />
+        <xs:element name="Partner" type="xs:string" minOccurs="0" />
+        <xs:element name="Quantity" type="xs:string" minOccurs="0" />
+        <xs:element name="ScannedBar" type="xs:string" minOccurs="0" />
+        <xs:element name="ScannerID" type="xs:string" minOccurs="0" />
+        <xs:element name="TotalProducts" minOccurs="0" maxOccurs="unbounded">
           <xs:complexType>
             <xs:sequence>
-              <xs:element name="Product" msprop:Generator_UserTableName="Product" msprop:Generator_RowDeletedName="ProductRowDeleted" msprop:Generator_TableClassName="ProductDataTable" msprop:Generator_RowChangedName="ProductRowChanged" msprop:Generator_RowClassName="ProductRow" msprop:Generator_RowChangingName="ProductRowChanging" msprop:Generator_RowEvArgName="ProductRowChangeEvent" msprop:Generator_RowEvHandlerName="ProductRowChangeEventHandler" msprop:Generator_TablePropName="Product" msprop:Generator_TableVarName="tableProduct" msprop:Generator_RowDeletingName="ProductRowDeleting" minOccurs="0" maxOccurs="unbounded">
+              <xs:element name="Product" minOccurs="0" maxOccurs="unbounded">
                 <xs:complexType>
                   <xs:sequence>
-                    <xs:element name="PID" msprop:Generator_UserColumnName="PID" msprop:Generator_ColumnPropNameInRow="PID" msprop:Generator_ColumnVarNameInTable="columnPID" msprop:Generator_ColumnPropNameInTable="PIDColumn" type="xs:string" minOccurs="0" />
-                    <xs:element name="PName" msprop:Generator_UserColumnName="PName" msprop:Generator_ColumnPropNameInRow="PName" msprop:Generator_ColumnVarNameInTable="columnPName" msprop:Generator_ColumnPropNameInTable="PNameColumn" type="xs:string" minOccurs="0" />
-                    <xs:element name="Quantity" msprop:Generator_UserColumnName="Quantity" msprop:Generator_ColumnPropNameInRow="Quantity" msprop:Generator_ColumnVarNameInTable="columnQuantity" msprop:Generator_ColumnPropNameInTable="QuantityColumn" type="xs:string" minOccurs="0" />
-                    <xs:element name="ScannedBar" msprop:Generator_UserColumnName="ScannedBar" msprop:Generator_ColumnPropNameInRow="ScannedBar" msprop:Generator_ColumnVarNameInTable="columnScannedBar" msprop:Generator_ColumnPropNameInTable="ScannedBarColumn" type="xs:string" minOccurs="0" />
+                    <xs:element name="PID" type="xs:string" minOccurs="0" />
+                    <xs:element name="PName" type="xs:string" minOccurs="0" />
+                    <xs:element name="Quantity" type="xs:string" minOccurs="0" />
+                    <xs:element name="ScannedBar" type="xs:string" minOccurs="0" />
                   </xs:sequence>
-                  <xs:attribute name="TotalProducts_Id" msprop:Generator_UserColumnName="TotalProducts_Id" msprop:Generator_ColumnPropNameInRow="TotalProducts_Id" msprop:Generator_ColumnVarNameInTable="columnTotalProducts_Id" msprop:Generator_ColumnPropNameInTable="TotalProducts_IdColumn" type="xs:int" use="prohibited" />
                 </xs:complexType>
               </xs:element>
             </xs:sequence>
-            <xs:attribute name="TotalProducts_Id" msdata:AutoIncrement="true" msprop:Generator_UserColumnName="TotalProducts_Id" msprop:Generator_ColumnPropNameInRow="TotalProducts_Id" msprop:Generator_ColumnVarNameInTable="columnTotalProducts_Id" msprop:Generator_ColumnPropNameInTable="TotalProducts_IdColumn" type="xs:int" msdata:AllowDBNull="false" use="prohibited" />
-            <xs:attribute name="CargoDoc_Id" msprop:Generator_UserColumnName="CargoDoc_Id" msprop:Generator_ColumnPropNameInRow="CargoDoc_Id" msprop:Generator_ColumnVarNameInTable="columnCargoDoc_Id" msprop:Generator_ColumnPropNameInTable="CargoDoc_IdColumn" type="xs:int" use="prohibited" />
           </xs:complexType>
         </xs:element>
-        <xs:element name="XCodes" msprop:Generator_UserTableName="XCodes" msprop:Generator_RowDeletedName="XCodesRowDeleted" msprop:Generator_TableClassName="XCodesDataTable" msprop:Generator_RowChangedName="XCodesRowChanged" msprop:Generator_RowClassName="XCodesRow" msprop:Generator_RowChangingName="XCodesRowChanging" msprop:Generator_RowEvArgName="XCodesRowChangeEvent" msprop:Generator_RowEvHandlerName="XCodesRowChangeEventHandler" msprop:Generator_TablePropName="XCodes" msprop:Generator_TableVarName="tableXCodes" msprop:Generator_RowDeletingName="XCodesRowDeleting" minOccurs="0" maxOccurs="unbounded">
+        <xs:element name="XCodes" minOccurs="0" maxOccurs="unbounded">
           <xs:complexType>
             <xs:sequence>
-              <xs:element name="XCode" msprop:Generator_UserTableName="XCode" msprop:Generator_RowDeletedName="XCodeRowDeleted" msprop:Generator_TableClassName="XCodeDataTable" msprop:Generator_RowChangedName="XCodeRowChanged" msprop:Generator_RowClassName="XCodeRow" msprop:Generator_RowChangingName="XCodeRowChanging" msprop:Generator_RowEvArgName="XCodeRowChangeEvent" msprop:Generator_RowEvHandlerName="XCodeRowChangeEventHandler" msprop:Generator_TablePropName="XCode" msprop:Generator_TableVarName="tableXCode" msprop:Generator_RowDeletingName="XCodeRowDeleting" minOccurs="0" maxOccurs="unbounded">
+              <xs:element name="XCode" minOccurs="0" maxOccurs="unbounded">
                 <xs:complexType>
                   <xs:sequence>
-                    <xs:element name="Data" msprop:Generator_UserColumnName="Data" msprop:Generator_ColumnPropNameInRow="Data" msprop:Generator_ColumnVarNameInTable="columnData" msprop:Generator_ColumnPropNameInTable="DataColumn" type="xs:string" minOccurs="0" />
-                    <xs:element name="Fio" msprop:Generator_UserColumnName="Fio" msprop:Generator_ColumnPropNameInRow="Fio" msprop:Generator_ColumnVarNameInTable="columnFio" msprop:Generator_ColumnPropNameInTable="FioColumn" type="xs:string" minOccurs="0" />
-                    <xs:element name="DData" msprop:Generator_UserColumnName="DData" msprop:Generator_ColumnPropNameInRow="DData" msprop:Generator_ColumnVarNameInTable="columnDData" msprop:Generator_ColumnPropNameInTable="DDataColumn" type="xs:string" minOccurs="0" />
-                    <xs:element name="DFio" msprop:Generator_UserColumnName="DFio" msprop:Generator_ColumnPropNameInRow="DFio" msprop:Generator_ColumnVarNameInTable="columnDFio" msprop:Generator_ColumnPropNameInTable="DFioColumn" type="xs:string" minOccurs="0" />
-                    <xs:element name="PID" msprop:Generator_UserColumnName="PID" msprop:Generator_ColumnPropNameInRow="PID" msprop:Generator_ColumnVarNameInTable="columnPID" msprop:Generator_ColumnPropNameInTable="PIDColumn" type="xs:string" minOccurs="0" />
-                    <xs:element name="ScanCode" msprop:Generator_UserColumnName="ScanCode" msprop:Generator_ColumnPropNameInRow="ScanCode" msprop:Generator_ColumnVarNameInTable="columnScanCode" msprop:Generator_ColumnPropNameInTable="ScanCodeColumn" type="xs:string" minOccurs="0" />
-                    <xs:element name="ScanFrom" msprop:Generator_UserColumnName="ScanFrom" msprop:Generator_ColumnPropNameInRow="ScanFrom" msprop:Generator_ColumnVarNameInTable="columnScanFrom" msprop:Generator_ColumnPropNameInTable="ScanFromColumn" type="xs:string" minOccurs="0" />
-                    <xs:element name="ScanTo" msprop:Generator_UserColumnName="ScanTo" msprop:Generator_ColumnPropNameInRow="ScanTo" msprop:Generator_ColumnVarNameInTable="columnScanTo" msprop:Generator_ColumnPropNameInTable="ScanToColumn" type="xs:string" minOccurs="0" />
-                    <xs:element name="ScannerID" msprop:Generator_UserColumnName="ScannerID" msprop:Generator_ColumnPropNameInRow="ScannerID" msprop:Generator_ColumnVarNameInTable="columnScannerID" msprop:Generator_ColumnPropNameInTable="ScannerIDColumn" type="xs:string" minOccurs="0" />
+                    <xs:element name="Data" type="xs:string" minOccurs="0" />
+                    <xs:element name="FIO" type="xs:string" minOccurs="0" />
+                    <xs:element name="DData" type="xs:string" minOccurs="0" />
+                    <xs:element name="DFIO" type="xs:string" minOccurs="0" />
+                    <xs:element name="PID" type="xs:string" minOccurs="0" />
+                    <xs:element name="ScanCode" type="xs:string" minOccurs="0" />
+                    <xs:element name="ScanFrom" type="xs:string" minOccurs="0" />
+                    <xs:element name="ScanTo" type="xs:string" minOccurs="0" />
+                    <xs:element name="ScannerID" type="xs:string" minOccurs="0" />
                   </xs:sequence>
-                  <xs:attribute name="XCodes_Id" msprop:Generator_UserColumnName="XCodes_Id" msprop:Generator_ColumnPropNameInRow="XCodes_Id" msprop:Generator_ColumnVarNameInTable="columnXCodes_Id" msprop:Generator_ColumnPropNameInTable="XCodes_IdColumn" type="xs:int" use="prohibited" />
                 </xs:complexType>
               </xs:element>
             </xs:sequence>
-            <xs:attribute name="XCodes_Id" msdata:AutoIncrement="true" msprop:Generator_UserColumnName="XCodes_Id" msprop:Generator_ColumnPropNameInRow="XCodes_Id" msprop:Generator_ColumnVarNameInTable="columnXCodes_Id" msprop:Generator_ColumnPropNameInTable="XCodes_IdColumn" type="xs:int" msdata:AllowDBNull="false" use="prohibited" />
-            <xs:attribute name="CargoDoc_Id" msprop:Generator_UserColumnName="CargoDoc_Id" msprop:Generator_ColumnPropNameInRow="CargoDoc_Id" msprop:Generator_ColumnVarNameInTable="columnCargoDoc_Id" msprop:Generator_ColumnPropNameInTable="CargoDoc_IdColumn" type="xs:int" use="prohibited" />
           </xs:complexType>
         </xs:element>
       </xs:sequence>
-      <xs:attribute name="CargoDoc_Id" msdata:AutoIncrement="true" msprop:Generator_UserColumnName="CargoDoc_Id" msprop:Generator_ColumnPropNameInRow="CargoDoc_Id" msprop:Generator_ColumnVarNameInTable="columnCargoDoc_Id" msprop:Generator_ColumnPropNameInTable="CargoDoc_IdColumn" type="xs:int" msdata:AllowDBNull="false" use="prohibited" />
     </xs:complexType>
   </xs:element>
 </xs:schema>
