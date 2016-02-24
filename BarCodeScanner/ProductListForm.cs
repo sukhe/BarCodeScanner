@@ -9,11 +9,12 @@ using System.Windows.Forms;
 
 namespace BarCodeScanner
 {
+
     public partial class ProductListForm : Form
     {
 
         public static int currentproductrow;
-        private int zizin;
+//        private int zizin;
 
         public ProductListForm()
         {
@@ -26,7 +27,10 @@ namespace BarCodeScanner
             partialColor = Color.FromArgb(255, 127, 127);
             fullColor = Color.FromArgb(127, 255, 127); */
 
-            zizin = 0;
+//            zizin = 0;
+
+/*            MainForm.re
+                addBarCode = new AddScan(BarCodeProcessing);*/
 
             dataGrid1.Focus();
         }
@@ -109,8 +113,8 @@ namespace BarCodeScanner
             int i;
             int q = 0;
             int b = 0;
-            MainForm.producttable.Clear();
-//            MainForm.producttable.Rows.Clear();
+//            MainForm.producttable.Clear();
+            MainForm.producttable.Rows.Clear();
             foreach (Product p in MainForm.cargodocs[MainForm.currentdocrow].TotalProducts)
             {
                 pid = p.PID;
@@ -133,6 +137,7 @@ namespace BarCodeScanner
             if (b == 0) label2.BackColor = Color.White;
             else if (b < q) label2.BackColor = MainForm.partialColor;
             else label2.BackColor = MainForm.fullColor;
+            label2.Refresh();
         }
 
         // разукрашивание ячеек в нужный цвет
@@ -211,11 +216,11 @@ namespace BarCodeScanner
             {
                 button4_Click(this, e);
             }
-            if ((e.KeyCode == System.Windows.Forms.Keys.D1))
+/*            if ((e.KeyCode == System.Windows.Forms.Keys.D1))
             {
                 //button1_Click(this, e);
                 MainForm.ScanBarCode(MainForm.producttable.Rows[currentproductrow].Field<string>(0)+"01160000"+zizi(++zizin));
-            }
+            }*/
 /*            if ((e.KeyCode == System.Windows.Forms.Keys.D2))
             {
                 Calib.SystemLibNet.Api.SysPlayBuzzer(Calib.SystemLibNet.Def.B_ALARM, Calib.SystemLibNet.Def.BUZ_DEFAULT, Calib.SystemLibNet.Def.BUZ_DEFAULT);
@@ -237,13 +242,13 @@ namespace BarCodeScanner
             }*/
         }
 
-        private string zizi(int i)
+/*        private string zizi(int i)
         {
             string s = i.ToString();
             if (s.Length == 1)
                 return "0" + s;
             else return s;
-        }
+        }*/
 
         private void button4_Click(object sender, EventArgs e)
         {
@@ -258,7 +263,7 @@ namespace BarCodeScanner
 
         private void button1_Click(object sender, EventArgs e)
         {
-            MessageBox.Show("Удаление штрих-кода ещё не готово");
+            MessageBox.Show("Удаление продукции не предусмотрено");
         }
 
         private void dataGrid1_Click(object sender, EventArgs e)
@@ -268,6 +273,7 @@ namespace BarCodeScanner
             MainForm.xcodelistform = new XCodeListForm();
             MainForm.xcodelistform.Show();
         }
+
 
     }
 }

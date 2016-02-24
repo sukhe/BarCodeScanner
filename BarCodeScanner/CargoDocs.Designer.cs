@@ -25,9 +25,11 @@ namespace BarCodeScanner {
         
         private string errorField;
         
+        private string messageField;
+        
         private string dataField;
         
-        private string uUIDField;
+        private string docIDField;
         
         private string numberField;
         
@@ -56,6 +58,16 @@ namespace BarCodeScanner {
         }
         
         [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string Message {
+            get {
+                return this.messageField;
+            }
+            set {
+                this.messageField = value;
+            }
+        }
+        
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
         public string Data {
             get {
                 return this.dataField;
@@ -66,12 +78,12 @@ namespace BarCodeScanner {
         }
         
         [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
-        public string UUID {
+        public string DocID {
             get {
-                return this.uUIDField;
+                return this.docIDField;
             }
             set {
-                this.uUIDField = value;
+                this.docIDField = value;
             }
         }
         

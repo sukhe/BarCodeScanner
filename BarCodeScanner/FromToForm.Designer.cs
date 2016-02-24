@@ -95,7 +95,6 @@
             this.label22.Location = new System.Drawing.Point(65, 87);
             this.label22.Name = "label22";
             this.label22.Size = new System.Drawing.Size(169, 16);
-            this.label22.Text = "label22";
             // 
             // listBox2
             // 
@@ -111,7 +110,6 @@
             this.label32.Location = new System.Drawing.Point(65, 178);
             this.label32.Name = "label32";
             this.label32.Size = new System.Drawing.Size(169, 16);
-            this.label32.Text = "label32";
             // 
             // label21
             // 
@@ -151,7 +149,6 @@
             this.label12.Location = new System.Drawing.Point(77, 6);
             this.label12.Name = "label12";
             this.label12.Size = new System.Drawing.Size(157, 16);
-            this.label12.Text = "label12";
             // 
             // FromToForm
             // 

@@ -16,9 +16,9 @@ namespace BarCodeScanner
             InitializeComponent();
 
             label11.Text = MainForm.xcodetable.Rows[XCodeListForm.currentxcoderow].Field<string>(0);
-            label12.Text = MainForm.xcodetable.Rows[XCodeListForm.currentxcoderow].Field<string>(1);
+            label12.Text = MainForm.ConvertToDDMMYYhhmmss(MainForm.xcodetable.Rows[XCodeListForm.currentxcoderow].Field<string>(5));
             label13.Text = MainForm.xcodetable.Rows[XCodeListForm.currentxcoderow].Field<string>(2);
-            label14.Text = MainForm.ConvertToDDMMYY(MainForm.xcodetable.Rows[XCodeListForm.currentxcoderow].Field<string>(3));
+            label14.Text = MainForm.xcodetable.Rows[XCodeListForm.currentxcoderow].Field<string>(3);
             label15.Text = MainForm.xcodetable.Rows[XCodeListForm.currentxcoderow].Field<string>(4);
 
             if (label14.Text == "")
@@ -40,7 +40,7 @@ namespace BarCodeScanner
             label17.Text = MainForm.producttable.Rows[ProductListForm.currentproductrow].Field<string>(1);
             
             label18.Text = MainForm.cargodocs[MainForm.currentdocrow].Number.Trim();
-            label19.Text = MainForm.ConvertToDDMMYY(MainForm.cargodocs[MainForm.currentdocrow].Data.ToString());
+            label19.Text = MainForm.ConvertToDDMMYYhhmmss(MainForm.cargodocs[MainForm.currentdocrow].Data.ToString());
             label20.Text = MainForm.cargodocs[MainForm.currentdocrow].Partner.Trim();
         }
 

@@ -30,6 +30,11 @@ namespace BarCodeScanner
         public delegate void AddScan(string s);                         // 
         public AddScan addBarCode;
 
+/*        public delegate void RefreshProductTable();
+        public RefreshProductTable refreshProduct;
+
+        public event EventHandler ScanXCode; */
+
         public static ScanMode scanmode;                                // режим сканирования штрихкодов - документ, продукция и т.д.
 
         public static DataTable doctable;
@@ -66,6 +71,7 @@ namespace BarCodeScanner
                     Close();
                 }
             }*/
+
 
             if (TestFilesAndDirs())
             {
@@ -157,6 +163,7 @@ namespace BarCodeScanner
 
             if (!File.Exists(CurrentPath + "settings.xml"))
             {
+                WakeUp1C();
                 if (!DownloadSettings())
                 {
                     LogShow("[MF.TestFilesAndDirs] Файл настроек не найден и не загружен!");
@@ -408,11 +415,33 @@ namespace BarCodeScanner
             else
             {
                 //                GetTime();
+                WakeUp1C();
                 string n = cargodocs[currentdocrow].Number.Trim();
                 string t = ConvertToYYYYMMDD(cargodocs[currentdocrow].Data);
                 string x = n + "_" + t + "_" + Config.scannerNumber;
                 string z = "";
                 int xall = cargodocs[currentdocrow].XCodes.Length;
+
+//
+                string pid;
+                int i;
+//                int q = 0;
+                int totalbydoc = 0; // неудалённых по всему документу
+                foreach (Product p in cargodocs[currentdocrow].TotalProducts)
+                {
+                    pid = p.PID;
+                    i = 0;
+//                    q += Convert.ToInt16(p.Quantity);
+                    foreach (XCode xx in cargodocs[currentdocrow].XCodes)
+                    {
+                        if (pid == xx.PID && xx.DData == "") i++;
+                    }
+                    totalbydoc += i;
+                    p.ScannedBar = i.ToString();
+                }
+//                cargodocs[currentdocrow].Quantity = q.ToString();
+                cargodocs[currentdocrow].ScannedBar = totalbydoc.ToString();
+
                 string xgood = cargodocs[currentdocrow].ScannedBar;
                 if (TestConnect1C())
                 { 
@@ -487,6 +516,26 @@ namespace BarCodeScanner
                 Log("[MF.GetTime] " + ex);
                 return "";
             }
+        }
+
+        /// <summary>
+        /// Разбудить 1С
+        /// </summary>
+        /// <returns>true - проснулась, false - нет</returns>
+        public static Boolean WakeUp1C()
+        {
+            Boolean result = false;
+            int repeat = 3;
+            while (repeat > 0 && result == false)
+            {
+                result = TestConnect1C();
+                if (!result)
+                {
+                    System.Threading.Thread.Sleep(1000);
+                    repeat++;
+                }
+            }
+            return result;
         }
 
         /// <summary>
@@ -907,9 +956,9 @@ namespace BarCodeScanner
             }
 
             // отработка нажатия 000 - ручной ввод номера документа
-//            if (e.KeyCode == System.Windows.Forms.Keys.D0)
-            if (e.KeyCode.GetHashCode() == 228)
-                if (manualDocNumEnter < 4)
+            if (e.KeyCode == System.Windows.Forms.Keys.D0)
+//            if (e.KeyCode.GetHashCode() == 48)
+                if (manualDocNumEnter < 3)
                 {
                     manualDocNumEnter++;
                     serviceKeySequence = 0;
@@ -1035,14 +1084,18 @@ namespace BarCodeScanner
                             {
                                 MainForm.xcodetable.AcceptChanges();
                                 MainForm.xcodelistform.ReloadXCodeTable();
-                                MainForm.xcodetable.AcceptChanges();
+                                MainForm.xcodelistform.Refresh();
+//                                MainForm.xcodelistform.Refresh();
+//                                MainForm.xcodetable.AcceptChanges();
                             }
                             else
                             {
                                 MainForm.producttable.AcceptChanges();
                                 MainForm.productlistform.ReloadProductTable();
-                                MainForm.producttable.AcceptChanges();
+                                MainForm.productlistform.Refresh();
+//                                MainForm.producttable.AcceptChanges();
                             }
+                            Application.DoEvents();
                             i++;
                             break;
                         }
@@ -1075,6 +1128,7 @@ namespace BarCodeScanner
             switch (scanmode)
             {
                 case (ScanMode.Doc):
+                    WakeUp1C();
                     if (code.Length > 15) barcod = code.Substring(0, 15);
                     else barcod = code;
                     string docnum = barcod.Replace(" ", "_") + "_" + Config.scannerNumber;
@@ -1264,6 +1318,25 @@ namespace BarCodeScanner
             try
             {
                 ss = "20" + s.Substring(6, 2) + "-" + s.Substring(3, 2) + "-" + s.Substring(0, 2) + "T" + s.Substring(9, 8) + @"+02:00";
+            }
+            catch
+            {
+                ss = "";
+            }
+            return ss;
+        }
+
+        /// <summary>
+        /// Преобразование отметки времени из формата "2015-11-18T14:50:17+02:00" в формат "18.11.15 14:50:17"
+        /// </summary>
+        /// <returns>Строка с датой</returns>
+        public static string ConvertToDDMMYYhhmmss(string s)
+        {
+            string ss;
+            try
+            {
+                ss = s.Substring(8, 2) + '.' + s.Substring(5, 2) + '.' + s.Substring(2, 2) + ' ' +
+                    s.Substring(11, 2) + ':' + s.Substring(14, 2) + ':' + s.Substring(17, 2);
             }
             catch
             {

@@ -21,8 +21,9 @@ namespace BarCodeScanner
 
         private void DocNumEnter_KeyDown(object sender, KeyEventArgs e)
         {
-            if (( (e.KeyCode == System.Windows.Forms.Keys.Down) ||
-                  (e.KeyCode == System.Windows.Forms.Keys.Right) ||
+            if (( 
+//                (e.KeyCode == System.Windows.Forms.Keys.Down) ||
+//                  (e.KeyCode == System.Windows.Forms.Keys.Right) ||
                   (e.KeyCode == System.Windows.Forms.Keys.Enter) ||
                   (e.KeyCode == System.Windows.Forms.Keys.F1)
                 ) && textBox1.Focused )
@@ -30,8 +31,10 @@ namespace BarCodeScanner
                 number = textBox1.Text;
                 dateTimePicker1.Focus();
             }
-            if (((e.KeyCode == System.Windows.Forms.Keys.Down) ||
-                  (e.KeyCode == System.Windows.Forms.Keys.Right) ||
+            if ((
+                
+//                (e.KeyCode == System.Windows.Forms.Keys.Down) ||
+//                  (e.KeyCode == System.Windows.Forms.Keys.Right) ||
                   (e.KeyCode == System.Windows.Forms.Keys.Enter) ||
                   (e.KeyCode == System.Windows.Forms.Keys.F1)
                 ) && dateTimePicker1.Focused)
@@ -48,7 +51,8 @@ namespace BarCodeScanner
 
         private void dateTimePicker1_GotFocus(object sender, EventArgs e)
         {
-            dateTimePicker1.Show();
+            dateTimePicker1.Visible = true;
+            dateTimePicker1.Update();
         }
 
         private void button2_Click(object sender, EventArgs e)
