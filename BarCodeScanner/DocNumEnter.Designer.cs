@@ -94,7 +94,10 @@
             // dateTimePicker1
             // 
             this.dateTimePicker1.Location = new System.Drawing.Point(46, 151);
+            this.dateTimePicker1.MaxDate = new System.DateTime(2100, 12, 31, 0, 0, 0, 0);
+            this.dateTimePicker1.MinDate = new System.DateTime(2016, 2, 1, 0, 0, 0, 0);
             this.dateTimePicker1.Name = "dateTimePicker1";
+            this.dateTimePicker1.ShowUpDown = true;
             this.dateTimePicker1.Size = new System.Drawing.Size(138, 22);
             this.dateTimePicker1.TabIndex = 6;
             this.dateTimePicker1.GotFocus += new System.EventHandler(this.dateTimePicker1_GotFocus);

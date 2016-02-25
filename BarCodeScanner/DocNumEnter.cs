@@ -65,5 +65,6 @@ namespace BarCodeScanner
             if (textBox1.Focused) dateTimePicker1.Focus();
             if (dateTimePicker1.Focused) Close();
         }
+
     }
 }

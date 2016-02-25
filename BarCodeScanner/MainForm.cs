@@ -946,7 +946,6 @@ namespace BarCodeScanner
                 serviceKeySequence = 0;
                 ServiceForm serv = new ServiceForm();
                 serv.ShowDialog();
-                serv.Close();
                 LoadAllDataFromXml();
                 GetCustomers();
                 currentdoccol = dataGrid1.CurrentCell.ColumnNumber;
@@ -970,7 +969,6 @@ namespace BarCodeScanner
                     serviceKeySequence = 0;
                     DocNumEnter doc = new DocNumEnter();
                     doc.ShowDialog();
-                    doc.Close();
                     //BarCodeProcessing(barcod);
                     MainForm.scanmode = ScanMode.Doc;
                 }
@@ -1047,15 +1045,15 @@ namespace BarCodeScanner
                         // Если уже набрано нужное количество штрихкодов - не даём добавлять
                         if (Convert.ToInt16(p.ScannedBar) > Convert.ToInt16(p.Quantity))
                         {
-                            MainForm.LogShow("Не добавлено! Уже достаточно продукции с кодом " + bar);
                             MainForm.Attention();
+                            MainForm.LogShow("Не добавлено! Уже достаточно продукции с кодом " + bar);
                         }
                         else
                         {
                             if (Convert.ToInt16(p.ScannedBar) == Convert.ToInt16(p.Quantity))
                             {
-                                MainForm.LogShow("Достигнуто необходимое количество продукции с кодом " + bar); // предупреждаем
                                 MainForm.Attention();                                
+                                MainForm.LogShow("Достигнуто необходимое количество продукции с кодом " + bar); // предупреждаем
                             }
 
                             MainForm.cargodocs[MainForm.currentdocrow].TotalProducts[i].ScannedBar = (Convert.ToInt16(p.ScannedBar) + 1).ToString();
@@ -1107,7 +1105,11 @@ namespace BarCodeScanner
             {
                 MainForm.LogErr("[MF.ScanBarCode]", ex);
             }
-            if (!find_product) MainForm.LogShow("В этом заказе нет продукции с кодом " + bar);
+            if (!find_product)
+            {
+                MainForm.Attention();
+                MainForm.LogShow("В этом заказе нет продукции с кодом " + bar);
+            }
         }
 
         /// <summary>
@@ -1164,7 +1166,7 @@ namespace BarCodeScanner
                     else barcod = code;
                     if (Config.transferFromLid == "" || Config.transferToLid == "")
                     {
-                        Attention();
+                        MainForm.Attention();
                         LogShow("[MF.BarCodeProcessing] Не выбрано откуда/куда грузится товар. Штрихкод не добавлен");
                     }
                     else
@@ -1310,6 +1312,7 @@ namespace BarCodeScanner
 
         /// <summary>
         /// Преобразование отметки времени из формата "27.01.16 14:27:48" в формат "2016-01-27T14:27:48+02:00"
+        /// (исходное значение часов может состоять из одной или двух цифр)
         /// </summary>
         /// <returns>Строка с датой</returns>
         public static string ConvertToFullDataTime(string s)
@@ -1317,7 +1320,7 @@ namespace BarCodeScanner
             string ss;
             try
             {
-                ss = "20" + s.Substring(6, 2) + "-" + s.Substring(3, 2) + "-" + s.Substring(0, 2) + "T" + s.Substring(9, 8) + @"+02:00";
+                ss = "20" + s.Substring(6, 2) + "-" + s.Substring(3, 2) + "-" + s.Substring(0, 2) + "T" + s.Substring(9) + @"+02:00";
             }
             catch
             {
@@ -1335,8 +1338,14 @@ namespace BarCodeScanner
             string ss;
             try
             {
-                ss = s.Substring(8, 2) + '.' + s.Substring(5, 2) + '.' + s.Substring(2, 2) + ' ' +
-                    s.Substring(11, 2) + ':' + s.Substring(14, 2) + ':' + s.Substring(17, 2);
+                if (s[12] == ':')
+                {
+                    ss = s.Substring(8, 2) + '.' + s.Substring(5, 2) + '.' + s.Substring(2, 2) + ' ' +
+                        s.Substring(11, 1) + ':' + s.Substring(13, 2) + ':' + s.Substring(16, 2);
+                } else {
+                    ss = s.Substring(8, 2) + '.' + s.Substring(5, 2) + '.' + s.Substring(2, 2) + ' ' +
+                        s.Substring(11, 2) + ':' + s.Substring(14, 2) + ':' + s.Substring(17, 2);
+                }
             }
             catch
             {

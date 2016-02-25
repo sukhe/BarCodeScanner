@@ -128,7 +128,6 @@ namespace BarCodeScanner
                 p.ScannedBar = i.ToString();
                 MainForm.producttable.Rows.Add(new object[] { p.PID, p.PName, p.Quantity, p.ScannedBar });
 
-//                MainForm.producttable.Rows.Add(new object[] { p.PID });
             }
             MainForm.producttable.AcceptChanges();
             MainForm.cargodocs[MainForm.currentdocrow].Quantity = q.ToString();
@@ -271,7 +270,7 @@ namespace BarCodeScanner
 //            currentdoccol = dataGrid1.CurrentCell.ColumnNumber;
             currentproductrow = dataGrid1.CurrentCell.RowNumber;
             MainForm.xcodelistform = new XCodeListForm();
-            MainForm.xcodelistform.Show();
+            MainForm.xcodelistform.ShowDialog();
         }
 
 
