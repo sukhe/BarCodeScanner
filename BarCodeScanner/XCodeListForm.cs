@@ -49,7 +49,7 @@ namespace BarCodeScanner
             label2.Text = MainForm.producttable.Rows[ProductListForm.currentproductrow].Field<string>(2) + "/" + i.ToString();
             if (i == 0) label2.BackColor = Color.White;
             else 
-                if (i < Convert.ToInt16(MainForm.producttable.Rows[ProductListForm.currentproductrow].Field<string>(2))) 
+                if (i != Convert.ToInt16(MainForm.producttable.Rows[ProductListForm.currentproductrow].Field<string>(2))) 
                      label2.BackColor = MainForm.partialColor;
                 else label2.BackColor = MainForm.fullColor;
             MainForm.xcodetable.AcceptChanges();
@@ -199,18 +199,19 @@ namespace BarCodeScanner
             }
             if ((e.KeyCode == System.Windows.Forms.Keys.D1))
             {
-                MainForm.ScanBarCode(MainForm.producttable.Rows[ProductListForm.currentproductrow].Field<string>(0) + "01160000" + zizi(++zizin));
+                MainForm.ScanBarCode(MainForm.producttable.Rows[ProductListForm.currentproductrow].Field<string>(0) + "01160000" + MainForm.AddZeroIfNeed(++zizin));
             }
 
         }
 
+/*        MainForm.AlignTo2Digit(int i);
         private string zizi(int i)
         {
             string s = i.ToString();
             if (s.Length == 1)
                 return "0" + s;
             else return s;
-        }
+        } */
 
         // разукрашивание ячеек в нужный цвет
         public class DataGridTextBoxColumnColored : DataGridTextBoxColumn

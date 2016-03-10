@@ -134,7 +134,7 @@ namespace BarCodeScanner
             MainForm.cargodocs[MainForm.currentdocrow].ScannedBar = b.ToString();
             label2.Text = q.ToString() + "/" + b.ToString();
             if (b == 0) label2.BackColor = Color.White;
-            else if (b < q) label2.BackColor = MainForm.partialColor;
+            else if (b != q) label2.BackColor = MainForm.partialColor;
             else label2.BackColor = MainForm.fullColor;
             label2.Refresh();
         }
@@ -188,9 +188,9 @@ namespace BarCodeScanner
             int q = Convert.ToInt16(MainForm.producttable.Rows[e.RowNum][2]);
             int b = Convert.ToInt16(MainForm.producttable.Rows[e.RowNum][3]);
 
-            if ((b < q) && (b != 0))
+            if ((b != q) && (b != 0))
                 e.BackBrush = new SolidBrush(MainForm.partialColor);
-            else if (b >= q)
+            else if (b == q)
                 e.BackBrush = new SolidBrush(MainForm.fullColor);
             else
                 e.BackBrush = new SolidBrush(Color.White);

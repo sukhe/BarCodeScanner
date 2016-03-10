@@ -56,7 +56,7 @@ namespace BarCodeScanner
         public static Color partialColor;                               // цвет фона для строк с частично заполненным документом
 
         private int serviceKeySequence;
-        private int manualDocNumEnter;
+        //private int manualDocNumEnter;
 
         public MainForm()
         {
@@ -902,43 +902,43 @@ namespace BarCodeScanner
                 MainForm.scanmode = ScanMode.BarCod;
                 dataGrid1_Click(sender, e);
                 serviceKeySequence = 0; 
-                manualDocNumEnter = 0;
+//                manualDocNumEnter = 0;
             }
             if ((e.KeyCode == System.Windows.Forms.Keys.F1))
             {
                 button1_Click(this, e);
                 serviceKeySequence = 0;
-                manualDocNumEnter = 0;
+//                manualDocNumEnter = 0;
             }
             if ((e.KeyCode == System.Windows.Forms.Keys.F2))
             {
                 panel3_Click(this, e);
                 serviceKeySequence = 0;
-                manualDocNumEnter = 0;
+//                manualDocNumEnter = 0;
             }
             if ((e.KeyCode == System.Windows.Forms.Keys.F3))
             {
                 button3_Click(this, e);
                 serviceKeySequence = 0;
-                manualDocNumEnter = 0;
+//                manualDocNumEnter = 0;
             } 
             if ((e.KeyCode == System.Windows.Forms.Keys.F4))
             {
                 button4_Click(this, e);
                 serviceKeySequence = 0;
-                manualDocNumEnter = 0;
+//                manualDocNumEnter = 0;
             }
 
             // отработка нажатия .1111. - запуск сервисной формы
             if ((e.KeyCode.GetHashCode() == 190) && (serviceKeySequence == 0))
             {
                 serviceKeySequence++;
-                manualDocNumEnter = 0;
+//                manualDocNumEnter = 0;
             }
             if ((e.KeyCode == System.Windows.Forms.Keys.D1) && (serviceKeySequence >= 1) && (serviceKeySequence <= 4))
             {
                 serviceKeySequence++;
-                manualDocNumEnter = 0;
+//                manualDocNumEnter = 0;
             }
             if ((e.KeyCode.GetHashCode() == 190) && (serviceKeySequence == 5))
             {
@@ -951,11 +951,11 @@ namespace BarCodeScanner
                 currentdoccol = dataGrid1.CurrentCell.ColumnNumber;
                 currentdocrow = dataGrid1.CurrentCell.RowNumber;
                 MainForm.scanmode = ScanMode.Doc;
-                manualDocNumEnter = 0;
+//                manualDocNumEnter = 0;
             }
 
             // отработка нажатия 000 - ручной ввод номера документа
-            if (e.KeyCode == System.Windows.Forms.Keys.D0)
+/*            if (e.KeyCode == System.Windows.Forms.Keys.D0)
 //            if (e.KeyCode.GetHashCode() == 48)
                 if (manualDocNumEnter < 3)
                 {
@@ -971,7 +971,7 @@ namespace BarCodeScanner
                     doc.ShowDialog();
                     //BarCodeProcessing(barcod);
                     MainForm.scanmode = ScanMode.Doc;
-                }
+                }*/
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -1043,14 +1043,14 @@ namespace BarCodeScanner
                         find_product = true;
 
                         // Если уже набрано нужное количество штрихкодов - не даём добавлять
-                        if (Convert.ToInt16(p.ScannedBar) > Convert.ToInt16(p.Quantity))
+                        if (Convert.ToInt16(p.ScannedBar) == Convert.ToInt16(p.Quantity))
                         {
                             MainForm.Attention();
                             MainForm.LogShow("Не добавлено! Уже достаточно продукции с кодом " + bar);
                         }
                         else
                         {
-                            if (Convert.ToInt16(p.ScannedBar) == Convert.ToInt16(p.Quantity))
+                            if (Convert.ToInt16(p.ScannedBar) == Convert.ToInt16(p.Quantity) - 1)
                             {
                                 MainForm.Attention();                                
                                 MainForm.LogShow("Достигнуто необходимое количество продукции с кодом " + bar); // предупреждаем
@@ -1431,6 +1431,14 @@ namespace BarCodeScanner
             //MessageBox.Show(DateTime.Now.ToString());
         }
 
+        public static string AddZeroIfNeed(int i)
+        {
+            string s = i.ToString();
+            if (s.Length == 1)
+                return "0" + s;
+            else return s;
+        }
+
         /// <summary>
         /// Обновляет значение времени на экране и проверяет состояние батареи
         /// </summary>
@@ -1461,7 +1469,18 @@ namespace BarCodeScanner
 
         private void button3_Click(object sender, EventArgs e)
         {
-            //
+            MainForm.scanmode = ScanMode.Nothing;
+            serviceKeySequence = 0;
+            DocNumEnter doc = new DocNumEnter();
+            doc.Owner = this;
+            this.Tag = "";
+            doc.ShowDialog();
+            MainForm.scanmode = ScanMode.Doc;
+            if (this.Tag.ToString() != "")
+            {
+                BarCodeProcessing(this.Tag.ToString());
+                this.Tag = "";
+            }
         }
 
     }

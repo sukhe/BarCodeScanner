@@ -103,13 +103,11 @@
             // 
             // button3
             // 
-            this.button3.Enabled = false;
             this.button3.Location = new System.Drawing.Point(120, 34);
             this.button3.Name = "button3";
             this.button3.Size = new System.Drawing.Size(120, 24);
             this.button3.TabIndex = 4;
-            this.button3.Text = "         Тип";
-            this.button3.Visible = false;
+            this.button3.Text = "         Ручн.№док";
             this.button3.Click += new System.EventHandler(this.button3_Click);
             // 
             // button1

@@ -36,6 +36,7 @@
             this.label3 = new System.Windows.Forms.Label();
             this.dateTimePicker1 = new System.Windows.Forms.DateTimePicker();
             this.label4 = new System.Windows.Forms.Label();
+            this.label5 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // textBox1
@@ -95,9 +96,8 @@
             // 
             this.dateTimePicker1.Location = new System.Drawing.Point(46, 151);
             this.dateTimePicker1.MaxDate = new System.DateTime(2100, 12, 31, 0, 0, 0, 0);
-            this.dateTimePicker1.MinDate = new System.DateTime(2016, 2, 1, 0, 0, 0, 0);
+            this.dateTimePicker1.MinDate = new System.DateTime(2015, 1, 1, 0, 0, 0, 0);
             this.dateTimePicker1.Name = "dateTimePicker1";
-            this.dateTimePicker1.ShowUpDown = true;
             this.dateTimePicker1.Size = new System.Drawing.Size(138, 22);
             this.dateTimePicker1.TabIndex = 6;
             this.dateTimePicker1.GotFocus += new System.EventHandler(this.dateTimePicker1_GotFocus);
@@ -109,12 +109,19 @@
             this.label4.Size = new System.Drawing.Size(100, 20);
             this.label4.Text = "Дата документа";
             // 
+            // label5
+            // 
+            this.label5.Location = new System.Drawing.Point(28, 208);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(182, 20);
+            // 
             // DocNumEnter
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.AutoScroll = true;
             this.ClientSize = new System.Drawing.Size(240, 294);
+            this.Controls.Add(this.label5);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.dateTimePicker1);
             this.Controls.Add(this.label3);
@@ -142,5 +149,6 @@
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.DateTimePicker dateTimePicker1;
         private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.Label label5;
     }
 }
