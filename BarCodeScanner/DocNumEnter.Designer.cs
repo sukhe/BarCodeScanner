@@ -36,7 +36,6 @@
             this.label3 = new System.Windows.Forms.Label();
             this.dateTimePicker1 = new System.Windows.Forms.DateTimePicker();
             this.label4 = new System.Windows.Forms.Label();
-            this.label5 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // textBox1
@@ -109,19 +108,12 @@
             this.label4.Size = new System.Drawing.Size(100, 20);
             this.label4.Text = "Дата документа";
             // 
-            // label5
-            // 
-            this.label5.Location = new System.Drawing.Point(28, 208);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(182, 20);
-            // 
             // DocNumEnter
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.AutoScroll = true;
             this.ClientSize = new System.Drawing.Size(240, 294);
-            this.Controls.Add(this.label5);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.dateTimePicker1);
             this.Controls.Add(this.label3);
@@ -149,6 +141,5 @@
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.DateTimePicker dateTimePicker1;
         private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.Label label5;
     }
 }

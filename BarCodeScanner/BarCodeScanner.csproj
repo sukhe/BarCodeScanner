@@ -269,6 +269,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <None Include="ClassDiagram3.cd" />
     <None Include="Resources\Icon1.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CompactFramework.CSharp.targets" />
