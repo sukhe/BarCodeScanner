@@ -476,7 +476,7 @@ namespace BarCodeScanner
                         }
                         else
                         {
-//                            LogShow("[MF.NotEqualQuantity] Сервер принял " + z + " штрихкодов, а отсканировано " + cargodocs[currentdoccol].ScannedBar);
+                            LogShow("[MF.NotEqualQuantity] Сервер принял " + z + " штрихкодов, а отсканировано " + cargodocs[currentdoccol].ScannedBar);
                         }
 
                     }

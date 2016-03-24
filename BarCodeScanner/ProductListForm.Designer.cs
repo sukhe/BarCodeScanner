@@ -72,10 +72,9 @@
             // panel2
             // 
             this.panel2.Controls.Add(this.dataGrid1);
-            this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel2.Location = new System.Drawing.Point(0, 21);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(240, 273);
+            this.panel2.Size = new System.Drawing.Size(240, 242);
             // 
             // dataGrid1
             // 
@@ -83,7 +82,7 @@
             this.dataGrid1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dataGrid1.Location = new System.Drawing.Point(0, 0);
             this.dataGrid1.Name = "dataGrid1";
-            this.dataGrid1.Size = new System.Drawing.Size(240, 273);
+            this.dataGrid1.Size = new System.Drawing.Size(240, 242);
             this.dataGrid1.TabIndex = 0;
             this.dataGrid1.CurrentCellChanged += new System.EventHandler(this.dataGrid1_CurrentCellChanged);
             this.dataGrid1.KeyDown += new System.Windows.Forms.KeyEventHandler(this.ProductListForm_KeyDown);

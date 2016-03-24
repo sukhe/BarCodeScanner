@@ -86,7 +86,7 @@ namespace BarCodeScanner
 
             DataGridTextBoxColumnColored col2 = new DataGridTextBoxColumnColored();
             //            DataGridTextBoxColumn col2 = new DataGridTextBoxColumn();
-            col2.Width = 71;
+            col2.Width = 76;
             col2.MappingName = MainForm.producttable.Columns[2].ColumnName;
             col2.HeaderText = MainForm.producttable.Columns[2].ColumnName;
             col2.NeedBackgroundProduct += new DataGridTextBoxColumnColored.NeedBackgroundEventHandlerProduct(OnBackgroundEventHandlerProduct);
@@ -94,7 +94,7 @@ namespace BarCodeScanner
 
             DataGridTextBoxColumnColored col3 = new DataGridTextBoxColumnColored();
             //            DataGridTextBoxColumn col3 = new DataGridTextBoxColumn();
-            col3.Width = 71;
+            col3.Width = 66;
             col3.MappingName = MainForm.producttable.Columns[3].ColumnName;
             col3.HeaderText = MainForm.producttable.Columns[3].ColumnName;
             col3.NeedBackgroundProduct += new DataGridTextBoxColumnColored.NeedBackgroundEventHandlerProduct(OnBackgroundEventHandlerProduct);
