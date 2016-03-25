@@ -916,6 +916,7 @@ namespace BarCodeScanner
                 serviceKeySequence = 0;
 //                manualDocNumEnter = 0;
             }
+
             if ((e.KeyCode == System.Windows.Forms.Keys.F3))
             {
                 button3_Click(this, e);
