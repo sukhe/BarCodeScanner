@@ -215,6 +215,18 @@ namespace BarCodeScanner
             {
                 button4_Click(this, e);
             }
+
+/*            if ((e.KeyCode == System.Windows.Forms.Keys.D5))
+            {
+                //                button4_Click(this, e);
+                string b = MainForm.cargodocs[0].TotalProducts[currentproductrow].PID.ToString();
+                Random rand = new Random();
+                b = b + rand.Next(100000000, 999999999).ToString();
+                MainForm.ScanBarCode(b);
+                //                manualDocNumEnter = 0;
+            }*/
+
+
 /*            if ((e.KeyCode == System.Windows.Forms.Keys.D1))
             {
                 //button1_Click(this, e);

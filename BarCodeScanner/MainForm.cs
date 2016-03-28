@@ -244,7 +244,7 @@ namespace BarCodeScanner
                     }
                     catch (Exception ex)
                     {
-                        LogErr("[MF.LoadAllDataFromXml.Doc] Не открывается документ " + s.Substring(s.IndexOf(@"\doc\") + 5), ex);
+                        LogErr("[MF.LoadAllDataFromXml.Doc] Не открывается документ №" + s.Substring(s.IndexOf(@"\doc\") + 5), ex);
                     }
                 }
                 result = true;
@@ -458,9 +458,9 @@ namespace BarCodeScanner
                         {
                             Log("[MF.DocSended] " + z + "(without deleted " + xgood + ")");
                             if (Convert.ToInt16(xgood) == xall)
-                                MessageBox.Show("Отправлено " + xgood + " штрихкодов по документу " + cargodocs[currentdocrow].Number.Trim());
+                                MessageBox.Show("Отправлено " + xgood + " штрихкодов по документу №" + cargodocs[currentdocrow].Number.Trim());
                             else
-                                MessageBox.Show("Отправлено " + xgood + " штрихкодов по документу " + cargodocs[currentdocrow].Number.Trim() + "(с удалёнными - " + xall.ToString() + ")");
+                                MessageBox.Show("Отправлено " + xgood + " штрихкодов по документу №" + cargodocs[currentdocrow].Number.Trim() + "(с удалёнными - " + xall.ToString() + ")");
                             try
                             {
                                 File.Delete(CurrentPath + @"doc\" + x + ".xml");
