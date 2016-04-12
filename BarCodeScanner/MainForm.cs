@@ -14,6 +14,7 @@ using Microsoft.WindowsMobile.Status;
 using System.Xml;
 using System.Xml.Serialization;
 using System.Diagnostics;
+using System.IO.Compression;
 
 namespace BarCodeScanner
 {
@@ -447,7 +448,7 @@ namespace BarCodeScanner
                 { 
                 try
                 {
-                    z = RestAPI_POST(@"http://" + Config.serverIp + "/CargoDocService.svc/CargoDoc/" + x);
+                    z = RestAPI_POST_Zip(@"http://" + Config.serverIp + "/CargoDocService.svc/CargoDocZip/" + x);
                     if (z.Substring(0, 2) == "->")
                     {
                         z = z.Remove(0, 2);
@@ -479,6 +480,10 @@ namespace BarCodeScanner
                             LogShow("[MF.NotEqualQuantity] Сервер принял " + z + " штрихкодов, а отсканировано " + cargodocs[currentdoccol].ScannedBar);
                         }
 
+                    }
+                    else
+                    {
+                        LogShow(z);
                     }
                 }
                 catch (Exception ex)
@@ -546,12 +551,12 @@ namespace BarCodeScanner
         {
             string ss;
             try
-            {
+            { 
                 string s = RestAPI_GET("http://" + Config.serverIp + "/CargoDocService.svc/Test1C");
 //                s = DeleteNameSpace(s);
-                if (s.IndexOf("<string>") >= 0)
+                if (s.IndexOf("</string>") >= 0)
                 {
-                    ss = s.Substring(s.IndexOf("<string>")+8);
+                    ss = s.Substring(s.IndexOf(">")+1);
                     s = ss.Substring(0,ss.IndexOf("</string>"));
                     if (s == "OK") return true;
                     else return false;
@@ -601,9 +606,10 @@ namespace BarCodeScanner
                 MainForm.Log("[MF.RestAPI_GET.Begin]");
                 HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
                 request.Method = "GET";
-                request.Timeout = 5000;
+                request.Timeout = 30000;
                 request.ContentType = "text/xml;charset=utf-8";
-                request.Proxy = GlobalProxySelection.GetEmptyWebProxy();
+                GlobalProxySelection.Select = new WebProxy("http://" + Config.serverIp.ToString() + ":80");
+                //request.Proxy = GlobalProxySelection.GetEmptyWebProxy();
 
                 HttpWebResponse response = (HttpWebResponse)request.GetResponse();
                 MainForm.Log("[MF.RestAPI_GET.Response]");
@@ -636,9 +642,10 @@ namespace BarCodeScanner
                 //                Log("MF.SendDoc.Begin");
                 HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
                 request.Method = "POST";
-                request.Timeout = 5000;
+                request.Timeout = 30000;
                 request.ContentType = "application/xml;charset=utf-8";
-                request.Proxy = GlobalProxySelection.GetEmptyWebProxy();
+                //request.Proxy = GlobalProxySelection.GetEmptyWebProxy();
+                GlobalProxySelection.Select = new WebProxy("http://" + Config.serverIp.ToString() + ":80");
 
                 string postData = cargodocs[currentdocrow].Serialize();
                 byte[] byteArray = Encoding.UTF8.GetBytes(postData);
@@ -694,6 +701,291 @@ namespace BarCodeScanner
             }
             return sb;
         }
+
+        public static void CopyStream(Stream input, Stream output)
+        {
+            byte[] buffer = new byte[8 * 1024];
+            int len;
+            while ((len = input.Read(buffer, 0, buffer.Length)) > 0)
+            {
+                output.Write(buffer, 0, len);
+            }
+            output.Flush();
+        }
+
+
+        private string RestAPI_POST_Zip(string url)
+        {
+            string sb = "";
+            try
+            {
+                //                Log("MF.SendDoc.Begin");
+                HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
+                request.Method = "POST";
+                request.Timeout = 30000;
+                //request.ContentType = "application/xml;charset=utf-8";
+                request.ContentType = "application/zip;charset=utf-8";
+                request.Proxy = GlobalProxySelection.GetEmptyWebProxy();
+                //GlobalProxySelection.Select = new WebProxy("http://" + Config.serverIp.ToString() + ":80");
+
+                //request.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
+                request.AutomaticDecompression = DecompressionMethods.GZip;
+                //request.SendChunked = false;
+                //request.AllowWriteStreamBuffering = false;
+                //request.TransferEncoding = "gzip";
+
+                //                string docid = url.Substring(url.IndexOf("/CargoDocZip/")+13);
+
+                //CargoDoc cargodoc = CargoDoc.LoadFromFile(@"D:\WORK\CASIO\RestClient\72_20160408_03.xml");
+                //                string postData = docid+cargodoc.Serialize();
+                string postData = cargodocs[currentdocrow].Serialize();
+                byte[] byteArray = Encoding.UTF8.GetBytes(postData);
+
+
+                //                using (FileStream fs = File.OpenWrite(CurrentPath + @"doc\_" + cargodocs[currentdocrow].Number.ToString() + ".xml"))
+                //                {
+                //                    Byte[] info = new UTF8Encoding(true).GetBytes();
+                //                    fs.Write(byteArray, 0, byteArray.Length);
+                //                }
+
+                //request.ContentLength = byteArray.Length;
+                //Stream dataStream = request.GetRequestStream();
+
+                //              вот эти 4 строчки вместо последующих двух - посылка зипованного документа
+                request.Headers.Add("Content-Encoding", "gzip");
+
+
+                //dataStream.Position = 0;
+                MemoryStream ms = new MemoryStream();
+                MemoryStream ms2 = new MemoryStream();
+                //MemoryStream ms3 = new MemoryStream();
+
+
+                /*                using (FileStream fileStream = File.Open(@"D:\WORK\CASIO\RestClient\62_20160401_03.gz", FileMode.Create))
+                                { */
+
+                using (GZipStream zipStream = new GZipStream(ms, CompressionMode.Compress))
+                {
+                    byte[] buffer = Encoding.UTF8.GetBytes(postData);
+                    zipStream.Write(buffer, 0, buffer.Length);
+                    ms.Position = 0;
+                    CopyStream(ms, ms2);
+                }
+
+                /*                    ms2.Position = 0;
+
+                                    byte[] byteArray33 = ms2.GetBuffer();
+                    
+
+                                    ms2.Position = 0;
+
+                                    using (GZipStream unzipStream = new GZipStream(ms2, CompressionMode.Decompress))
+                                    {
+                                        byte[] buffer = new byte[8 * 1024];
+                                        int len;
+                                        while ((len = unzipStream.Read(buffer, 0, buffer.Length)) > 0)
+                                        {
+                                            ms3.Write(buffer, 0, len);
+                                        }
+
+                                    }
+
+                                    byte[] byteArray3 = ms3.GetBuffer();
+                                    sb = Encoding.UTF8.GetString(byteArray3);
+                                    sb = sb.Substring(0, sb.IndexOf("</CargoDoc")) + "</CargoDoc>";
+                                */
+
+
+                //                    StreamReader reader = new StreamReader(ms3, Encoding.UTF8);
+                //                    sb = reader.ReadToEnd().ToString();
+
+                //                }
+
+                /*                    using (FileStream fileStream = File.Open(@"D:\WORK\CASIO\RestClient\62_20160401_03.gzz", FileMode.Create))
+                                    {
+                                        using (GZipStream stream = new GZipStream(fileStream, CompressionMode.Compress))
+                                        {
+                                            byte[] array = System.Text.Encoding.UTF8.GetBytes(postData);
+                                            stream.Write(array, 0, array.Length);
+                                        }
+                                    } */
+                //                stream.Close(); 
+
+                //                ms2.Position = 0;
+                byte[] byteArray2 = ms2.GetBuffer();
+                request.ContentLength = byteArray2.Length;
+                Stream dataStream = request.GetRequestStream();
+
+                dataStream.Write(byteArray2, 0, byteArray2.Length);
+                dataStream.Close();
+
+                HttpWebResponse response = (HttpWebResponse)request.GetResponse();
+                StreamReader reader = new StreamReader(response.GetResponseStream(), Encoding.UTF8);
+
+                sb = HTTPReplace(reader.ReadToEnd().ToString());
+
+//                sb = reader.ReadToEnd().ToString();
+
+                try
+                {
+                    Protocol proto = new Protocol();
+                    XmlSerializer serializer = new XmlSerializer(typeof(Protocol));
+                    using (var r = new StringReader(sb))
+                    {
+                        proto = (Protocol)serializer.Deserialize(r);
+                    }
+                    if (proto.Error != null)
+                    {
+                        Log("[MF.RestAPI_POSTZ.Error] " + sb);
+                        MessageBox.Show("[MF.RestAPI_POSTZ.Error] " + proto.Error);
+                    }
+                    else
+                        if (proto.Message != null)
+                        {
+                            Log("[MF.RestAPI_POSTZ.Result] " + sb);
+//                            MessageBox.Show("Отправлено " + proto.Message + " штрихкодов по документу " + cargodocs[currentdocrow].Number.Trim());
+                            sb = "->" + proto.Message;
+                        }
+                        else
+                        {
+                            LogShow("[MF.RestAPI_POSTZ.Error.3]");
+                        }
+                }
+                catch
+                {
+                    LogShow("[MF.RestAPI_POSTZ.Error.2] " + sb);
+                }
+
+                //                LogShow("MF.SendDoc = " + sb);
+                response.Close();
+                reader.Close();
+            }
+            catch (Exception ex)
+            {
+                LogErr("[MF.RestAPI_POSTZ.GlobalError]", ex);
+                sb = ex.Message.ToString();
+            }
+            return sb;
+
+        }
+
+
+
+/*
+
+        /// <summary>
+        /// Загрузка данных на сервер командой POST
+        /// В ответ приходит или количество загруженных штрих-кодов или ошибка в заранее оговоренной форме (см. класс Protocol)
+        /// </summary>
+        /// <param name="url">Строка в формате БазовыйURLДляОтправкиДанных/НомерДокумента_Дата_НомерСканера </param>
+        /// <returns>Ответ сервера - количество загруженных штрих-кодов или ошибка</returns>
+        private string RestAPI_POST_Zip(string url)
+        {
+            string sb = "";
+            try
+            {
+                //                Log("MF.SendDoc.Begin");
+                HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
+                request.Method = "POST";
+                request.Timeout = 30000;
+                //request.ContentType = "application/xml;charset=utf-8";
+                request.ContentType = "application/zip;charset=utf-8";
+                //request.Proxy = GlobalProxySelection.GetEmptyWebProxy();
+                GlobalProxySelection.Select = new WebProxy("http://" + Config.serverIp.ToString() + ":80");
+                request.AutomaticDecompression = DecompressionMethods.GZip;
+                request.SendChunked = true;
+                //| DecompressionMethods.Deflate;
+                //request.SendChunked = false;
+                //request.AllowWriteStreamBuffering = false;
+                request.TransferEncoding = "gzip";
+
+                string postData = cargodocs[currentdocrow].Serialize();
+                byte[] byteArray = Encoding.UTF8.GetBytes(postData);
+
+
+                //                using (FileStream fs = File.OpenWrite(CurrentPath + @"doc\_" + cargodocs[currentdocrow].Number.ToString() + ".xml"))
+                //                {
+                //                    Byte[] info = new UTF8Encoding(true).GetBytes();
+                //                    fs.Write(byteArray, 0, byteArray.Length);
+                //                }
+
+                // zip >>
+                request.Headers.Add("Content-Encoding", "gzip");
+                MemoryStream ms = new MemoryStream();
+                MemoryStream ms2 = new MemoryStream();
+
+                using (GZipStream zipStream = new GZipStream(ms, CompressionMode.Compress))
+                {
+                    byte[] buffer = Encoding.UTF8.GetBytes(postData);
+                    zipStream.Write(buffer, 0, buffer.Length);
+                    ms.Position = 0;
+                    CopyStream(ms, ms2);
+                }
+
+                byte[] byteArray2 = ms2.GetBuffer();
+                request.ContentLength = byteArray2.Length;
+                Stream dataStream = request.GetRequestStream();
+
+                dataStream.Write(byteArray2, 0, byteArray2.Length);
+                dataStream.Close();
+                ms.Close();
+                ms2.Close();
+                //<<zip
+
+                // это если незипованный документ
+                //                request.ContentLength = byteArray.Length;
+                //                Stream dataStream = request.GetRequestStream();
+                //                dataStream.Write(byteArray, 0, byteArray.Length);
+                //                dataStream.Close();
+
+                HttpWebResponse response = (HttpWebResponse)request.GetResponse();
+                //                Log("MF.SendDoc.Response");
+                StreamReader reader = new StreamReader(response.GetResponseStream(), Encoding.UTF8);
+
+                sb = HTTPDecode(reader.ReadToEnd().ToString());
+
+                try
+                {
+                    Protocol proto = new Protocol();
+                    XmlSerializer serializer = new XmlSerializer(typeof(Protocol));
+                    using (var r = new StringReader(sb))
+                    {
+                        proto = (Protocol)serializer.Deserialize(r);
+                    }
+                    if (proto.Error != null)
+                    {
+                        Log("[MF.RestAPI_POSTZ.Error] " + sb);
+                        MessageBox.Show("[MF.RestAPI_POSTZ.Error] " + proto.Error);
+                    }
+                    else
+                        if (proto.Message != null)
+                        {
+                            Log("[MF.RestAPI_POSTZ.Result] " + sb);
+                            //                            MessageBox.Show("Отправлено " + proto.Message + " штрихкодов по документу " + cargodocs[currentdocrow].Number.Trim());
+                            sb = "->" + proto.Message;
+                        }
+                        else
+                        {
+                            LogShow("[MF.RestAPI_POSTZ.Error.3]");
+                        }
+                }
+                catch
+                {
+                    LogShow("[MF.RestAPI_POSTZ.Error.2] " + sb);
+                }
+
+                //                LogShow("MF.SendDoc = " + sb);
+                response.Close();
+                reader.Close();
+            }
+            catch (Exception ex)
+            {
+                LogErrShow("[MF.RestAPI_POSTZ.GlobalError]", "[MF.RestAPI_POSTZ.GlobalError] " + ex.Message.ToString(), ex);
+                sb = ex.Message.ToString();
+            }
+            return sb;
+        }
+ */
 
         # endregion
 
@@ -1404,6 +1696,21 @@ namespace BarCodeScanner
             input = ss.Replace("&gt;", ">");
             ss = input.Substring(input.IndexOf("<string>") + 8);
             input = ss.Substring(0, ss.Length - 9);
+            return input;
+        }
+
+        /// <summary>
+        /// Заменяет HTTP-шные коды на обычные символы
+        /// </summary>
+        /// <returns>Строка</returns>
+        private string HTTPReplace(string input)
+        {
+            string ss = input.Replace("&lt;", "<");
+            input = ss.Replace("&gt;", ">");
+            ss = input.Replace("\t", "");
+            input = ss.Replace("\n", "");
+            ss = input.Substring(0,input.Length-9);
+            input = ss.Substring(ss.IndexOf(">")+1);
             return input;
         }
 
