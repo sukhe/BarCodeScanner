@@ -62,6 +62,11 @@ namespace BarCodeScanner
                     serviceform.Close();
 //                    return true;
                 }
+                else
+                    if (pwd == ".11.")
+                    {
+                        MainForm.SoftReset();
+                    }
                 return false;
             }
 

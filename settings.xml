@@ -1,0 +1,69 @@
+<?xml version="1.0"?>
+<Settings xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Users>
+    <User>
+      <FIO>Рыкуш И.В.</FIO>
+      <Pwd>181072</Pwd>
+    </User>
+    <User>
+      <FIO>Миненкова О.В.</FIO>
+      <Pwd>775319</Pwd>
+    </User>
+    <User>
+      <FIO>ДеминВН</FIO>
+      <Pwd>111111</Pwd>
+    </User>
+    <User>
+      <FIO>СухоносОВ</FIO>
+      <Pwd>222222</Pwd>
+    </User>
+    <User>
+      <FIO>Исенко Е.В.</FIO>
+      <Pwd>120485</Pwd>
+    </User>
+  </Users>
+  <Scanners>
+    <Scanner>
+      <MAC>00:0B:6C:B8:CC:C0</MAC>
+      <Nomer>01</Nomer>
+    </Scanner>
+    <Scanner>
+      <MAC>00:0B:6C:CF:2D:11</MAC>
+      <Nomer>02</Nomer>
+    </Scanner>
+    <Scanner>
+      <MAC>00:0B:6C:C4:3A:02</MAC>
+      <Nomer>03</Nomer>
+    </Scanner>
+  </Scanners>
+  <Locations>
+    <Location>
+      <LID>1</LID>
+      <Name>СкладГП</Name>
+    </Location>
+    <Location>
+      <LID>2</LID>
+      <Name>КонвейерЦГП</Name>
+    </Location>
+    <Location>
+      <LID>3</LID>
+      <Name>Сборка1103</Name>
+    </Location>
+    <Location>
+      <LID>9</LID>
+      <Name>Контрагент</Name>
+    </Location>
+  </Locations>
+  <Transfers>
+    <Transfer>
+      <Name>Отгрузка ГП</Name>
+      <From>1,2,3</From>
+      <To>9</To>
+    </Transfer>
+    <Transfer>
+      <Name>Приход На Склад</Name>
+      <From>2,3</From>
+      <To>1</To>
+    </Transfer>
+  </Transfers>
+</Settings>

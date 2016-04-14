@@ -15,12 +15,20 @@ using System.Xml;
 using System.Xml.Serialization;
 using System.Diagnostics;
 using System.IO.Compression;
+using System.Runtime.InteropServices;
 
 namespace BarCodeScanner
 {
 
     public partial class MainForm : Form
     {
+        // >> для перезагрузки
+        [DllImport("coredll.dll", SetLastError = true)]
+        static extern int SetSystemPowerState(string psState, int StateFlags, int Options);
+        const int POWER_FORCE = 4096;
+        const int POWER_STATE_RESET = 0x00800000;
+        // << 
+
         public static List<CargoDoc> cargodocs = new List<CargoDoc>();  // структура в памяти, куда загружаются 
                                                                         // все отгрузочные документы, имеющиеся в сканере
         public static Settings settings = new Settings();               // сюда загружаются данные из файла настроек settings.xml
@@ -117,7 +125,9 @@ namespace BarCodeScanner
                     dataGrid1.DataSource = doctable;
                     GetCustomers();
                 }
+
                 Log("Start " + Config.userName + " " + Config.scannerNumber);
+
                 labelInfo.Text = "Ск." + Config.scannerNumber + "/" + Config.userName;
                 labelTime.Text = System.DateTime.Now.ToShortDateString().Substring(0, 5) + " " + System.DateTime.Now.ToShortTimeString();
 //            }
@@ -483,7 +493,7 @@ namespace BarCodeScanner
                     }
                     else
                     {
-                        LogShow(z);
+                        //LogShow(z);
                     }
                 }
                 catch (Exception ex)
@@ -616,7 +626,7 @@ namespace BarCodeScanner
                 StreamReader reader = new StreamReader(response.GetResponseStream(), Encoding.UTF8);
 
                 sb = reader.ReadToEnd().ToString();
-                MainForm.Log("[MF.RestAPI_GET.Reader] " + sb);
+//                MainForm.Log("[MF.RestAPI_GET.Reader] " + sb);
                 response.Close();
                 reader.Close();
             }
@@ -706,6 +716,7 @@ namespace BarCodeScanner
         {
             byte[] buffer = new byte[8 * 1024];
             int len;
+            input.Position = 0;
             while ((len = input.Read(buffer, 0, buffer.Length)) > 0)
             {
                 output.Write(buffer, 0, len);
@@ -725,8 +736,8 @@ namespace BarCodeScanner
                 request.Timeout = 30000;
                 //request.ContentType = "application/xml;charset=utf-8";
                 request.ContentType = "application/zip;charset=utf-8";
-                request.Proxy = GlobalProxySelection.GetEmptyWebProxy();
-                //GlobalProxySelection.Select = new WebProxy("http://" + Config.serverIp.ToString() + ":80");
+                //request.Proxy = GlobalProxySelection.GetEmptyWebProxy();
+                GlobalProxySelection.Select = new WebProxy("http://" + Config.serverIp.ToString() + ":80");
 
                 //request.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
                 request.AutomaticDecompression = DecompressionMethods.GZip;
@@ -758,43 +769,67 @@ namespace BarCodeScanner
                 //dataStream.Position = 0;
                 MemoryStream ms = new MemoryStream();
                 MemoryStream ms2 = new MemoryStream();
-                //MemoryStream ms3 = new MemoryStream();
-
 
                 /*                using (FileStream fileStream = File.Open(@"D:\WORK\CASIO\RestClient\62_20160401_03.gz", FileMode.Create))
                                 { */
 
-                using (GZipStream zipStream = new GZipStream(ms, CompressionMode.Compress))
+/*                using (GZipStream zipStream = new GZipStream(ms, CompressionMode.Compress))
                 {
                     byte[] buffer = Encoding.UTF8.GetBytes(postData);
                     zipStream.Write(buffer, 0, buffer.Length);
                     ms.Position = 0;
                     CopyStream(ms, ms2);
+                }*/
+
+
+//public static byte[] Compress(byte[] raw)
+//    {
+	using (MemoryStream memory = new MemoryStream())
+	{
+	    using (GZipStream gzip = new GZipStream(memory, CompressionMode.Compress, true))
+	    {
+		    gzip.Write(byteArray, 0, byteArray.Length);
+	    }
+        CopyStream(memory, ms2);
+//	    return memory.ToArray();
+	}
+//    }
+
+
+
+// >> unzip test
+
+/*                ms2.Position = 0;
+                using (FileStream compressedFileStream = File.Create(CurrentPath + "lastzip.gz"))
+                {
+                    using (GZipStream compressionStream = new GZipStream(compressedFileStream,CompressionMode.Compress))
+                    {
+                  //      originalFileStream.CopyTo(compressionStream);
+                        CopyStream(ms2, compressionStream);
+
+                    }
+                }*/
+
+/*                MemoryStream ms3 = new MemoryStream();
+                ms2.Position = 0;
+                byte[] byteArray33 = ms2.GetBuffer();
+                ms2.Position = 0;
+                using (GZipStream unzipStream = new GZipStream(ms2, CompressionMode.Decompress))
+                {
+                    byte[] buffer = new byte[8 * 1024];
+                    int len;
+                    while ((len = unzipStream.Read(buffer, 0, buffer.Length)) > 0)
+                    {
+                        ms3.Write(buffer, 0, len);
+                    }
                 }
 
-                /*                    ms2.Position = 0;
-
-                                    byte[] byteArray33 = ms2.GetBuffer();
-                    
-
-                                    ms2.Position = 0;
-
-                                    using (GZipStream unzipStream = new GZipStream(ms2, CompressionMode.Decompress))
-                                    {
-                                        byte[] buffer = new byte[8 * 1024];
-                                        int len;
-                                        while ((len = unzipStream.Read(buffer, 0, buffer.Length)) > 0)
-                                        {
-                                            ms3.Write(buffer, 0, len);
-                                        }
-
-                                    }
-
-                                    byte[] byteArray3 = ms3.GetBuffer();
-                                    sb = Encoding.UTF8.GetString(byteArray3);
-                                    sb = sb.Substring(0, sb.IndexOf("</CargoDoc")) + "</CargoDoc>";
-                                */
-
+                ms3.Position = 0;
+                byte[] byteArray3 = ms3.GetBuffer();
+                sb = Encoding.UTF8.GetString(byteArray3,0,byteArray3.Length);
+                sb = sb.Substring(0, sb.IndexOf("</CargoDoc")) + "</CargoDoc>";
+                */               
+// << unzip test
 
                 //                    StreamReader reader = new StreamReader(ms3, Encoding.UTF8);
                 //                    sb = reader.ReadToEnd().ToString();
@@ -811,7 +846,7 @@ namespace BarCodeScanner
                                     } */
                 //                stream.Close(); 
 
-                //                ms2.Position = 0;
+                ms2.Position = 0;
                 byte[] byteArray2 = ms2.GetBuffer();
                 request.ContentLength = byteArray2.Length;
                 Stream dataStream = request.GetRequestStream();
@@ -1162,6 +1197,7 @@ namespace BarCodeScanner
 
                 productlistform = new ProductListForm();
                 productlistform.ShowDialog();
+                LogSave();
             }
 /*            else
             {
@@ -1245,6 +1281,10 @@ namespace BarCodeScanner
                 currentdocrow = dataGrid1.CurrentCell.RowNumber;
                 MainForm.scanmode = ScanMode.Doc;
 //                manualDocNumEnter = 0;
+            }
+            if ((e.KeyCode.GetHashCode() == 190) && (serviceKeySequence == 3))
+            {
+                SoftReset();
             }
 
             // отработка нажатия 000 - ручной ввод номера документа
@@ -1562,7 +1602,16 @@ namespace BarCodeScanner
                 }
             }
             log.Clear();
+
+            FileInfo f = new FileInfo(CurrentPath + "log.txt");
+            if (f.Length > Config.maxLogSize) // обрезаем лог-файл
+            {
+                File.Copy(CurrentPath + "log.txt", CurrentPath + "log_old.txt", true);
+                File.Delete(CurrentPath + "log.txt");
+            }
+
         }
+
         #endregion
 
         #region Utilities - маленькие вспомогательные функции
@@ -1789,6 +1838,11 @@ namespace BarCodeScanner
                 BarCodeProcessing(this.Tag.ToString());
                 this.Tag = "";
             }
+        }
+
+        public static void SoftReset()
+        {
+            SetSystemPowerState(null, POWER_STATE_RESET, POWER_FORCE);
         }
 
     }

@@ -20,6 +20,7 @@ namespace BarCodeScanner
         public static string transferTo = "";
         public static string transferFromLid = "";
         public static string transferToLid = "";
+        public static int maxLogSize = 200000;
     }
 
     public enum ScanMode { Doc, BarCod, DelBarCod, Nothing }
