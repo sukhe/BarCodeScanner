@@ -12,10 +12,10 @@ namespace BarCodeScanner
         public static string scannerMac = "";
         public static string userName = "";
 //        public static string batterylevel = "";
-        public static Boolean superuser = false;
+//        public static Boolean superuser = false;
         public static string serverIp = "";
-        public static Boolean notping = true;
-        public static string transfer = "";
+//        public static Boolean notping = true;
+//        public static string transfer = "";
         public static string transferFrom = "";
         public static string transferTo = "";
         public static string transferFromLid = "";

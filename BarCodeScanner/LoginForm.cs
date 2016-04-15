@@ -48,11 +48,11 @@ namespace BarCodeScanner
 
             if (Config.userName != "")
             {
-                Config.superuser = false;
+//                Config.superuser = false;
                 return true;
             }
             else
-            {
+            { 
                 if (pwd == ".1111.")
                 {
                     Config.userName = "Superuser";
@@ -63,7 +63,7 @@ namespace BarCodeScanner
 //                    return true;
                 }
                 else
-                    if (pwd == ".11.")
+                    if (pwd == "..11..")
                     {
                         MainForm.SoftReset();
                     }

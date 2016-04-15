@@ -626,7 +626,7 @@ namespace BarCodeScanner
                 StreamReader reader = new StreamReader(response.GetResponseStream(), Encoding.UTF8);
 
                 sb = reader.ReadToEnd().ToString();
-//                MainForm.Log("[MF.RestAPI_GET.Reader] " + sb);
+                MainForm.Log("[MF.RestAPI_GET.Reader] Получено " + sb.Length.ToString() + "байт");
                 response.Close();
                 reader.Close();
             }
@@ -1269,7 +1269,7 @@ namespace BarCodeScanner
                 serviceKeySequence++;
 //                manualDocNumEnter = 0;
             }
-            if ((e.KeyCode.GetHashCode() == 190) && (serviceKeySequence == 5))
+            if ((e.KeyCode.GetHashCode() == 190) && (serviceKeySequence == 5)) // запуск сервисной формы по .1111.
             {
                 MainForm.scanmode = ScanMode.Nothing;
                 serviceKeySequence = 0;
@@ -1282,7 +1282,7 @@ namespace BarCodeScanner
                 MainForm.scanmode = ScanMode.Doc;
 //                manualDocNumEnter = 0;
             }
-            if ((e.KeyCode.GetHashCode() == 190) && (serviceKeySequence == 3))
+            if ((e.KeyCode.GetHashCode() == 190) && (serviceKeySequence == 3)) // перезагрузка по ..11..
             {
                 SoftReset();
             }

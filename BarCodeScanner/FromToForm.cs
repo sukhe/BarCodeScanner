@@ -152,7 +152,7 @@ namespace BarCodeScanner
 
             if (listBox2.Visible == false) // прошли уже все три списка
             {
-                Config.transfer = label12.Text;
+                //Config.transfer = label12.Text;
                 foreach (Location n in MainForm.settings.Locations)
                 {
                     if (n.Name == label22.Text)
