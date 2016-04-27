@@ -21,39 +21,32 @@ namespace BarCodeScanner
 
         private void DocNumEnter_KeyDown(object sender, KeyEventArgs e)
         {
+            
+            if ((e.KeyCode == System.Windows.Forms.Keys.F1) &&
+                 dateTimePicker1.Focused)
+            {
+                this.Owner.Tag = textBox1.Text.Trim() + " " + dateTimePicker1.Value.Year.ToString() +
+                                 MainForm.AddZeroIfNeed(dateTimePicker1.Value.Month) + MainForm.AddZeroIfNeed(dateTimePicker1.Value.Day);
+                Close();
+            }
+
             if (( 
-//                (e.KeyCode == System.Windows.Forms.Keys.Down) ||
-//                  (e.KeyCode == System.Windows.Forms.Keys.Right) ||
                   (e.KeyCode == System.Windows.Forms.Keys.Enter) ||
                   (e.KeyCode == System.Windows.Forms.Keys.F1)
                 ) && textBox1.Focused )
             {
-//                number = textBox1.Text;
                 dateTimePicker1.Focus();
                 flag = true;
             }
-            if ((e.KeyCode != System.Windows.Forms.Keys.F1) && (flag))
+
+/*            if ((e.KeyCode != System.Windows.Forms.Keys.F1) && (flag))
             {
                 flag = false;
             }
 
             if ((
-                
-//                (e.KeyCode == System.Windows.Forms.Keys.Down) ||
-//                  (e.KeyCode == System.Windows.Forms.Keys.Right) ||
-//                  (e.KeyCode == System.Windows.Forms.Keys.Enter) ||
                   (e.KeyCode == System.Windows.Forms.Keys.F1)
-                ) && (!flag) && dateTimePicker1.Focused)
-            {
-                this.Owner.Tag = textBox1.Text.Trim() + " " + dateTimePicker1.Value.Year.ToString()+
-                                 MainForm.AddZeroIfNeed(dateTimePicker1.Value.Month) + MainForm.AddZeroIfNeed(dateTimePicker1.Value.Day);
-//                label5.Text = "Запрашивается документ " + this.Owner.Tag.ToString();
-                Close();
-                    /*                (this.Owner as MainForm).Tag = "";
-                                    Close();
-                } */
-                
-            }
+                ) && (!flag) && dateTimePicker1.Focused)*/
 
             if ((e.KeyCode == System.Windows.Forms.Keys.F4))
             {
@@ -66,10 +59,7 @@ namespace BarCodeScanner
 
         private void dateTimePicker1_GotFocus(object sender, EventArgs e)
         {
-//            dateTimePicker1.Visible = true;
-//            dateTimePicker1.Update();
             button1.Text = "           Принять";
-//            this.KeyPreview = true;
         }
 
         private void button2_Click(object sender, EventArgs e)

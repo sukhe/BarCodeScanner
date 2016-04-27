@@ -22,65 +22,104 @@ namespace BarCodeScanner
 
     public partial class MainForm : Form
     {
-        // >> для перезагрузки
+
+        // >> часть кода, необходимая для вызова Reset
         [DllImport("coredll.dll", SetLastError = true)]
         static extern int SetSystemPowerState(string psState, int StateFlags, int Options);
         const int POWER_FORCE = 4096;
         const int POWER_STATE_RESET = 0x00800000;
         // << 
 
-        public static List<CargoDoc> cargodocs = new List<CargoDoc>();  // структура в памяти, куда загружаются 
-                                                                        // все отгрузочные документы, имеющиеся в сканере
-        public static Settings settings = new Settings();               // сюда загружаются данные из файла настроек settings.xml
-        public static string[] doclist;                                 // список всех отгрузочных документов (файлов в подкаталоге doc)
-        public static string CurrentPath;                               // путь в файловой системе к каталогу программы
+        # region Variables - объявление переменных
 
-        CasioScanner cs;                                                // класс сканера, запускаемый в отдельном потоке
-        public delegate void AddScan(string s);                         // 
+        /// <summary>
+        /// Структура в памяти, хранящая во время работы все отгрузочные документы, имеющиеся в сканере
+        /// </summary>
+        public static List<CargoDoc> cargodocs = new List<CargoDoc>();
+        /// <summary>
+        /// Структура в памяти, хранящая данные из файла настроек settings.xml
+        /// </summary>
+        public static Settings settings = new Settings();
+        /// <summary>
+        /// Список всех отгрузочных документов (файлов в подкаталоге doc)
+        /// </summary>
+        public static string[] doclist;
+        /// <summary>
+        /// Путь в файловой системе к каталогу программы
+        /// </summary>
+        public static string CurrentPath;
+        /// <summary>
+        /// Класс для низкоуровнего сканирования штрихкодов, запускаемый в отдельном потоке
+        /// </summary>
+        CasioScanner cs;
+        /// <summary>
+        /// Делегат для потокобезопасного вызова из cs процедуры addBarCode, 
+        /// срабатывающей в основном потоке программы при сканировании штрихкода
+        /// </summary>
+        public delegate void AddScan(string s);
+        /// <summary>
+        /// Процедура в основном потоке программы, которая вызывается из потока cs при сканировании штрихкода
+        /// </summary>
         public AddScan addBarCode;
-
-/*        public delegate void RefreshProductTable();
-        public RefreshProductTable refreshProduct;
-
-        public event EventHandler ScanXCode; */
-
-        public static ScanMode scanmode;                                // режим сканирования штрихкодов - документ, продукция и т.д.
-
+        /// <summary>
+        /// Режим сканирования штрихкодов - документ, продукция и т.д.
+        /// </summary>
+        public static ScanMode scanmode;
+        /// <summary>
+        /// Отображаемая на экране таблица отгрузочных документов 
+        /// </summary>
         public static DataTable doctable;
-        public static DataTableReader docreader;
-        public static int currentdocrow;                                // номер текущей строки таблицы отгрузочных документов
-        public static int currentdoccol;                                // номер текущей колонки таблицы отгрузочных документов
-
-        public static ProductListForm productlistform;                  // форма для работы со списком продукции
+        /// <summary>
+        /// Номер текущей строки таблицы отгрузочных документов
+        /// </summary>
+        public static int currentdocrow;
+        /// <summary>
+        /// Номер текущей колонки таблицы отгрузочных документов
+        /// </summary>
+        public static int currentdoccol;
+        /// <summary>
+        /// Форма для работы со списком продукции
+        /// </summary>
+        public static ProductListForm productlistform;
+        /// <summary>
+        /// Отображаемая на экране таблица продукции
+        /// </summary>
         public static DataTable producttable;
-        public static DataTableReader productreader;
-
-        public static XCodeListForm xcodelistform;                      // форма для работы со списком штрих-кодов
+        /// <summary>
+        /// Форма для работы со списком штрихкодов
+        /// </summary>
+        public static XCodeListForm xcodelistform;
+        /// <summary>
+        /// Отображаемая на экране таблица штрихкодов
+        /// </summary>
         public static DataTable xcodetable;
-        public static DataTableReader xcodereader;
-
-        public static List<string> log = new List<string>();            // структура для хранения логов в памяти, при выходе из программы
-                                                                        // записывается на диск
-        public static Color fullColor;                                  // цвет фона для строк с полностью заполненным документом
-        public static Color partialColor;                               // цвет фона для строк с частично заполненным документом
-
+        /// <summary>
+        /// Структура для хранения логов в памяти, при выходе из программы логи записываются на диск
+        /// </summary>
+        public static List<string> log = new List<string>();
+        /// <summary>
+        /// Цвет фона для строк с полностью заполненным документом
+        /// </summary>
+        public static Color fullColor;
+        /// <summary>
+        /// Цвет фона для строк с частично заполненным документом
+        /// </summary>
+        public static Color partialColor;
+        /// <summary>
+        /// Счётчик последовательности нажатия клавиш для входа в сервисный режим
+        /// </summary>
         private int serviceKeySequence;
-        //private int manualDocNumEnter;
 
+        # endregion
+
+        # region Load and Close MainForm - загрузка и выгрузка основной формы
+
+        /// <summary>
+        /// Конструктор для основной формы приложения.
+        /// </summary>
         public MainForm()
         {
             InitializeComponent();
-
-/*            var processes = OpenNETCF.ToolHelp.ProcessEntry.GetProcesses();
-            foreach (OpenNETCF.ToolHelp.ProcessEntry process in processes)
-            {
-                if (process.ExeFile == "BarCodeScanner.exe")
-                {
-                    LogShow("[MF.StartDuplicate] Программа уже запущена!");
-                    Close();
-                }
-            }*/
-
 
             if (TestFilesAndDirs())
             {
@@ -90,57 +129,41 @@ namespace BarCodeScanner
                 cs = new CasioScanner();
                 cs.Scanned += OnScan;
                 cs.Open();
-                addBarCode = new AddScan(BarCodeProcessing); // назначение делегата для потокобезопасного вызова процедуры
-
-                //SystemLibNet.Api.SysSetBuzzerVolume(SystemLibNet.Def.B_SCANEND, SystemLibNet.Def.BUZZERVOLUME_MAX);
-
+                addBarCode = new AddScan(BarCodeProcessing);
                 dataGrid1.Focus();
             }
             else Close();
         }
 
-/*        private Boolean existDoc(string s)
-        {
-            return doclist.Contains(s);
-        } */
-
+        /// <summary>
+        /// Обработчик события загрузки основной формы
+        /// </summary>
         private void MainForm_Load(object sender, EventArgs e)
         {
-            Config.userName = "Мистер Х";
-//            Config.notping = true;
-
             serviceKeySequence = 0;
-            if (LoginForm.Dialog() == DialogResult.Abort) Close();
+            if (LoginForm.Dialog() == DialogResult.Abort) Close(); // проверка пароля
             else
             {
-/*            Config.scannerNumber = GetScannerID();
-            if (Config.scannerNumber == "")
-                Close();
-            else
-            {*/
                 if (LoadAllDataFromXml())
                 {
                     if (doctable == null)
                         doctable = new DataTable();
                     dataGrid1.DataSource = doctable;
-                    GetCustomers();
+                    CreateScreenTable();
                 }
 
                 Log("Start " + Config.userName + " " + Config.scannerNumber);
 
                 labelInfo.Text = "Ск." + Config.scannerNumber + "/" + Config.userName;
                 labelTime.Text = System.DateTime.Now.ToShortDateString().Substring(0, 5) + " " + System.DateTime.Now.ToShortTimeString();
-//            }
             }
-/*            if (Config.superuser)
-            {
-                this.BackColor = Color.Coral;
-            }*/
         }
 
+        /// <summary>
+        /// Обработчик события закрытия основной формы
+        /// </summary>
         private void MainForm_Closing(object sender, CancelEventArgs e)
         {
-            // сделать сохранение xml ?
             Log("[MF.Closing] Штатный выход из программы");
             LogSave();
             if (cs != null)
@@ -151,13 +174,14 @@ namespace BarCodeScanner
             Dispose();
         }
 
+        # endregion
+
         # region BeforeWork - проверки, обработки перед запуском основной программы
 
         /// <summary>
-        /// Проверяем наличие файла настроек и каталога "doc". При отсутствии - загружаем/создаём.
-        /// Определяем номер сканера
+        /// Проверяем наличие файла настроек и каталога "doc". Определяем номер сканера.
         /// </summary>
-        /// <returns>Истина если всё хорошо; ложь, если что-то не в порядке</returns>
+        /// <returns>true - всё нормально, можно запускать программу; false - что-то не в порядке</returns>
         private Boolean TestFilesAndDirs()
         {
 
@@ -186,14 +210,12 @@ namespace BarCodeScanner
                 settings = Settings.LoadFromFile(CurrentPath + "settings.xml");
             }
 
-            /*            if (!Directory.Exists(CurrentPath+@"\log")
-                            Directory.CreateDirectory(CurrentPath+@"\log"); */
-
             if (!Directory.Exists(CurrentPath + "doc"))
                 Directory.CreateDirectory(CurrentPath + "doc");
 
-            Config.serverIp = "192.168.10.213";
-//            Config.scannerNumber = 
+/*            Config.serverIp = "192.168.10.213";
+            Config.userName = "Мистер X"; */
+
             GetScannerID();
             if (Config.scannerNumber == "")
             {
@@ -226,22 +248,17 @@ namespace BarCodeScanner
                     break;
                 }
             }
-/*            if (number == "")
-            {
-                LogShow("[MF.GetScannerID] Неопознанный сканер");
-                //                Close();
-            }
-            return number;*/
         }
 
         /// <summary>
         /// Загружаем в память все имеющиеся на сканере документы
         /// </summary>
-        /// <returns>Истина если всё хорошо; ложь, если что-то не в порядке</returns>
+        /// <returns>true - файлы загрузились; false - что-то не в порядке</returns>
         private Boolean LoadAllDataFromXml()
         {
             Boolean result = false;
             cargodocs.Clear();
+            // файлы документов имеют название вида "НомерДокумента_ДатаДокумента_НомерСканера.xml"
             doclist = Directory.GetFiles(CurrentPath + "doc", "*_*_*.xml");
             string ss = "";
             try
@@ -268,7 +285,6 @@ namespace BarCodeScanner
             return result;
         }
 
-
         #endregion
 
         # region Network - работа с сетью (обмен данными, пинги)
@@ -277,7 +293,7 @@ namespace BarCodeScanner
         /// Загрузка файла настроек с сервера. Делаем указанное количество попыток.
         /// Критерий правильности загрузки - в полученном конфиге количество пользователей больше нуля
         /// </summary>
-        /// <returns>Истина если загрузилось; ложь, если нет</returns>
+        /// <returns>true - настройки загрузились; false - нет</returns>
         public static Boolean DownloadSettings()
         {
             Boolean result = false;
@@ -330,26 +346,23 @@ namespace BarCodeScanner
         /// <summary>
         /// Загрузка отгрузочной накладной с сервера
         /// </summary>
-        /// <returns>Истина если загрузилось; ложь, если нет</returns>
+        /// <param name="docnum">Строка в формате НомерДокумента_ДатаДокумента_НомерСканера </param>
+        /// <returns>true - документ загрузился; false - нет</returns>
         public Boolean DownloadXML(string docnum)
         {
-            //            if (GetTime()!="") 
-            //string docnum = barcod.Replace(" ", "_") + "_" + Config.scannerNumber;
             if (TestConnect1C())
             {
                 try
                 {
                     string s;
-                    //string docnum = barcod.Replace(" ", "_") + "_" + Config.scannerNumber;
                     int i = 0;
-//                    GetTime();
                     do
                     {
                         s = RestAPI_GET("http://" + Config.serverIp + "/CargoDocService.svc/CargoDoc/" + docnum);
                         s = DeleteNameSpace(s);
                         s = DeleteNil(s);
-                        if (s == "<CargoDoc>")
-                        {
+                        if (s == "<CargoDoc>") // Пришёл пустой документ. Такое бывает, если не успел отработать запрос к 1С. 
+                        {                      // Делаем паузу и повторяем попытку загрузки
                             i++;
                             System.Threading.Thread.Sleep(1000);
                         }
@@ -362,6 +375,7 @@ namespace BarCodeScanner
                         return false;
                     }
                     else
+                        // В ответ на запрос 1С может вернуть сообщение об одной из заранее предусмотренных ошибок
                         if ((s.IndexOf("<Error>") > 0) && (s.IndexOf("</Error>") > 0))
                         {
                             string er = s.Substring(s.IndexOf("<Error>") + 7);
@@ -369,7 +383,7 @@ namespace BarCodeScanner
                             LogShow("[MF.DownloadXML.3] Ошибка получения документа " + docnum + ": " + s);
                             return false;
                         }
-                        else
+                        else // ошибок нет, делаем разбор документа
                         {
                             try
                             {
@@ -378,7 +392,8 @@ namespace BarCodeScanner
                                 using (var reader = new StringReader(s))
                                 {
                                     cd = (CargoDoc)serializer.Deserialize(reader);
-                                    cd.SaveToFile(CurrentPath + @"doc\" + docnum + ".xml");
+                                    string x = cd.Number.Trim() + "_" + ConvertToYYYYMMDD(cd.Data) + "_" + Config.scannerNumber;
+                                    cd.SaveToFile(CurrentPath + @"doc\" + x + ".xml"); // разобранный документ сохраняем в виде XML файла
                                 }
                             }
                             catch (Exception ex)
@@ -386,11 +401,6 @@ namespace BarCodeScanner
                                 LogErr("[MF.DownloadXML.2] Документ получен с ошибками ", ex);
                             }
 
-                            /*                    using (FileStream fs = File.OpenWrite(CurrentPath + @"doc\" + docnum + ".xml"))
-                                                {
-                                                    Byte[] info = new UTF8Encoding(true).GetBytes(s);
-                                                    fs.Write(info, 0, info.Length);
-                                                }*/
                         }
                     return true;
                 }
@@ -408,41 +418,30 @@ namespace BarCodeScanner
         }
 
         /// <summary>
-        /// Отправка отгрузочного документа на сервер
+        /// Отправка отгрузочного документа со сканера на сервер
         /// </summary>
         private void UploadXML()
         {
-            /*            if (PingServer("192.168.10.213")){
-                            Log("MF.SendDoc "+cargodocs[currentdocrow].Number);
-                        } else {
-                            Log("MF.SendDoc "+cargodocs[currentdocrow].Number + "Server not connect");
-                        }
-                        GetTime(); 
-                        LogShow("MF GetTime Done");*/
             if (dataGrid1.VisibleRowCount == 0)
             {
                 LogShow("[MF.DocSendNothing]\n Нет документов для отправки");
             }
             else
             {
-                //                GetTime();
                 WakeUp1C();
                 string n = cargodocs[currentdocrow].Number.Trim();
                 string t = ConvertToYYYYMMDD(cargodocs[currentdocrow].Data);
                 string x = n + "_" + t + "_" + Config.scannerNumber;
                 string z = "";
-                int xall = cargodocs[currentdocrow].XCodes.Length;
+                int xall = cargodocs[currentdocrow].XCodes.Length; // всего штрихкодов в текущем документе
 
-//
                 string pid;
                 int i;
-//                int q = 0;
-                int totalbydoc = 0; // неудалённых по всему документу
+                int totalbydoc = 0; // количество неудалённых штрихкодов по текущему документу
                 foreach (Product p in cargodocs[currentdocrow].TotalProducts)
                 {
                     pid = p.PID;
                     i = 0;
-//                    q += Convert.ToInt16(p.Quantity);
                     foreach (XCode xx in cargodocs[currentdocrow].XCodes)
                     {
                         if (pid == xx.PID && xx.DData == "") i++;
@@ -450,7 +449,6 @@ namespace BarCodeScanner
                     totalbydoc += i;
                     p.ScannedBar = i.ToString();
                 }
-//                cargodocs[currentdocrow].Quantity = q.ToString();
                 cargodocs[currentdocrow].ScannedBar = totalbydoc.ToString();
 
                 string xgood = cargodocs[currentdocrow].ScannedBar;
@@ -459,12 +457,9 @@ namespace BarCodeScanner
                 try
                 {
                     z = RestAPI_POST_Zip(@"http://" + Config.serverIp + "/CargoDocService.svc/CargoDocZip/" + x);
-                    if (z.Substring(0, 2) == "->")
+                    if (z.Substring(0, 2) == "->") // маркер, означающий нормальную передачу документа
                     {
-                        z = z.Remove(0, 2);
-                        //Log("[MF.DocSended] " + cargodocs[currentdocrow].Number);
-                        //Log("[MF.DocSended] " + z);
-                        //                            if (Convert.ToInt16(z) == Convert.ToInt16(cargodocs[currentdoccol].ScannedBar))
+                        z = z.Remove(0, 2); // получаем количество штрихкодов, принятых 1С
                         if (Convert.ToInt16(z) == xall)
                         {
                             Log("[MF.DocSended] " + z + "(without deleted " + xgood + ")");
@@ -474,9 +469,10 @@ namespace BarCodeScanner
                                 MessageBox.Show("Отправлено " + xgood + " штрихкодов по документу №" + cargodocs[currentdocrow].Number.Trim() + "(с удалёнными - " + xall.ToString() + ")");
                             try
                             {
-                                File.Delete(CurrentPath + @"doc\" + x + ".xml");
+                                // после подтверждения передачи, документ на сканере удаляется
+                                File.Delete(CurrentPath + @"doc\" + x + ".xml"); 
                                 LoadAllDataFromXml();
-                                GetCustomers();
+                                CreateScreenTable();
                                 currentdoccol = dataGrid1.CurrentCell.ColumnNumber;
                                 currentdocrow = dataGrid1.CurrentCell.RowNumber;
                             }
@@ -534,7 +530,7 @@ namespace BarCodeScanner
         }
 
         /// <summary>
-        /// Разбудить 1С
+        /// Разбудить 1С. Чтобы заранее поднялась из свопа и приготовилась обслуживать запросы.
         /// </summary>
         /// <returns>true - проснулась, false - нет</returns>
         public static Boolean WakeUp1C()
@@ -563,8 +559,7 @@ namespace BarCodeScanner
             try
             { 
                 string s = RestAPI_GET("http://" + Config.serverIp + "/CargoDocService.svc/Test1C");
-//                s = DeleteNameSpace(s);
-                if (s.IndexOf("</string>") >= 0)
+                if (s.IndexOf("</string>") >= 0) // если 1С работоспособна, она отвечает XML сообщением, содержащим текст "<string>OK</string>"
                 {
                     ss = s.Substring(s.IndexOf(">")+1);
                     s = ss.Substring(0,ss.IndexOf("</string>"));
@@ -580,10 +575,11 @@ namespace BarCodeScanner
         }
 
         /// <summary>
-        /// Проверка доступности сервера по сети
-        /// При этом не проверяется его работоспособность
+        /// Проверка доступности сервера по сети.
+        /// При этом не проверяется только доступность (ping), но не работоспособность.
         /// </summary>
-        /// <returns>Истина - сервер доступен, ложь - нет</returns>
+        /// <param name="serverAddress">IP адрес сервера</param>
+        /// <returns>true - сервер доступен, false - нет</returns>
         public static Boolean PingServer(string serverAddress)
         {
             int timeout = 5000;
@@ -607,7 +603,8 @@ namespace BarCodeScanner
         /// <summary>
         /// Получение данных с сервера командой GET
         /// </summary>
-        /// <returns>Ответ сервера в виде строки</returns>
+        /// <param name="url">URL запрашиваемого документа</param> 
+        /// <returns>Ответ сервера в виде текстовой строки</returns>
         public static string RestAPI_GET(string url)
         {
             string sb = "";
@@ -639,17 +636,16 @@ namespace BarCodeScanner
         }
 
         /// <summary>
-        /// Загрузка данных на сервер командой POST
-        /// В ответ приходит или количество загруженных штрих-кодов или ошибка в заранее оговоренной форме (см. класс Protocol)
+        /// Загрузка данных на сервер командой POST.
+        /// В ответ приходит или количество загруженных штрихкодов или ошибка в заранее оговоренной форме (см. класс Protocol)
         /// </summary>
-        /// <param name="url">Строка в формате БазовыйURLДляОтправкиДанных/НомерДокумента_Дата_НомерСканера </param>
-        /// <returns>Ответ сервера - количество загруженных штрих-кодов или ошибка</returns>
+        /// <param name="url">URL передаваемого документа в формате БазовыйURLДляОтправкиДанных/НомерДокумента_Дата_НомерСканера </param>
+        /// <returns>Ответ сервера - количество загруженных штрихкодов или ошибка</returns>
         private string RestAPI_POST(string url)
         {
             string sb = "";
             try
             {
-                //                Log("MF.SendDoc.Begin");
                 HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
                 request.Method = "POST";
                 request.Timeout = 30000;
@@ -665,7 +661,6 @@ namespace BarCodeScanner
                 dataStream.Close();
 
                 HttpWebResponse response = (HttpWebResponse)request.GetResponse();
-                //                Log("MF.SendDoc.Response");
                 StreamReader reader = new StreamReader(response.GetResponseStream(), Encoding.UTF8);
 
                 sb = HTTPDecode(reader.ReadToEnd().ToString());
@@ -687,7 +682,6 @@ namespace BarCodeScanner
                         if (proto.Message != null)
                         {
                             Log("[MF.RestAPI_POST.Result] " + sb);
-//                            MessageBox.Show("Отправлено " + proto.Message + " штрихкодов по документу " + cargodocs[currentdocrow].Number.Trim());
                             sb = "->" + proto.Message;
                         }
                         else
@@ -700,7 +694,6 @@ namespace BarCodeScanner
                     LogShow("[MF.RestAPI_POST.Error.2] " + sb);
                 }
 
-                //                LogShow("MF.SendDoc = " + sb);
                 response.Close();
                 reader.Close();
             }
@@ -712,6 +705,10 @@ namespace BarCodeScanner
             return sb;
         }
 
+
+        /// <summary>
+        /// Копирование данных из одного потока в другой (у .Net 3.5 Compact Framework нет встроенных средств копирования потоков)
+        /// </summary>
         public static void CopyStream(Stream input, Stream output)
         {
             byte[] buffer = new byte[8 * 1024];
@@ -724,13 +721,17 @@ namespace BarCodeScanner
             output.Flush();
         }
 
-
+        /// <summary>
+        /// Загрузка на сервер командой POST данных, упакованных GZip-ом.
+        /// Неупакованные данные не всегда влезают в буфер отправки (max 64KB для .Net 3.5 Compact Framework)
+        /// </summary>
+        /// <param name="url">URL передаваемого документа в формате БазовыйURLДляОтправкиДанных/НомерДокумента_Дата_НомерСканера </param>         
+        /// <returns>Ответ сервера - количество загруженных штрихкодов или ошибка</returns>
         private string RestAPI_POST_Zip(string url)
         {
             string sb = "";
             try
             {
-                //                Log("MF.SendDoc.Begin");
                 HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
                 request.Method = "POST";
                 request.Timeout = 30000;
@@ -739,7 +740,6 @@ namespace BarCodeScanner
                 //request.Proxy = GlobalProxySelection.GetEmptyWebProxy();
                 GlobalProxySelection.Select = new WebProxy("http://" + Config.serverIp.ToString() + ":80");
 
-                //request.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
                 request.AutomaticDecompression = DecompressionMethods.GZip;
                 //request.SendChunked = false;
                 //request.AllowWriteStreamBuffering = false;
@@ -799,53 +799,6 @@ namespace BarCodeScanner
 
 // >> unzip test
 
-/*                ms2.Position = 0;
-                using (FileStream compressedFileStream = File.Create(CurrentPath + "lastzip.gz"))
-                {
-                    using (GZipStream compressionStream = new GZipStream(compressedFileStream,CompressionMode.Compress))
-                    {
-                  //      originalFileStream.CopyTo(compressionStream);
-                        CopyStream(ms2, compressionStream);
-
-                    }
-                }*/
-
-/*                MemoryStream ms3 = new MemoryStream();
-                ms2.Position = 0;
-                byte[] byteArray33 = ms2.GetBuffer();
-                ms2.Position = 0;
-                using (GZipStream unzipStream = new GZipStream(ms2, CompressionMode.Decompress))
-                {
-                    byte[] buffer = new byte[8 * 1024];
-                    int len;
-                    while ((len = unzipStream.Read(buffer, 0, buffer.Length)) > 0)
-                    {
-                        ms3.Write(buffer, 0, len);
-                    }
-                }
-
-                ms3.Position = 0;
-                byte[] byteArray3 = ms3.GetBuffer();
-                sb = Encoding.UTF8.GetString(byteArray3,0,byteArray3.Length);
-                sb = sb.Substring(0, sb.IndexOf("</CargoDoc")) + "</CargoDoc>";
-                */               
-// << unzip test
-
-                //                    StreamReader reader = new StreamReader(ms3, Encoding.UTF8);
-                //                    sb = reader.ReadToEnd().ToString();
-
-                //                }
-
-                /*                    using (FileStream fileStream = File.Open(@"D:\WORK\CASIO\RestClient\62_20160401_03.gzz", FileMode.Create))
-                                    {
-                                        using (GZipStream stream = new GZipStream(fileStream, CompressionMode.Compress))
-                                        {
-                                            byte[] array = System.Text.Encoding.UTF8.GetBytes(postData);
-                                            stream.Write(array, 0, array.Length);
-                                        }
-                                    } */
-                //                stream.Close(); 
-
                 ms2.Position = 0;
                 byte[] byteArray2 = ms2.GetBuffer();
                 request.ContentLength = byteArray2.Length;
@@ -859,8 +812,6 @@ namespace BarCodeScanner
 
                 sb = HTTPReplace(reader.ReadToEnd().ToString());
 
-//                sb = reader.ReadToEnd().ToString();
-
                 try
                 {
                     Protocol proto = new Protocol();
@@ -878,8 +829,7 @@ namespace BarCodeScanner
                         if (proto.Message != null)
                         {
                             Log("[MF.RestAPI_POSTZ.Result] " + sb);
-//                            MessageBox.Show("Отправлено " + proto.Message + " штрихкодов по документу " + cargodocs[currentdocrow].Number.Trim());
-                            sb = "->" + proto.Message;
+                            sb = "->" + proto.Message; // вставляем маркер, что всё ОК
                         }
                         else
                         {
@@ -890,8 +840,6 @@ namespace BarCodeScanner
                 {
                     LogShow("[MF.RestAPI_POSTZ.Error.2] " + sb);
                 }
-
-                //                LogShow("MF.SendDoc = " + sb);
                 response.Close();
                 reader.Close();
             }
@@ -904,130 +852,12 @@ namespace BarCodeScanner
 
         }
 
-
-
-/*
-
-        /// <summary>
-        /// Загрузка данных на сервер командой POST
-        /// В ответ приходит или количество загруженных штрих-кодов или ошибка в заранее оговоренной форме (см. класс Protocol)
-        /// </summary>
-        /// <param name="url">Строка в формате БазовыйURLДляОтправкиДанных/НомерДокумента_Дата_НомерСканера </param>
-        /// <returns>Ответ сервера - количество загруженных штрих-кодов или ошибка</returns>
-        private string RestAPI_POST_Zip(string url)
-        {
-            string sb = "";
-            try
-            {
-                //                Log("MF.SendDoc.Begin");
-                HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
-                request.Method = "POST";
-                request.Timeout = 30000;
-                //request.ContentType = "application/xml;charset=utf-8";
-                request.ContentType = "application/zip;charset=utf-8";
-                //request.Proxy = GlobalProxySelection.GetEmptyWebProxy();
-                GlobalProxySelection.Select = new WebProxy("http://" + Config.serverIp.ToString() + ":80");
-                request.AutomaticDecompression = DecompressionMethods.GZip;
-                request.SendChunked = true;
-                //| DecompressionMethods.Deflate;
-                //request.SendChunked = false;
-                //request.AllowWriteStreamBuffering = false;
-                request.TransferEncoding = "gzip";
-
-                string postData = cargodocs[currentdocrow].Serialize();
-                byte[] byteArray = Encoding.UTF8.GetBytes(postData);
-
-
-                //                using (FileStream fs = File.OpenWrite(CurrentPath + @"doc\_" + cargodocs[currentdocrow].Number.ToString() + ".xml"))
-                //                {
-                //                    Byte[] info = new UTF8Encoding(true).GetBytes();
-                //                    fs.Write(byteArray, 0, byteArray.Length);
-                //                }
-
-                // zip >>
-                request.Headers.Add("Content-Encoding", "gzip");
-                MemoryStream ms = new MemoryStream();
-                MemoryStream ms2 = new MemoryStream();
-
-                using (GZipStream zipStream = new GZipStream(ms, CompressionMode.Compress))
-                {
-                    byte[] buffer = Encoding.UTF8.GetBytes(postData);
-                    zipStream.Write(buffer, 0, buffer.Length);
-                    ms.Position = 0;
-                    CopyStream(ms, ms2);
-                }
-
-                byte[] byteArray2 = ms2.GetBuffer();
-                request.ContentLength = byteArray2.Length;
-                Stream dataStream = request.GetRequestStream();
-
-                dataStream.Write(byteArray2, 0, byteArray2.Length);
-                dataStream.Close();
-                ms.Close();
-                ms2.Close();
-                //<<zip
-
-                // это если незипованный документ
-                //                request.ContentLength = byteArray.Length;
-                //                Stream dataStream = request.GetRequestStream();
-                //                dataStream.Write(byteArray, 0, byteArray.Length);
-                //                dataStream.Close();
-
-                HttpWebResponse response = (HttpWebResponse)request.GetResponse();
-                //                Log("MF.SendDoc.Response");
-                StreamReader reader = new StreamReader(response.GetResponseStream(), Encoding.UTF8);
-
-                sb = HTTPDecode(reader.ReadToEnd().ToString());
-
-                try
-                {
-                    Protocol proto = new Protocol();
-                    XmlSerializer serializer = new XmlSerializer(typeof(Protocol));
-                    using (var r = new StringReader(sb))
-                    {
-                        proto = (Protocol)serializer.Deserialize(r);
-                    }
-                    if (proto.Error != null)
-                    {
-                        Log("[MF.RestAPI_POSTZ.Error] " + sb);
-                        MessageBox.Show("[MF.RestAPI_POSTZ.Error] " + proto.Error);
-                    }
-                    else
-                        if (proto.Message != null)
-                        {
-                            Log("[MF.RestAPI_POSTZ.Result] " + sb);
-                            //                            MessageBox.Show("Отправлено " + proto.Message + " штрихкодов по документу " + cargodocs[currentdocrow].Number.Trim());
-                            sb = "->" + proto.Message;
-                        }
-                        else
-                        {
-                            LogShow("[MF.RestAPI_POSTZ.Error.3]");
-                        }
-                }
-                catch
-                {
-                    LogShow("[MF.RestAPI_POSTZ.Error.2] " + sb);
-                }
-
-                //                LogShow("MF.SendDoc = " + sb);
-                response.Close();
-                reader.Close();
-            }
-            catch (Exception ex)
-            {
-                LogErrShow("[MF.RestAPI_POSTZ.GlobalError]", "[MF.RestAPI_POSTZ.GlobalError] " + ex.Message.ToString(), ex);
-                sb = ex.Message.ToString();
-            }
-            return sb;
-        }
- */
-
         # endregion
 
         #region DataGrid - загрузка данных в таблицу, обработка событий, раскраска
 
         /// <summary>
-        /// Загрузка в экранную таблицу отгрузочных документов данных из соответствующей структуры в памяти
+        /// Загрузка данных в экранную таблицу отгрузочных документов из соответствующей структуры в памяти
         /// </summary>
         public void ReloadDocTable()
         {
@@ -1042,7 +872,7 @@ namespace BarCodeScanner
         /// <summary>
         /// Формирование экранной таблицы отгрузочных документов
         /// </summary>
-        private void GetCustomers()
+        private void CreateScreenTable()
         {
             fullColor = new Color();
             partialColor = new Color();
@@ -1064,16 +894,11 @@ namespace BarCodeScanner
 
             ReloadDocTable();
 
-            // ширина колонок
+            // описываем колонки
             dataGrid1.TableStyles.Clear();
             DataGridTableStyle tableStyle = new DataGridTableStyle();
-            //            tableStyle.MappingName = MainForm.doctable.TableName;
-
-            /*            vColumn.MappingName = "Name";
-                        vColumn.HeaderText = "Наименование";*/
 
             DataGridTextBoxColumnColored col0 = new DataGridTextBoxColumnColored();
-            //            DataGridTextBoxColumn col1 = new DataGridTextBoxColumn();
             col0.Width = 80;
             col0.MappingName = doctable.Columns[0].ColumnName;
             col0.HeaderText = doctable.Columns[0].ColumnName;
@@ -1081,7 +906,6 @@ namespace BarCodeScanner
             tableStyle.GridColumnStyles.Add(col0);
 
             DataGridTextBoxColumnColored col1 = new DataGridTextBoxColumnColored();
-            //            DataGridTextBoxColumn col2 = new DataGridTextBoxColumn();
             col1.Width = 90;
             col1.MappingName = doctable.Columns[1].ColumnName;
             col1.HeaderText = doctable.Columns[1].ColumnName;
@@ -1089,7 +913,6 @@ namespace BarCodeScanner
             tableStyle.GridColumnStyles.Add(col1);
 
             DataGridTextBoxColumnColored col2 = new DataGridTextBoxColumnColored();
-            //            DataGridTextBoxColumn col3 = new DataGridTextBoxColumn();
             if (MainForm.cargodocs.Count > 9) 
               col2.Width = 236;
             else 
@@ -1121,9 +944,10 @@ namespace BarCodeScanner
         /// </summary>
         public class DataGridTextBoxColumnColored : DataGridTextBoxColumn
         {
-            //Определим класс аргумента события, делегат и само событие, 
-            //необходимые для "общения" кода выполняющего прорисовку ячейки, с кодом, 
-            //предоставляющим цвет для этой ячейки. 
+            /// <summary>
+            /// Определим класс аргумента события, делегат и само событие, необходимые для "общения" кода выполняющего прорисовку ячейки, 
+            /// с кодом, предоставляющим цвет для этой ячейки. 
+            /// </summary>
             public class NeedBackgroundEventArgs : EventArgs
             {
                 private int FRowNum;
@@ -1147,11 +971,11 @@ namespace BarCodeScanner
             public delegate void NeedBackgroundEventHandler(object sender, NeedBackgroundEventArgs e);
             public event NeedBackgroundEventHandler NeedBackground;
 
-            //А вот и переопределенный метод DataGridTextBoxColumn.Paint(), 
-            //запрашивающий при помощи события (аргументов) цвет и передающий его 
-            //базовому методу Paint(), в параметре backBrush. 
-            //Теперь метод Paint базового класса будет заниматься прорисовкой ячейки, 
-            //используя при этом подставленный нами backBrush. 
+            /// <summary>
+            /// Переопределенный метод DataGridTextBoxColumn.Paint(), запрашивающий при помощи события цвет и передающий его 
+            /// базовому методу Paint(), в параметре backBrush. 
+            /// Теперь метод Paint базового класса будет заниматься прорисовкой ячейки, используя при этом подставленный нами backBrush. 
+            /// </summary>
             protected override void Paint(Graphics g, Rectangle bounds, CurrencyManager source, int rowNum, Brush backBrush, Brush foreBrush, bool alignToRight)
             {
                 NeedBackgroundEventArgs e = new NeedBackgroundEventArgs(source, rowNum, backBrush, foreBrush);
@@ -1186,7 +1010,7 @@ namespace BarCodeScanner
         }
 
         /// <summary>
-        /// При щелчке на строке таблицы (или нажатии Enter) вызывается список продукции этого отгрузочного документа
+        /// При щелчке на строке таблицы (или нажатии Enter) вызывается форма со списком продукции этого отгрузочного документа
         /// </summary>
         private void dataGrid1_Click(object sender, EventArgs e)
         {
@@ -1199,16 +1023,11 @@ namespace BarCodeScanner
                 productlistform.ShowDialog();
                 LogSave();
             }
-/*            else
-            {
-                Log("[MF.DataGrid.Empty.Table]");
-                MessageBox.Show("В сканере нет загруженных документов!");
-            }*/
             MainForm.scanmode = ScanMode.Doc;
         }
 
         /// <summary>
-        /// При изменении текущей ячейки обновляем соответствующие переменные
+        /// Если перешли на другую ячейку - нужно обновить переменные, хранящие её позицию
         /// </summary>
         private void dataGrid1_CurrentCellChanged(object sender, EventArgs e)
         {
@@ -1230,44 +1049,37 @@ namespace BarCodeScanner
                 MainForm.scanmode = ScanMode.BarCod;
                 dataGrid1_Click(sender, e);
                 serviceKeySequence = 0; 
-//                manualDocNumEnter = 0;
             }
             if ((e.KeyCode == System.Windows.Forms.Keys.F1))
             {
                 button1_Click(this, e);
                 serviceKeySequence = 0;
-//                manualDocNumEnter = 0;
             }
             if ((e.KeyCode == System.Windows.Forms.Keys.F2))
             {
                 panel3_Click(this, e);
                 serviceKeySequence = 0;
-//                manualDocNumEnter = 0;
             }
 
             if ((e.KeyCode == System.Windows.Forms.Keys.F3))
             {
                 button3_Click(this, e);
                 serviceKeySequence = 0;
-//                manualDocNumEnter = 0;
             } 
             if ((e.KeyCode == System.Windows.Forms.Keys.F4))
             {
                 button4_Click(this, e);
                 serviceKeySequence = 0;
-//                manualDocNumEnter = 0;
             }
 
             // отработка нажатия .1111. - запуск сервисной формы
             if ((e.KeyCode.GetHashCode() == 190) && (serviceKeySequence == 0))
             {
                 serviceKeySequence++;
-//                manualDocNumEnter = 0;
             }
             if ((e.KeyCode == System.Windows.Forms.Keys.D1) && (serviceKeySequence >= 1) && (serviceKeySequence <= 4))
             {
                 serviceKeySequence++;
-//                manualDocNumEnter = 0;
             }
             if ((e.KeyCode.GetHashCode() == 190) && (serviceKeySequence == 5)) // запуск сервисной формы по .1111.
             {
@@ -1276,37 +1088,22 @@ namespace BarCodeScanner
                 ServiceForm serv = new ServiceForm();
                 serv.ShowDialog();
                 LoadAllDataFromXml();
-                GetCustomers();
+                CreateScreenTable();
                 currentdoccol = dataGrid1.CurrentCell.ColumnNumber;
                 currentdocrow = dataGrid1.CurrentCell.RowNumber;
                 MainForm.scanmode = ScanMode.Doc;
-//                manualDocNumEnter = 0;
             }
-            if ((e.KeyCode.GetHashCode() == 190) && (serviceKeySequence == 3)) // перезагрузка по ..11..
+            // отработка нажатия ..11.. - перезагрузка
+            if ((e.KeyCode.GetHashCode() == 190) && (serviceKeySequence == 3))
             {
                 SoftReset();
             }
 
-            // отработка нажатия 000 - ручной ввод номера документа
-/*            if (e.KeyCode == System.Windows.Forms.Keys.D0)
-//            if (e.KeyCode.GetHashCode() == 48)
-                if (manualDocNumEnter < 3)
-                {
-                    manualDocNumEnter++;
-                    serviceKeySequence = 0;
-                }
-                else
-                {
-                    MainForm.scanmode = ScanMode.Nothing;
-                    manualDocNumEnter = 0;
-                    serviceKeySequence = 0;
-                    DocNumEnter doc = new DocNumEnter();
-                    doc.ShowDialog();
-                    //BarCodeProcessing(barcod);
-                    MainForm.scanmode = ScanMode.Doc;
-                }*/
         }
 
+        /// <summary>
+        /// Выгрузка документов из сканера на сервер
+        /// </summary>
         private void button1_Click(object sender, EventArgs e)
         {
             MainForm.scanmode = ScanMode.Nothing;
@@ -1314,6 +1111,9 @@ namespace BarCodeScanner
             MainForm.scanmode = ScanMode.Doc;
         }
 
+        /// <summary>
+        /// Выбор направления перемещения продукции
+        /// </summary>
         private void panel3_Click(object sender, EventArgs e)
         {
             MainForm.scanmode = ScanMode.Nothing;
@@ -1324,11 +1124,6 @@ namespace BarCodeScanner
             labelTo.Text = Config.transferTo;
         }
        
-/*        private void button3_Click(object sender, EventArgs e)
-        {
-            SetTime(GetTime());
-        } */
-
         /// <summary>
         /// Выход из программы
         /// </summary>
@@ -1341,6 +1136,11 @@ namespace BarCodeScanner
 
         # region Scan - обработка событий сканирования штрихкодов
 
+        /// <summary>
+        /// Проверка того, что такой штрихкод уже сканировался (имеется в документах на сканере)
+        /// </summary>
+        /// <param name="barcod">Номер штрихкода</param>
+        /// <returns>true - такой штрихкод уже сканировался, false - ещё не сканировался</returns>
         public static Boolean isXCodePresent(string barcod) 
         {
             foreach (XCode x in MainForm.cargodocs[MainForm.currentdocrow].XCodes)
@@ -1351,11 +1151,12 @@ namespace BarCodeScanner
         }
 
         /// <summary>
-        /// Добавление отсканированного штрих-кода в таблицу на экране и стуктуры в памяти
+        /// Добавление отсканированного штрихкода в таблицу на экране и стуктуры в памяти
         /// </summary>
+        /// <param name="barcod">Номер штрихкода</param>
         public static void ScanBarCode(string barcod)
         {
-            string bar = barcod.Substring(0, 5);
+            string bar = barcod.Substring(0, 5); // первые 5 символов штрихкода - тип продукции
             Boolean find_product = false;
             int i = 0;
 
@@ -1385,8 +1186,8 @@ namespace BarCodeScanner
                         {
                             if (Convert.ToInt16(p.ScannedBar) == Convert.ToInt16(p.Quantity) - 1)
                             {
-                                MainForm.Attention();                                
-                                MainForm.LogShow("Достигнуто необходимое количество продукции с кодом " + bar); // предупреждаем
+                                MainForm.Attention(); // предупреждаем, что больше сканировать не нужно - это последний штрихкод по этому типу продукции
+                                MainForm.LogShow("Достигнуто необходимое количество продукции с кодом " + bar);
                             }
 
                             MainForm.cargodocs[MainForm.currentdocrow].TotalProducts[i].ScannedBar = (Convert.ToInt16(p.ScannedBar) + 1).ToString();
@@ -1409,22 +1210,18 @@ namespace BarCodeScanner
                             xl.AddRange(MainForm.cargodocs[MainForm.currentdocrow].XCodes);
                             xl.Add(x);
                             MainForm.cargodocs[MainForm.currentdocrow].XCodes = xl.ToArray();
-//                            MainForm.cargodocs[MainForm.currentdocrow].ScannedBar = 
 
                             if (MainForm.xcodelistform != null && MainForm.xcodelistform.Visible)
                             {
                                 MainForm.xcodetable.AcceptChanges();
                                 MainForm.xcodelistform.ReloadXCodeTable();
                                 MainForm.xcodelistform.Refresh();
-//                                MainForm.xcodelistform.Refresh();
-//                                MainForm.xcodetable.AcceptChanges();
                             }
                             else
                             {
                                 MainForm.producttable.AcceptChanges();
                                 MainForm.productlistform.ReloadProductTable();
                                 MainForm.productlistform.Refresh();
-//                                MainForm.producttable.AcceptChanges();
                             }
                             Application.DoEvents();
                             i++;
@@ -1446,7 +1243,7 @@ namespace BarCodeScanner
         }
 
         /// <summary>
-        /// Вызов обработчика при возникновении события считывания штрих-кода
+        /// Вызов обработчика в основном потоке при возникновении события считывания штрихкода в потоке cs
         /// </summary>
         private void OnScan(object sender, ScannedDataEventArgs e)
         {
@@ -1454,22 +1251,25 @@ namespace BarCodeScanner
         }
 
         /// <summary>
-        /// Считанный штрих-код может быть штрих-кодом товара или штрих-кодом отгрузочного документа
-        /// Здесь производится определение того, что это за штрих-код, и вызов соответствующих процедур
+        /// Считанный штрихкод может быть штрихкодом товара или штрихкодом отгрузочного документа.
+        /// Здесь производится определение того, что это за штрихкод, и вызов соответствующих процедур
         /// </summary>
+        /// <param name="code">Номер штрихкода</param>
         public void BarCodeProcessing(string code)
         {
             string barcod = "";
             switch (scanmode)
             {
-                case (ScanMode.Doc):
+                case (ScanMode.Doc): // открыта форма со списком документов, значит считываем штрихкод с номером документа
                     WakeUp1C();
+                    // сканер иногда добавляет после номера штрихкода произвольные символы, поэтому обрезаем лишнее
                     if (code.Length > 15) barcod = code.Substring(0, 15);
                     else barcod = code;
                     string docnum = barcod.Replace(" ", "_") + "_" + Config.scannerNumber;
-                    //                    if (existDoc(CurrentPath + @"doc\" + barcod.Replace(" ", "_") + "_" + Config.scannerNumber + ".xml"))
-                    if (doclist.Contains(CurrentPath + @"doc\" + docnum + ".xml"))
-                                                                 
+
+                    // проверяем, нет-ли уже такого документа, чтобы не затереть отсканированные ранее штрихкоды
+                    // в принципе, 1С не должна-бы отдавать документ, если он уже загружен, но лучше проверить
+                    if (doclist.Contains(CurrentPath + @"doc\" + docnum + ".xml")) 
                     {
                         int space = barcod.IndexOf(" ");
                         string data_raw = barcod.Remove(0, space);
@@ -1493,10 +1293,10 @@ namespace BarCodeScanner
                         }
                     }
                     break;
-                case (ScanMode.BarCod):
-                    if (code.Length > 15)
-                        barcod = code.Substring(0, 15);
+                case (ScanMode.BarCod): // открыта форма со списком продукции, значит считываем штрихкод изделия
+                    if (code.Length > 15) barcod = code.Substring(0, 15);
                     else barcod = code;
+                    // отгрузка по одному документу может происходить в разных местах, поэтому нужно выбрать откуда/куда грузим
                     if (Config.transferFromLid == "" || Config.transferToLid == "")
                     {
                         MainForm.Attention();
@@ -1507,7 +1307,7 @@ namespace BarCodeScanner
                         ScanBarCode(barcod);
                     }
                     break;
-                case (ScanMode.Nothing):
+                case (ScanMode.Nothing): // показываем считанный штрихкод без обработки (например, если мы находимся в сервисном режиме)
                     MessageBox.Show(code);
                     break;
             }
@@ -1517,6 +1317,9 @@ namespace BarCodeScanner
 
         # region Log - протоколирование событий
 
+        /// <summary>
+        /// Тройной писк и срабатывание вибромотора, чтобы пользователь не пропустил сообщение
+        /// </summary>
         public static void Attention()
         {
             MainForm.Speaker();
@@ -1529,21 +1332,29 @@ namespace BarCodeScanner
             MainForm.Vibration();
         }
 
+        /// <summary>
+        /// Включение вибромотора в режиме ALARM
+        /// </summary>
         public static void Vibration()
         {
             Calib.SystemLibNet.Api.SysPlayVibrator(Calib.SystemLibNet.Def.B_ALARM, Calib.SystemLibNet.Def.VIBRATOR_DEFAULT, Calib.SystemLibNet.Def.VIBRATOR_DEFAULT, Calib.SystemLibNet.Def.VIBRATOR_DEFAULT);
         }
 
+        /// <summary>
+        /// Писк динамика в режиме WARNING
+        /// </summary>
         public static void Speaker()
         {
-            //Calib.SystemLibNet.Api.SysPlayBuzzer(Calib.SystemLibNet.Def.B_ALARM, Calib.SystemLibNet.Def.BUZ_DEFAULT, Calib.SystemLibNet.Def.BUZ_DEFAULT);
             Calib.SystemLibNet.Api.SysPlayBuzzer(Calib.SystemLibNet.Def.B_WARNING, Calib.SystemLibNet.Def.BUZ_DEFAULT, Calib.SystemLibNet.Def.BUZ_DEFAULT);
         }
 
         /// <summary>
-        /// Добавление в лог-файл строки с отметкой времени плюс распарсенного сообщения об ошибке
-        /// Сообщение об ошибке - на экран
+        /// Добавление в лог-файл сообщения с отметкой времени и распарсенного сообщения об ошибке.
+        /// Также выдаётся сообщение об ошибке на экран
         /// </summary>
+        /// <param name="LogString">Строчка, которая запишется в лог-файл</param>
+        /// <param name="МessageString">Строчка, которая отобразится на экране</param>
+        /// <param name="ex">Исключение (exception)</param>
         public static void LogErrShow(string LogString, string MessageString, Exception ex)
         {
             if (ex.InnerException == null)
@@ -1558,8 +1369,10 @@ namespace BarCodeScanner
         }
 
         /// <summary>
-        /// Добавление в лог-файл строки с отметкой времени плюс распарсенного сообщения об ошибке
+        /// Добавление в лог-файл сообщения с отметкой времени и распарсенного сообщения об ошибке.
         /// </summary>
+        /// <param name="LogString">Строчка, которая запишется в лог-файл</param>
+        /// <param name="ex">Исключение (exception)</param>         
         public static void LogErr(string LogString, Exception ex)
         {
             if (ex.InnerException == null)
@@ -1575,6 +1388,7 @@ namespace BarCodeScanner
         /// <summary>
         /// Добавление в лог-файл строки с отметкой времени
         /// </summary>
+        /// <param name="LogString">Строчка, которая запишется в лог-файл</param>         
         public static void Log(string LogString)
         {
             MainForm.log.Add(System.DateTime.Now.ToString() + " " + LogString);
@@ -1583,10 +1397,11 @@ namespace BarCodeScanner
         /// <summary>
         /// Добавление в лог-файл строки с отметкой времени и показ такого-же сообщения во всплывающем окне
         /// </summary>
-        public static void LogShow(string Label)
+        /// <param name="LogString">Строчка, которая запишется в лог-файл</param> 
+        public static void LogShow(string LogString)
         {
-            MainForm.log.Add(System.DateTime.Now.ToString() + " " + Label);
-            MessageBox.Show(Label);
+            MainForm.log.Add(System.DateTime.Now.ToString() + " " + LogString);
+            MessageBox.Show(LogString);
         }
 
         /// <summary>
@@ -1619,7 +1434,8 @@ namespace BarCodeScanner
         /// <summary>
         /// Преобразование отметки времени из формата "2015-11-18T14:50:17+02:00" в формат "18.11.15"
         /// </summary>
-        /// <returns>Строка с датой</returns>
+        /// <param name="s">Строка даты в формате "2015-11-18T14:50:17+02:00"</param>
+        /// <returns>Строка даты в формате "18.11.15"</returns>
         public static string ConvertToDDMMYY(string s)
         {
             string ss;
@@ -1637,7 +1453,8 @@ namespace BarCodeScanner
         /// <summary>
         /// Преобразование отметки времени из формата "2015-11-18T14:50:17+02:00" в формат "20151118"
         /// </summary>
-        /// <returns>Строка с датой</returns>
+        /// <param name="s">Строка даты в формате "2015-11-18T14:50:17+02:00"</param>
+        /// <returns>Строка даты в формате "20151118"</returns>
         public static string ConvertToYYYYMMDD(string s)
         {
             string ss;
@@ -1656,7 +1473,8 @@ namespace BarCodeScanner
         /// Преобразование отметки времени из формата "27.01.16 14:27:48" в формат "2016-01-27T14:27:48+02:00"
         /// (исходное значение часов может состоять из одной или двух цифр)
         /// </summary>
-        /// <returns>Строка с датой</returns>
+        /// <param name="s">Строка даты в формате "27.01.16 14:27:48"</param>
+        /// <returns>Строка даты в формате "2016-01-27T14:27:48+02:00"</returns>
         public static string ConvertToFullDataTime(string s)
         {
             string ss;
@@ -1674,7 +1492,8 @@ namespace BarCodeScanner
         /// <summary>
         /// Преобразование отметки времени из формата "2015-11-18T14:50:17+02:00" в формат "18.11.15 14:50:17"
         /// </summary>
-        /// <returns>Строка с датой</returns>
+        /// <param name="s">Строка даты в формате "2015-11-18T14:50:17+02:00"</param>
+        /// <returns>Строка даты в формате "18.11.15 14:50:17"</returns>
         public static string ConvertToDDMMYYhhmmss(string s)
         {
             string ss;
@@ -1697,10 +1516,11 @@ namespace BarCodeScanner
         }
 
         /// <summary>
-        /// Удаляет из XML определения пространств имён
+        /// Удаляет из XML определения пространств имён.
         /// Применять только один раз, иначе удаляет больше чем надо
         /// </summary>
-        /// <returns>Строка</returns>
+        /// <param name="s">Строка в формате XML</param> 
+        /// <returns>Строка XML без пространства имён</returns>
         public static string DeleteNameSpace(string s)
         {
             string ss = "";
@@ -1729,15 +1549,17 @@ namespace BarCodeScanner
         /// <summary>
         /// Заменяет в XML значения nil на ""
         /// </summary>
-        /// <returns>Строка</returns>
+        /// <param name="s">Строка в формате XML</param> 
+        /// <returns>Строка XML без nil-ов</returns>
         private string DeleteNil(string s)
         {
             return s.Replace(@" i:nil=""true""", "");
         }
 
         /// <summary>
-        /// Заменяет HTTP-шные коды на обычные символы
+        /// Заменяет HTTP-шные коды знаков "меньше" и "больше" на обычные символы
         /// </summary>
+        /// <param name="input">Строка</param> 
         /// <returns>Строка</returns>
         private string HTTPDecode(string input)
         {
@@ -1749,8 +1571,9 @@ namespace BarCodeScanner
         }
 
         /// <summary>
-        /// Заменяет HTTP-шные коды на обычные символы
+        /// Заменяет HTTP-шные коды знаков "меньше" и "больше" на обычные символы; удаляет табуляции и переводы строк
         /// </summary>
+        /// <param name="input">Строка</param> 
         /// <returns>Строка</returns>
         private string HTTPReplace(string input)
         {
@@ -1763,11 +1586,10 @@ namespace BarCodeScanner
             return input;
         }
 
-        #endregion
-
         /// <summary>
-        /// Обновляет значение времени на экране и проверяет состояние батареи
+        /// Устанавливает системное время
         /// </summary>
+        /// <param name="s">Строка даты в формате </param> 
         public static void SetTime(string s)
         {
             if (s == "") return;
@@ -1781,13 +1603,15 @@ namespace BarCodeScanner
             hour = Convert.ToInt16(time[0]);
             min = Convert.ToInt16(time[1]);
             sec = Convert.ToInt16(time[2]);
-            //MessageBox.Show(s + " " + DateTime.Now.ToString() );
             DateTime dt = new DateTime(year, month, day, hour, min, sec);
             OpenNETCF.WindowsCE.DateTimeHelper.LocalTime = dt;
-            //System.Threading.Thread.Sleep(1000);            
-            //MessageBox.Show(DateTime.Now.ToString());
         }
 
+        /// <summary>
+        /// Если нужно - добавляет впереди нолик до двухсимвольной строки
+        /// </summary>
+        /// <param name="i">Строка вида "01" или "1"</param> 
+        /// <returns>Строка вида "01"</returns>         
         public static string AddZeroIfNeed(int i)
         {
             string s = i.ToString();
@@ -1797,7 +1621,7 @@ namespace BarCodeScanner
         }
 
         /// <summary>
-        /// Обновляет значение времени на экране и проверяет состояние батареи
+        /// Периодически вызывается из таймера. Обновляет значение времени на экране и проверяет состояние батареи
         /// </summary>
         private void timer1_Tick(object sender, EventArgs e)
         {
@@ -1824,6 +1648,9 @@ namespace BarCodeScanner
             }
         }
 
+        /// <summary>
+        /// Вызывает форму для ручного ввода номера документа
+        /// </summary>
         private void button3_Click(object sender, EventArgs e)
         {
             MainForm.scanmode = ScanMode.Nothing;
@@ -1840,10 +1667,15 @@ namespace BarCodeScanner
             }
         }
 
+        /// <summary>
+        /// Перезагрузка сканера (Reset)
+        /// </summary>
         public static void SoftReset()
         {
             SetSystemPowerState(null, POWER_STATE_RESET, POWER_FORCE);
         }
+
+        #endregion
 
     }
 }

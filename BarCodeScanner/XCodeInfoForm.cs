@@ -18,7 +18,7 @@ namespace BarCodeScanner
             label11.Text = MainForm.xcodetable.Rows[XCodeListForm.currentxcoderow].Field<string>(0);
             label12.Text = MainForm.ConvertToDDMMYYhhmmss(MainForm.xcodetable.Rows[XCodeListForm.currentxcoderow].Field<string>(5));
             label13.Text = MainForm.xcodetable.Rows[XCodeListForm.currentxcoderow].Field<string>(2);
-            label14.Text = MainForm.xcodetable.Rows[XCodeListForm.currentxcoderow].Field<string>(3);
+            label14.Text = MainForm.ConvertToDDMMYYhhmmss(MainForm.xcodetable.Rows[XCodeListForm.currentxcoderow].Field<string>(3));
             label15.Text = MainForm.xcodetable.Rows[XCodeListForm.currentxcoderow].Field<string>(4);
 
             if (label14.Text == "")

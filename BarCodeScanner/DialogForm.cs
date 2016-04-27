@@ -47,23 +47,19 @@ namespace BarCodeScanner
         {
             if ((e.KeyCode == System.Windows.Forms.Keys.F1))
             {
-                //                MessageBox.Show("Нажата F1 аппаратно");
                 buttonRetry_Click(this, e);
             }
             if ((e.KeyCode == System.Windows.Forms.Keys.F2))
             {
                 buttonRetry_Click(this, e);
-                //                MessageBox.Show("Нажата F2 аппаратно");
             }
             if ((e.KeyCode == System.Windows.Forms.Keys.F3))
             {
                 buttonCancel_Click(this, e);
-                //                MessageBox.Show("Нажата F3 аппаратно");
             }
             if ((e.KeyCode == System.Windows.Forms.Keys.F4))
             {
                 buttonCancel_Click(this, e);
-                //                MessageBox.Show("Нажата F4 аппаратно");
             }
 
         }

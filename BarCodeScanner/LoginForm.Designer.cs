@@ -51,7 +51,6 @@
             this.textBox1.Size = new System.Drawing.Size(100, 21);
             this.textBox1.TabIndex = 1;
             this.textBox1.TextChanged += new System.EventHandler(this.textBox1_TextChanged);
-            this.textBox1.KeyDown += new System.Windows.Forms.KeyEventHandler(this.textBox1_KeyDown);
             // 
             // buttonClose
             // 
@@ -87,6 +86,7 @@
             this.Controls.Add(this.buttonClose);
             this.Controls.Add(this.textBox1);
             this.Controls.Add(this.label1);
+            this.KeyPreview = true;
             this.MinimizeBox = false;
             this.Name = "LoginForm";
             this.Text = "Сканирование штрихкодов";

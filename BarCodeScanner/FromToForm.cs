@@ -116,9 +116,6 @@ namespace BarCodeScanner
             else if (listBox2.Focused)
             {
                 listBox3.Enabled = true;
-/*                button1.Visible = false;
-                label5.Visible = false;*/
-
                 s = MainForm.settings.Transfers[listBox1.SelectedIndex].To.Split(',');
                 foreach (string t in s)
                 {
@@ -152,7 +149,6 @@ namespace BarCodeScanner
 
             if (listBox2.Visible == false) // прошли уже все три списка
             {
-                //Config.transfer = label12.Text;
                 foreach (Location n in MainForm.settings.Locations)
                 {
                     if (n.Name == label22.Text)

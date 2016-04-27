@@ -14,56 +14,53 @@ namespace BarCodeScanner
     public partial class LoginForm : Form
     {
 
+        /// <summary>
+        /// Переменная для возврата значения из формы
+        /// </summary>
         private static DialogResult LoginResult;
 
+        /// <summary>
+        /// Конструктор для формы проверки паролей
+        /// </summary>
         public LoginForm()
         {
             InitializeComponent();
         }
 
+        /// <summary>
+        /// Сравнение введённого пользователем пароля с паролями из конфигурационного файла.
+        /// Кроме паролей обрабатывает последовательности клавиш для входа в сервисный режим и для перезагрузки сканера
+        /// </summary>
+        /// <param name="pwd">Строка из 6 символов, считанных с клавиатуры</param>
+        /// <returns>true - найден пользователь, соответствующий введённому паролю, false - не найден</returns>
         private Boolean TestPassword(string pwd)
         {
             Config.userName = "";
 
-/*            try
-            {
-                string p = pwd.Substring(0, 6);
-                double d = Math.Sqrt(Convert.ToInt64(p) * 171587);
-                pwd = Math.Floor(Math.Sqrt(i * 171587)).ToString(); // дополнить спереди нулями
-                    //=ЦЕЛОЕ(КОРЕНЬ(A11*171587))
-            }
-            catch
-            {
-                return false;
-            } */
-
-            foreach (User u in MainForm.settings.Users)
+            foreach (User u in MainForm.settings.Users) 
             {
                 if (u.Pwd == pwd)
                 {
-                    Config.userName = u.FIO;
+                    Config.userName = u.FIO; // нашли, чей пароль
                     break;
                 }
             }
 
-            if (Config.userName != "")
+            if (Config.userName != "") 
             {
-//                Config.superuser = false;
                 return true;
             }
             else
             { 
-                if (pwd == ".1111.")
+                if (pwd == ".1111.") // вход в сервисный режим
                 {
-                    Config.userName = "Superuser";
-//                    Config.superuser = true;
+//                    Config.userName = "Superuser";
                     ServiceForm serviceform = new ServiceForm();
                     serviceform.ShowDialog();
                     serviceform.Close();
-//                    return true;
                 }
                 else
-                    if (pwd == "..11..")
+                    if (pwd == "..11..") // перезагрузка сканера
                     {
                         MainForm.SoftReset();
                     }
@@ -72,6 +69,10 @@ namespace BarCodeScanner
 
         }
 
+        /// <summary>
+        /// Обработчик нажатия клавиш.
+        /// Когда нажато 6 клавиш - вызывает функцию проверки пароля. Если пароль неверен - предлагает ввести ещё раз.
+        /// </summary>
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
             if (textBox1.Text.Length >= 6)
@@ -83,10 +84,7 @@ namespace BarCodeScanner
                 }
                 else
                 {
-/*                    if (Config.userName == "Superuser")
-                    {
-                        Config.userName = "";
-                        if (DialogForm.Dialog("Войти в программу?", "", "Вопрос", "              Да", "          Нет") == DialogResult.Retry)
+                    if (DialogForm.Dialog("Неверный пароль", "", "Ошибка!", "           Повторить", "         Выход") == DialogResult.Retry)
                         {
                             textBox1.Text = "";
                         }
@@ -95,23 +93,14 @@ namespace BarCodeScanner
                             LoginResult = DialogResult.Abort;
                             Close();
                         }
-                    }
-                    else
-                    {*/
-                        if (DialogForm.Dialog("Неверный пароль", "", "Ошибка!", "           Повторить", "         Выход") == DialogResult.Retry)
-                        {
-                            textBox1.Text = "";
-                        }
-                        else
-                        {
-                            LoginResult = DialogResult.Abort;
-                            Close();
-                        }
-//                    }
                 }
             }
         }
 
+        /// <summary>
+        /// Форму ввода пароля вызываем через функцию, чтобы вернуть в MainForm результат проверки пароля.
+        /// </summary>
+        /// <returns>DialogResult.OK - пользователь найден, вход в программу разрешён, DialogResult.Abort - производим выход из программы</returns>
         public static DialogResult Dialog()
         {
             LoginForm f = new LoginForm();
@@ -120,18 +109,24 @@ namespace BarCodeScanner
             return LoginResult;
         }
 
+        /// <summary>
+        /// Выход из формы ввода пароля и, соответственно, из программы
+        /// </summary>
         private void buttonClose_Click(object sender, EventArgs e)
         {
             LoginResult = DialogResult.Abort;
             Close();
         }
 
+        /// <summary>
+        /// Обработка нажатия клавиш на форме
+        /// </summary>
         private void LoginForm_KeyDown(object sender, KeyEventArgs e)
         {
-            if ((e.KeyCode == System.Windows.Forms.Keys.F3))
+/*            if ((e.KeyCode == System.Windows.Forms.Keys.F3))
             {
                 buttonClose_Click(this, e);
-            }
+            }*/
             if ((e.KeyCode == System.Windows.Forms.Keys.F4))
             {
                 buttonClose_Click(this, e);
@@ -139,7 +134,10 @@ namespace BarCodeScanner
 
         }
 
-        private void textBox1_KeyDown(object sender, KeyEventArgs e)
+        /// <summary>
+        /// Обработка нажатия клавиш в поле ввода
+        /// </summary>
+/*        private void textBox1_KeyDown(object sender, KeyEventArgs e)
         {
             if ((e.KeyCode == System.Windows.Forms.Keys.F3))
             {
@@ -149,7 +147,7 @@ namespace BarCodeScanner
             {
                 buttonClose_Click(this, e);
             }
-        }
+        }*/
 
     }
 }

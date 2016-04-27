@@ -14,10 +14,16 @@ namespace BarCodeScanner
 {
     public partial class ServiceForm : Form
     {
+
+        /// <summary>
+        /// Конструктор для сервисной формы.
+        /// </summary>
         public ServiceForm()
         {
             InitializeComponent();
             MainForm.Log("[SF.Enter] Вход в настройки");
+
+            // показываем всякую статистику
             listBox1.Items.Add("Сканер номер " + Config.scannerNumber);
             listBox1.Items.Add("MAC адрес " + Config.scannerMac);
             listBox1.Items.Add("IP адрес " + Config.scannerIp);
@@ -55,10 +61,13 @@ namespace BarCodeScanner
             }
 
             MainForm.doclist = Directory.GetFiles(MainForm.CurrentPath + "doc", "*_*_*.xml");
-
             listBox1.Items.Add("Количество документов " + MainForm.doclist.Length.ToString());
         }
 
+        /// <summary>
+        /// Показывает заряд аккумулятора в виде процентов
+        /// </summary>
+        /// <returns>Строка вида "0-20%","41-60%"</returns>         
         private string Battery()
         {
             switch (Microsoft.WindowsMobile.Status.SystemState.PowerBatteryStrength) {
@@ -75,8 +84,9 @@ namespace BarCodeScanner
             }
         }
 
-        // (SystemState.PowerBatteryState == BatteryState.Critical)
-
+        /// <summary>
+        /// Загрузка файла настроек
+        /// </summary>
         private void button1_Click(object sender, EventArgs e)
         {
             if (MainForm.DownloadSettings())
@@ -91,6 +101,9 @@ namespace BarCodeScanner
             }
         }
 
+        /// <summary>
+        /// Вызов формы со списком документов
+        /// </summary>
         private void button2_Click(object sender, EventArgs e)
         {
             FileListForm flf = new FileListForm();
@@ -98,18 +111,11 @@ namespace BarCodeScanner
             flf.Close();
         }
 
+        /// <summary>
+        /// Просмотр лог файла
+        /// </summary>
         private void button3_Click(object sender, EventArgs e)
         {
-/*            listBox1.Items.Clear();
-            string line;
-            System.IO.StreamReader file = new System.IO.StreamReader(MainForm.CurrentPath + "log.txt");
-            while ((line = file.ReadLine()) != null)
-            {
-                listBox1.Items.Add(line);
-            }
-            listBox1.Focus();
-            file.Close();*/
-
             MainForm.LogSave();
             ProcessStartInfo processStartInfo = new ProcessStartInfo();
             processStartInfo.FileName = @"\FlashDisk\Program Files\Notepad\Notepad.exe";
@@ -125,18 +131,27 @@ namespace BarCodeScanner
 
         }
 
+        /// <summary>
+        /// Выход из сервисного режима
+        /// </summary>
         private void button4_Click(object sender, EventArgs e)
         {
             MainForm.scanmode = ScanMode.Doc;
             Close();
         }
 
+        /// <summary>
+        /// Удаление лог файла
+        /// </summary>
         private void button5_Click(object sender, EventArgs e)
         {
             File.Delete(MainForm.CurrentPath + "log.txt");
             MessageBox.Show("Лог-файл удалён");
         }
 
+        /// <summary>
+        /// Обработка нажатия клавиш
+        /// </summary>
         private void ServiceForm_KeyDown(object sender, KeyEventArgs e)
         {
             if ((e.KeyCode == System.Windows.Forms.Keys.F1))
@@ -170,6 +185,9 @@ namespace BarCodeScanner
 
         }
 
+        /// <summary>
+        /// Принудительная синхронизация времени с сервером
+        /// </summary>
         private void button6_Click(object sender, EventArgs e)
         {
             try
@@ -183,6 +201,9 @@ namespace BarCodeScanner
             }
         }
 
+        /// <summary>
+        /// Проверка связи с 1С
+        /// </summary>
         private string Test1C()
         {
             if (MainForm.TestConnect1C())
@@ -190,6 +211,9 @@ namespace BarCodeScanner
             else return "1С не отвечает";
         }
 
+        /// <summary>
+        /// Вызов проверки связи с 1С
+        /// </summary>
         private void button7_Click(object sender, EventArgs e)
         {
             MessageBox.Show(Test1C());

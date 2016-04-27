@@ -35,8 +35,8 @@
             this.label12 = new System.Windows.Forms.Label();
             this.button4 = new System.Windows.Forms.Button();
             this.panel1 = new System.Windows.Forms.Panel();
-            this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
+            this.label1 = new System.Windows.Forms.Label();
             this.panel2 = new System.Windows.Forms.Panel();
             this.panel3.SuspendLayout();
             this.panel1.SuspendLayout();
@@ -49,7 +49,7 @@
             this.dataGrid1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dataGrid1.Location = new System.Drawing.Point(0, 0);
             this.dataGrid1.Name = "dataGrid1";
-            this.dataGrid1.Size = new System.Drawing.Size(240, 244);
+            this.dataGrid1.Size = new System.Drawing.Size(240, 249);
             this.dataGrid1.TabIndex = 0;
             this.dataGrid1.CurrentCellChanged += new System.EventHandler(this.dataGrid1_CurrentCellChanged);
             this.dataGrid1.KeyDown += new System.Windows.Forms.KeyEventHandler(this.XCodeListForm_KeyDown);
@@ -61,16 +61,16 @@
             this.panel3.Controls.Add(this.label12);
             this.panel3.Controls.Add(this.button4);
             this.panel3.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.panel3.Location = new System.Drawing.Point(0, 265);
+            this.panel3.Location = new System.Drawing.Point(0, 270);
             this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(240, 29);
+            this.panel3.Size = new System.Drawing.Size(240, 24);
             // 
             // label11
             // 
             this.label11.BackColor = System.Drawing.Color.Red;
             this.label11.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold);
             this.label11.ForeColor = System.Drawing.Color.White;
-            this.label11.Location = new System.Drawing.Point(2, 5);
+            this.label11.Location = new System.Drawing.Point(2, 2);
             this.label11.Name = "label11";
             this.label11.Size = new System.Drawing.Size(35, 20);
             this.label11.Text = "F1";
@@ -78,7 +78,7 @@
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(0, 3);
+            this.button1.Location = new System.Drawing.Point(0, 0);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(120, 24);
             this.button1.TabIndex = 12;
@@ -89,7 +89,7 @@
             // 
             this.label12.BackColor = System.Drawing.Color.Yellow;
             this.label12.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold);
-            this.label12.Location = new System.Drawing.Point(123, 5);
+            this.label12.Location = new System.Drawing.Point(122, 2);
             this.label12.Name = "label12";
             this.label12.Size = new System.Drawing.Size(35, 20);
             this.label12.Text = "F4";
@@ -97,7 +97,7 @@
             // 
             // button4
             // 
-            this.button4.Location = new System.Drawing.Point(120, 3);
+            this.button4.Location = new System.Drawing.Point(120, 0);
             this.button4.Name = "button4";
             this.button4.Size = new System.Drawing.Size(120, 24);
             this.button4.TabIndex = 11;
@@ -113,13 +113,6 @@
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(240, 21);
             // 
-            // label1
-            // 
-            this.label1.Location = new System.Drawing.Point(3, 3);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(160, 16);
-            this.label1.Text = "label1";
-            // 
             // label2
             // 
             this.label2.Location = new System.Drawing.Point(185, 3);
@@ -128,13 +121,20 @@
             this.label2.Text = "label2";
             this.label2.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             // 
+            // label1
+            // 
+            this.label1.Location = new System.Drawing.Point(3, 3);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(160, 16);
+            this.label1.Text = "label1";
+            // 
             // panel2
             // 
             this.panel2.Controls.Add(this.dataGrid1);
             this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel2.Location = new System.Drawing.Point(0, 21);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(240, 244);
+            this.panel2.Size = new System.Drawing.Size(240, 249);
             // 
             // XCodeListForm
             // 

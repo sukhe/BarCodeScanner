@@ -58,7 +58,7 @@
             this.label33.BackColor = System.Drawing.Color.Yellow;
             this.label33.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold);
             this.label33.ForeColor = System.Drawing.Color.Black;
-            this.label33.Location = new System.Drawing.Point(4, 269);
+            this.label33.Location = new System.Drawing.Point(3, 272);
             this.label33.Name = "label33";
             this.label33.Size = new System.Drawing.Size(35, 20);
             this.label33.Text = "F4";
@@ -69,9 +69,9 @@
             this.buttonClose.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
                         | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonClose.Location = new System.Drawing.Point(0, 264);
+            this.buttonClose.Location = new System.Drawing.Point(0, 270);
             this.buttonClose.Name = "buttonClose";
-            this.buttonClose.Size = new System.Drawing.Size(240, 30);
+            this.buttonClose.Size = new System.Drawing.Size(240, 24);
             this.buttonClose.TabIndex = 4;
             this.buttonClose.Text = "Выход";
             this.buttonClose.Click += new System.EventHandler(this.buttonClose_Click);
@@ -90,7 +90,7 @@
             this.label2.Location = new System.Drawing.Point(3, 31);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(132, 20);
-            this.label2.Text = "Дата сканирования";
+            this.label2.Text = "Дата сканиров.";
             // 
             // label3
             // 
@@ -130,7 +130,7 @@
             this.label8.Location = new System.Drawing.Point(3, 195);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(119, 20);
-            this.label8.Text = "Номер документа";
+            this.label8.Text = "№ документа";
             // 
             // label10
             // 
@@ -158,72 +158,74 @@
             // 
             // label11
             // 
-            this.label11.Location = new System.Drawing.Point(128, 10);
+            this.label11.Location = new System.Drawing.Point(109, 10);
             this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(110, 20);
+            this.label11.Size = new System.Drawing.Size(129, 20);
             this.label11.Text = "label11";
             // 
             // label12
             // 
-            this.label12.Location = new System.Drawing.Point(128, 31);
+            this.label12.Location = new System.Drawing.Point(109, 31);
             this.label12.Name = "label12";
-            this.label12.Size = new System.Drawing.Size(110, 20);
+            this.label12.Size = new System.Drawing.Size(129, 20);
             this.label12.Text = "label12";
             // 
             // label13
             // 
-            this.label13.Location = new System.Drawing.Point(128, 52);
+            this.label13.Location = new System.Drawing.Point(109, 52);
             this.label13.Name = "label13";
-            this.label13.Size = new System.Drawing.Size(110, 20);
+            this.label13.Size = new System.Drawing.Size(129, 20);
             this.label13.Text = "label13";
             // 
             // label14
             // 
-            this.label14.Location = new System.Drawing.Point(128, 73);
+            this.label14.ForeColor = System.Drawing.Color.Firebrick;
+            this.label14.Location = new System.Drawing.Point(109, 73);
             this.label14.Name = "label14";
-            this.label14.Size = new System.Drawing.Size(110, 20);
+            this.label14.Size = new System.Drawing.Size(129, 20);
             this.label14.Text = "label14";
             // 
             // label15
             // 
-            this.label15.Location = new System.Drawing.Point(128, 94);
+            this.label15.ForeColor = System.Drawing.Color.Firebrick;
+            this.label15.Location = new System.Drawing.Point(109, 94);
             this.label15.Name = "label15";
-            this.label15.Size = new System.Drawing.Size(110, 20);
+            this.label15.Size = new System.Drawing.Size(129, 20);
             this.label15.Text = "label15";
             // 
             // label16
             // 
-            this.label16.Location = new System.Drawing.Point(128, 135);
+            this.label16.Location = new System.Drawing.Point(109, 135);
             this.label16.Name = "label16";
-            this.label16.Size = new System.Drawing.Size(110, 20);
+            this.label16.Size = new System.Drawing.Size(129, 20);
             this.label16.Text = "label16";
             // 
             // label17
             // 
-            this.label17.Location = new System.Drawing.Point(128, 156);
+            this.label17.Location = new System.Drawing.Point(109, 156);
             this.label17.Name = "label17";
-            this.label17.Size = new System.Drawing.Size(110, 20);
+            this.label17.Size = new System.Drawing.Size(128, 20);
             this.label17.Text = "label17";
             // 
             // label18
             // 
-            this.label18.Location = new System.Drawing.Point(128, 195);
+            this.label18.Location = new System.Drawing.Point(109, 195);
             this.label18.Name = "label18";
-            this.label18.Size = new System.Drawing.Size(110, 20);
+            this.label18.Size = new System.Drawing.Size(129, 20);
             this.label18.Text = "label18";
             // 
             // label19
             // 
-            this.label19.Location = new System.Drawing.Point(128, 216);
+            this.label19.Location = new System.Drawing.Point(109, 216);
             this.label19.Name = "label19";
-            this.label19.Size = new System.Drawing.Size(110, 20);
+            this.label19.Size = new System.Drawing.Size(129, 20);
             this.label19.Text = "label19";
             // 
             // label20
             // 
-            this.label20.Location = new System.Drawing.Point(128, 237);
+            this.label20.Location = new System.Drawing.Point(109, 237);
             this.label20.Name = "label20";
-            this.label20.Size = new System.Drawing.Size(110, 20);
+            this.label20.Size = new System.Drawing.Size(129, 20);
             this.label20.Text = "label20";
             // 
             // XCodeInfoForm

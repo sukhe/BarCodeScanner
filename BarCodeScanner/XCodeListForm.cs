@@ -139,7 +139,7 @@ namespace BarCodeScanner
             MainForm.scanmode = ScanMode.Nothing;
             if (MainForm.xcodetable.Rows[i].Field<string>(3) == "")
             {
-                if (DialogForm.Dialog("Удалить штрих-код ", barcod, "Удалить?", "        Да", "        Нет") == DialogResult.Retry)
+                if (DialogForm.Dialog("Удалить штрихкод ", barcod, "Удалить?", "        Да", "        Нет") == DialogResult.Retry)
                 {
                     XCode x = new XCode();
 
@@ -168,7 +168,7 @@ namespace BarCodeScanner
             }
             else
             {
-                MessageBox.Show("Этот штрих-код уже удалён");
+                MessageBox.Show("Этот штрихкод уже удалён");
             }
             MainForm.scanmode = ScanMode.BarCod;
         }

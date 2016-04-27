@@ -84,7 +84,7 @@
             this.label7.BackColor = System.Drawing.Color.Green;
             this.label7.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold);
             this.label7.ForeColor = System.Drawing.Color.White;
-            this.label7.Location = new System.Drawing.Point(123, 36);
+            this.label7.Location = new System.Drawing.Point(122, 36);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(35, 20);
             this.label7.Text = "F3";
@@ -95,7 +95,7 @@
             this.label5.BackColor = System.Drawing.Color.Red;
             this.label5.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold);
             this.label5.ForeColor = System.Drawing.Color.White;
-            this.label5.Location = new System.Drawing.Point(3, 36);
+            this.label5.Location = new System.Drawing.Point(2, 36);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(35, 20);
             this.label5.Text = "F1";
@@ -123,14 +123,14 @@
             // 
             this.panel2.BackColor = System.Drawing.Color.Chocolate;
             this.panel2.Controls.Add(this.label3);
-            this.panel2.Location = new System.Drawing.Point(3, 60);
+            this.panel2.Location = new System.Drawing.Point(2, 60);
             this.panel2.Name = "panel2";
             this.panel2.Size = new System.Drawing.Size(35, 20);
             // 
             // label3
             // 
             this.label3.BackColor = System.Drawing.Color.Black;
-            this.label3.Location = new System.Drawing.Point(5, 6);
+            this.label3.Location = new System.Drawing.Point(4, 6);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(25, 14);
             // 
@@ -146,7 +146,7 @@
             // 
             this.label1.BackColor = System.Drawing.Color.Yellow;
             this.label1.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold);
-            this.label1.Location = new System.Drawing.Point(123, 61);
+            this.label1.Location = new System.Drawing.Point(122, 61);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(35, 20);
             this.label1.Text = "F4";
@@ -240,7 +240,7 @@
             this.label4.Enabled = false;
             this.label4.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold);
             this.label4.ForeColor = System.Drawing.Color.White;
-            this.label4.Location = new System.Drawing.Point(4, 7);
+            this.label4.Location = new System.Drawing.Point(3, 7);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(35, 20);
             this.label4.Text = "F2";
