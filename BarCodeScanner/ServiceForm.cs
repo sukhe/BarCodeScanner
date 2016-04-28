@@ -21,6 +21,7 @@ namespace BarCodeScanner
         public ServiceForm()
         {
             InitializeComponent();
+
             MainForm.Log("[SF.Enter] Вход в настройки");
 
             // показываем всякую статистику
@@ -150,6 +151,40 @@ namespace BarCodeScanner
         }
 
         /// <summary>
+        /// Принудительная синхронизация времени с сервером
+        /// </summary>
+        private void button6_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                MainForm.SetTime(MainForm.GetTime());
+                MessageBox.Show("Время с сервера получено: " + DateTime.Now.ToString());
+            }
+            catch
+            {
+                MessageBox.Show("Не удалось получить всемя с сервера");
+            }
+        }
+
+        /// <summary>
+        /// Проверка связи с 1С
+        /// </summary>
+        private string Test1C()
+        {
+            if (MainForm.TestConnect1C())
+                return "1С отвечает на запросы";
+            else return "1С не отвечает";
+        }
+
+        /// <summary>
+        /// Вызов проверки связи с 1С
+        /// </summary>
+        private void button7_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show(Test1C());
+        }
+
+        /// <summary>
         /// Обработка нажатия клавиш
         /// </summary>
         private void ServiceForm_KeyDown(object sender, KeyEventArgs e)
@@ -183,40 +218,6 @@ namespace BarCodeScanner
                 button7_Click(this, e);
             }
 
-        }
-
-        /// <summary>
-        /// Принудительная синхронизация времени с сервером
-        /// </summary>
-        private void button6_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                MainForm.SetTime(MainForm.GetTime());
-                MessageBox.Show("Время с сервера получено: " + DateTime.Now.ToString());
-            }
-            catch
-            {
-                MessageBox.Show("Не удалось получить всемя с сервера");
-            }
-        }
-
-        /// <summary>
-        /// Проверка связи с 1С
-        /// </summary>
-        private string Test1C()
-        {
-            if (MainForm.TestConnect1C())
-                return "1С отвечает на запросы";
-            else return "1С не отвечает";
-        }
-
-        /// <summary>
-        /// Вызов проверки связи с 1С
-        /// </summary>
-        private void button7_Click(object sender, EventArgs e)
-        {
-            MessageBox.Show(Test1C());
         }
 
     }

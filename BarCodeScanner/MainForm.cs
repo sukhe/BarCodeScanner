@@ -124,7 +124,6 @@ namespace BarCodeScanner
             if (TestFilesAndDirs())
             {
                 CargoDoc cargodoc = new CargoDoc();
-                MainForm.scanmode = ScanMode.Doc;
 
                 cs = new CasioScanner();
                 cs.Scanned += OnScan;
@@ -151,6 +150,7 @@ namespace BarCodeScanner
                     dataGrid1.DataSource = doctable;
                     CreateScreenTable();
                 }
+                MainForm.scanmode = ScanMode.Doc;
 
                 Log("Start " + Config.userName + " " + Config.scannerNumber);
 
@@ -213,8 +213,15 @@ namespace BarCodeScanner
             if (!Directory.Exists(CurrentPath + "doc"))
                 Directory.CreateDirectory(CurrentPath + "doc");
 
-/*            Config.serverIp = "192.168.10.213";
-            Config.userName = "Мистер X"; */
+            try
+            {
+                Config.serverIp = settings.CommonSettings.ServerIP;
+                Config.baseUrl = settings.CommonSettings.BaseUrl;
+                Config.logLevel = Convert.ToInt16(settings.CommonSettings.LogLevel);
+            }
+            catch
+            {
+            }
 
             GetScannerID();
             if (Config.scannerNumber == "")
@@ -303,7 +310,7 @@ namespace BarCodeScanner
             {
                 try
                 {
-                    string s = RestAPI_GET("http://"+Config.serverIp+"/CargoDocService.svc/Settings");
+                    string s = RestAPI_GET("http://"+Config.serverIp+ Config.baseUrl + "/Settings");
                     s = MainForm.DeleteNameSpace(s);
                     XmlSerializer serializer = new XmlSerializer(typeof(Settings));
 
@@ -358,7 +365,7 @@ namespace BarCodeScanner
                     int i = 0;
                     do
                     {
-                        s = RestAPI_GET("http://" + Config.serverIp + "/CargoDocService.svc/CargoDoc/" + docnum);
+                        s = RestAPI_GET("http://" + Config.serverIp + Config.baseUrl + "/CargoDoc/" + docnum);
                         s = DeleteNameSpace(s);
                         s = DeleteNil(s);
                         if (s == "<CargoDoc>") // Пришёл пустой документ. Такое бывает, если не успел отработать запрос к 1С. 
@@ -456,7 +463,7 @@ namespace BarCodeScanner
                 { 
                 try
                 {
-                    z = RestAPI_POST_Zip(@"http://" + Config.serverIp + "/CargoDocService.svc/CargoDocZip/" + x);
+                    z = RestAPI_POST_Zip(@"http://" + Config.serverIp + Config.baseUrl + "/CargoDocZip/" + x);
                     if (z.Substring(0, 2) == "->") // маркер, означающий нормальную передачу документа
                     {
                         z = z.Remove(0, 2); // получаем количество штрихкодов, принятых 1С
@@ -513,7 +520,7 @@ namespace BarCodeScanner
             try
             {
                 XmlSerializer serializer = new XmlSerializer(typeof(CustomTime));
-                string s = RestAPI_GET("http://" + Config.serverIp + "/CargoDocService.svc/Time");
+                string s = RestAPI_GET("http://" + Config.serverIp + Config.baseUrl + "/Time");
                 s = DeleteNameSpace(s);
                 CustomTime customtime = new CustomTime();
                 using (var reader = new StringReader(s))
@@ -558,7 +565,7 @@ namespace BarCodeScanner
             string ss;
             try
             { 
-                string s = RestAPI_GET("http://" + Config.serverIp + "/CargoDocService.svc/Test1C");
+                string s = RestAPI_GET("http://" + Config.serverIp + Config.baseUrl + "/Test1C");
                 if (s.IndexOf("</string>") >= 0) // если 1С работоспособна, она отвечает XML сообщением, содержащим текст "<string>OK</string>"
                 {
                     ss = s.Substring(s.IndexOf(">")+1);

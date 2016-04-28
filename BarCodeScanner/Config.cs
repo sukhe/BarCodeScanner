@@ -15,11 +15,12 @@ namespace BarCodeScanner
         public static string scannerIp = "";
         public static string scannerMac = "";
         public static string userName = "";
-//        public static string batterylevel = "";
-//        public static Boolean superuser = false;
         public static string serverIp = "192.168.10.213";
-//        public static Boolean notping = true;
-//        public static string transfer = "";
+        public static string baseUrl = "/CargoDocService.svc";
+        /// <summary>
+        /// Уровень протоколирования: 0 - рабочий режим, 1 - разработка (подробные логи)
+        /// </summary>
+        public static int logLevel = 1;
         public static string transferFrom = "";
         public static string transferTo = "";
         public static string transferFromLid = "";
@@ -30,6 +31,6 @@ namespace BarCodeScanner
     /// <summary>
     /// Режим сканирования штрихкода
     /// </summary>
-    //public enum ScanMode { Doc, BarCod, DelBarCod, Nothing }
     public enum ScanMode { Doc, BarCod, Nothing }
+
 }

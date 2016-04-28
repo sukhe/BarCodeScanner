@@ -12,8 +12,6 @@ namespace BarCodeScanner
         /// Creates a new instance of the <see cref="ScannedDataEventArgs"/>
         /// </summary>
         /// <param name="data"></param>
-//        public ScannedDataEventArgs(IEnumerable<BarcodeData> data)
-//        public ScannedDataEventArgs(IEnumerable<string> data)
         public ScannedDataEventArgs(string data)
         {
             Data = data;
@@ -27,8 +25,6 @@ namespace BarCodeScanner
         /// if the scanner is not capable of this then the barcode is obviously
         /// stored in the first index of the string array (<see cref="Data"/>[0])
         /// </remarks>
-        // public IEnumerable<BarcodeData> Data { get; private set; }
-        //public IEnumerable<string> Data { get; private set; }
         public string Data { get; private set; }
     }
 }

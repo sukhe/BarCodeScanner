@@ -14,24 +14,12 @@ namespace BarCodeScanner
     {
 
         public static int currentproductrow;
-//        private int zizin;
 
         public ProductListForm()
         {
             InitializeComponent();
             label1.Text = "№"+MainForm.cargodocs[MainForm.currentdocrow].Number.Trim() + " / " + MainForm.cargodocs[MainForm.currentdocrow].Partner.Trim();
             MainForm.scanmode = ScanMode.BarCod;
-
-/*            fullColor = new Color();
-            partialColor = new Color();
-            partialColor = Color.FromArgb(255, 127, 127);
-            fullColor = Color.FromArgb(127, 255, 127); */
-
-//            zizin = 0;
-
-/*            MainForm.re
-                addBarCode = new AddScan(BarCodeProcessing);*/
-
             dataGrid1.Focus();
         }
 
@@ -40,16 +28,16 @@ namespace BarCodeScanner
             if (MainForm.producttable == null)
                 MainForm.producttable = new DataTable();
             dataGrid1.DataSource = MainForm.producttable;
-            GetProducts();
+            CreateProductTable();
         }
 
-        private void GetProducts()
+        /// <summary>
+        /// Формирование экранной таблицы списка продукции
+        /// </summary>
+        private void CreateProductTable()
         {
-            //            AddDataToTable();
-
             if (MainForm.producttable.Columns.Count == 0)
             {
-
                 DataColumn PID = MainForm.producttable.Columns.Add("Код", typeof(string));
                 MainForm.producttable.Columns.Add("Название", typeof(string));
                 MainForm.producttable.Columns.Add("Надо", typeof(string));
@@ -61,11 +49,10 @@ namespace BarCodeScanner
 
             ReloadProductTable();
 
-            // ширина колонок
+            // описываем колонки
             MainForm.productlistform.dataGrid1.TableStyles.Clear();
             DataGridTableStyle tableStyle = new DataGridTableStyle();
             DataGridTextBoxColumnColored col0 = new DataGridTextBoxColumnColored();
-            //            DataGridTextBoxColumn col0 = new DataGridTextBoxColumn();
             col0.Width = 80;
             col0.MappingName = MainForm.producttable.Columns[0].ColumnName;
             col0.HeaderText = MainForm.producttable.Columns[0].ColumnName;
@@ -74,7 +61,6 @@ namespace BarCodeScanner
 
             
             DataGridTextBoxColumnColored col1 = new DataGridTextBoxColumnColored();
-            //            DataGridTextBoxColumn col1 = new DataGridTextBoxColumn();
             if (MainForm.producttable.Rows.Count > 12) 
                 col1.Width = 180;
             else 
@@ -85,7 +71,6 @@ namespace BarCodeScanner
             tableStyle.GridColumnStyles.Add(col1);
 
             DataGridTextBoxColumnColored col2 = new DataGridTextBoxColumnColored();
-            //            DataGridTextBoxColumn col2 = new DataGridTextBoxColumn();
             col2.Width = 76;
             col2.MappingName = MainForm.producttable.Columns[2].ColumnName;
             col2.HeaderText = MainForm.producttable.Columns[2].ColumnName;
@@ -93,58 +78,61 @@ namespace BarCodeScanner
             tableStyle.GridColumnStyles.Add(col2);
 
             DataGridTextBoxColumnColored col3 = new DataGridTextBoxColumnColored();
-            //            DataGridTextBoxColumn col3 = new DataGridTextBoxColumn();
             col3.Width = 66;
             col3.MappingName = MainForm.producttable.Columns[3].ColumnName;
             col3.HeaderText = MainForm.producttable.Columns[3].ColumnName;
             col3.NeedBackgroundProduct += new DataGridTextBoxColumnColored.NeedBackgroundEventHandlerProduct(OnBackgroundEventHandlerProduct);
             tableStyle.GridColumnStyles.Add(col3);
 
-            // учесть ширину вертикальной прокрутки в ширине колонок
-
             MainForm.productlistform.dataGrid1.TableStyles.Add(tableStyle);
 
             MainForm.producttable.AcceptChanges();
         }
 
+        /// <summary>
+        /// Загрузка данных в экранную таблицу списка продукции из соответствующей структуры в памяти
+        /// </summary>
         public void ReloadProductTable()
         {
-            string pid;
+            string pid; // переменная для типа продукции (product id)
+            int need = 0; // необходимое количество продукции по всем типам
+            int have = 0; // уже отсканировано продукции по всем типам
             int i;
-            int q = 0;
-            int b = 0;
-//            MainForm.producttable.Clear();
+
             MainForm.producttable.Rows.Clear();
             foreach (Product p in MainForm.cargodocs[MainForm.currentdocrow].TotalProducts)
             {
                 pid = p.PID;
                 i = 0;
-                q += Convert.ToInt16(p.Quantity);
+                need += Convert.ToInt16(p.Quantity); // p.Quantity - необходимое количество продукции по типу p.PID
                 foreach (XCode x in MainForm.cargodocs[MainForm.currentdocrow].XCodes)
                 {
-                    if (pid == x.PID && x.DData == "") i++;
+                    if (pid == x.PID && x.DData == "") i++; // если штрихкод неудалён - прибавляем его к уже отсканированным
                 }
-                b += i;
+                have += i;
                 p.ScannedBar = i.ToString();
                 MainForm.producttable.Rows.Add(new object[] { p.PID, p.PName, p.Quantity, p.ScannedBar });
 
             }
             MainForm.producttable.AcceptChanges();
-            MainForm.cargodocs[MainForm.currentdocrow].Quantity = q.ToString();
-            MainForm.cargodocs[MainForm.currentdocrow].ScannedBar = b.ToString();
-            label2.Text = q.ToString() + "/" + b.ToString();
-            if (b == 0) label2.BackColor = Color.White;
-            else if (b != q) label2.BackColor = MainForm.partialColor;
+            MainForm.cargodocs[MainForm.currentdocrow].Quantity = need.ToString();
+            MainForm.cargodocs[MainForm.currentdocrow].ScannedBar = have.ToString();
+            label2.Text = need.ToString() + "/" + have.ToString();
+            if (have == 0) label2.BackColor = Color.White; // меняем цвет фона в зависимости от количества нужных/отсканированных штрихкодов
+            else if (have != need) label2.BackColor = MainForm.partialColor;
             else label2.BackColor = MainForm.fullColor;
             label2.Refresh();
         }
 
-        // разукрашивание ячеек в нужный цвет
+        /// <summary>
+        /// Определяем класс для работы с цветными строками экранной таблицы списка продукции
+        /// </summary>
         public class DataGridTextBoxColumnColored : DataGridTextBoxColumn
         {
-            //Определим класс аргумента события, делегат и само событие, 
-            //необходимые для "общения" кода выполняющего прорисовку ячейки, с кодом, 
-            //предоставляющим цвет для этой ячейки. 
+            /// <summary>
+            /// Определим класс аргумента события, делегат и само событие, необходимые для "общения" кода выполняющего прорисовку ячейки, 
+            /// с кодом, предоставляющим цвет для этой ячейки. 
+            /// </summary>
             public class NeedBackgroundEventArgs : EventArgs
             {
                 private int FRowNum;
@@ -168,11 +156,11 @@ namespace BarCodeScanner
             public delegate void NeedBackgroundEventHandlerProduct(object sender, NeedBackgroundEventArgs e);
             public event NeedBackgroundEventHandlerProduct NeedBackgroundProduct;
 
-            //А вот и переопределенный метод DataGridTextBoxColumn.Paint(), 
-            //запрашивающий при помощи события (аргументов) цвет и передающий его 
-            //базовому методу Paint(), в параметре backBrush. 
-            //Теперь метод Paint базового класса будет заниматься прорисовкой ячейки, 
-            //используя при этом подставленный нами backBrush. 
+            /// <summary>
+            /// Переопределенный метод DataGridTextBoxColumn.Paint(), запрашивающий при помощи события цвет и передающий его 
+            /// базовому методу Paint(), в параметре backBrush. 
+            /// Теперь метод Paint базового класса будет заниматься прорисовкой ячейки, используя при этом подставленный нами backBrush. 
+            /// </summary>
             protected override void Paint(Graphics g, Rectangle bounds, CurrencyManager source, int rowNum, Brush backBrush, Brush foreBrush, bool alignToRight)
             {
                 NeedBackgroundEventArgs e = new NeedBackgroundEventArgs(source, rowNum, backBrush, foreBrush);
@@ -181,6 +169,10 @@ namespace BarCodeScanner
             }
         }
 
+        /// <summary>
+        /// Раскрашивание в нужный цвет ячеек экранной таблицы списка продукции
+        /// в зависимости от количества отсканированных и необходимых штрихкодов этого типа продукции
+        /// </summary>
         private void OnBackgroundEventHandlerProduct(object sender, DataGridTextBoxColumnColored.NeedBackgroundEventArgs e)
         {
             e.ForeBrush = new SolidBrush(Color.Black);
@@ -196,71 +188,32 @@ namespace BarCodeScanner
                 e.BackBrush = new SolidBrush(Color.White);
         }
 
+        /// <summary>
+        /// Если перешли на другой тип продукции - нужно обновить переменную, хранящую номер строки
+        /// </summary>
         private void dataGrid1_CurrentCellChanged(object sender, EventArgs e)
         {
             currentproductrow = dataGrid1.CurrentRowIndex;
         }
 
+        /// <summary>
+        /// Обработка нажатия клавиш
+        /// </summary>
         private void ProductListForm_KeyDown(object sender, KeyEventArgs e)
         {
             if ((e.KeyCode == System.Windows.Forms.Keys.Enter))
             {
                 dataGrid1_Click(sender, e);
             }
-            if ((e.KeyCode == System.Windows.Forms.Keys.F1))
-            {
-                button1_Click(this, e);
-            }
             if ((e.KeyCode == System.Windows.Forms.Keys.F4))
             {
                 button4_Click(this, e);
             }
-
-/*            if ((e.KeyCode == System.Windows.Forms.Keys.D5))
-            {
-                //                button4_Click(this, e);
-                string b = MainForm.cargodocs[0].TotalProducts[currentproductrow].PID.ToString();
-                Random rand = new Random();
-                b = b + rand.Next(100000000, 999999999).ToString();
-                MainForm.ScanBarCode(b);
-                //                manualDocNumEnter = 0;
-            }*/
-
-
-/*            if ((e.KeyCode == System.Windows.Forms.Keys.D1))
-            {
-                //button1_Click(this, e);
-                MainForm.ScanBarCode(MainForm.producttable.Rows[currentproductrow].Field<string>(0)+"01160000"+zizi(++zizin));
-            }*/
-/*            if ((e.KeyCode == System.Windows.Forms.Keys.D2))
-            {
-                Calib.SystemLibNet.Api.SysPlayBuzzer(Calib.SystemLibNet.Def.B_ALARM, Calib.SystemLibNet.Def.BUZ_DEFAULT, Calib.SystemLibNet.Def.BUZ_DEFAULT);
-            }
-            if ((e.KeyCode == System.Windows.Forms.Keys.D9))
-            {
-                Calib.SystemLibNet.Api.SysPlayBuzzer(Calib.SystemLibNet.Def.B_WARNING, Calib.SystemLibNet.Def.BUZ_DEFAULT, Calib.SystemLibNet.Def.BUZ_DEFAULT);
-            }
-            if ((e.KeyCode == System.Windows.Forms.Keys.D8))
-            {
-                MainForm.Speaker();
-                MainForm.Vibration();
-                System.Threading.Thread.Sleep(100);
-                MainForm.Speaker();
-                MainForm.Vibration();
-                System.Threading.Thread.Sleep(100);
-                MainForm.Speaker();                   
-                MainForm.Vibration();
-            }*/
         }
 
-/*        private string zizi(int i)
-        {
-            string s = i.ToString();
-            if (s.Length == 1)
-                return "0" + s;
-            else return s;
-        }*/
-
+        /// <summary>
+        /// Выход из формы со списком продукции
+        /// </summary>
         private void button4_Click(object sender, EventArgs e)
         {
             CargoDoc d = new CargoDoc();
@@ -272,19 +225,15 @@ namespace BarCodeScanner
             Close();
         }
 
-        private void button1_Click(object sender, EventArgs e)
-        {
-            MessageBox.Show("Удаление продукции не предусмотрено");
-        }
-
+        /// <summary>
+        /// Открываем форму со списком штрихкодов по текущему типу продукции
+        /// </summary>
         private void dataGrid1_Click(object sender, EventArgs e)
         {
-//            currentdoccol = dataGrid1.CurrentCell.ColumnNumber;
             currentproductrow = dataGrid1.CurrentCell.RowNumber;
             MainForm.xcodelistform = new XCodeListForm();
             MainForm.xcodelistform.ShowDialog();
         }
-
 
     }
 }

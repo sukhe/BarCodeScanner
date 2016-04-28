@@ -11,12 +11,12 @@ namespace BarCodeScanner
 {
     public partial class DocNumEnter : Form
     {
-        Boolean flag;
+//        Boolean flag;
 
         public DocNumEnter()
         {
             InitializeComponent();
-            flag = false;
+//            flag = false;
         }
 
         private void DocNumEnter_KeyDown(object sender, KeyEventArgs e)
@@ -36,7 +36,7 @@ namespace BarCodeScanner
                 ) && textBox1.Focused )
             {
                 dateTimePicker1.Focus();
-                flag = true;
+//                flag = true;
             }
 
 /*            if ((e.KeyCode != System.Windows.Forms.Keys.F1) && (flag))

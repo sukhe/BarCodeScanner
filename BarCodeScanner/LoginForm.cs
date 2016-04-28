@@ -54,7 +54,6 @@ namespace BarCodeScanner
             { 
                 if (pwd == ".1111.") // вход в сервисный режим
                 {
-//                    Config.userName = "Superuser";
                     ServiceForm serviceform = new ServiceForm();
                     serviceform.ShowDialog();
                     serviceform.Close();
@@ -103,6 +102,7 @@ namespace BarCodeScanner
         /// <returns>DialogResult.OK - пользователь найден, вход в программу разрешён, DialogResult.Abort - производим выход из программы</returns>
         public static DialogResult Dialog()
         {
+            MainForm.scanmode = ScanMode.Nothing;
             LoginForm f = new LoginForm();
             f.ShowDialog();
             f.Close();
@@ -123,15 +123,10 @@ namespace BarCodeScanner
         /// </summary>
         private void LoginForm_KeyDown(object sender, KeyEventArgs e)
         {
-/*            if ((e.KeyCode == System.Windows.Forms.Keys.F3))
-            {
-                buttonClose_Click(this, e);
-            }*/
             if ((e.KeyCode == System.Windows.Forms.Keys.F4))
             {
                 buttonClose_Click(this, e);
             }
-
         }
 
         /// <summary>

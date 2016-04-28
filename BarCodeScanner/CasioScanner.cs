@@ -32,13 +32,6 @@ namespace BarCodeScanner
 
             lock (syncLock)
             {
-//               var result = OBReadLibNet.Api.OBROpen(Handle.GetValueOrDefault(IntPtr.Zero),
-//                                                     OBReadLibNet.Def.OBR_ALL | OBReadLibNet.Def.OBR_OUT_ON | OBReadLibNet.Def.OBR_OUT_ON);
-/*               var result = OBReadLibNet.Api.OBROpen(IntPtr.Zero,
-                            OBReadLibNet.Def.OBR_ALL | OBReadLibNet.Def.OBR_OUT_ON | OBReadLibNet.Def.OBR_OUT_ON);
-               CheckCasioResult(result); */
-/*                var result = OBReadLibNet.Api.OBRClose();
-                CheckCasioResult(result);*/
                 var result = OBReadLibNet.Api.OBRLoadConfigFile(); //ini File read default value set
                 CheckCasioResult(result);
                 result = OBReadLibNet.Api.OBRSetDefaultSymbology(); //1D(OBR) driver mode will be ini File vallue
@@ -55,17 +48,11 @@ namespace BarCodeScanner
                 //1D(OBR) driver mode will be OBR_EVENT
                 CheckCasioResult(result);
 
-/*                result = OBReadLibNet.Api.OBRSetBuzzer(OBReadLibNet.Def.OBR_BUZON); //enable sound notification
-                CheckCasioResult(result);*/
-
                 result = OBReadLibNet.Api.OBRSetVibrator(OBReadLibNet.Def.OBR_VIBOFF); //enable vibration notification
                 CheckCasioResult(result);
 
-/*                if (Handle == null)
-                {*/
                 result = OBReadLibNet.Api.OBROpen(Handle, 0); //OBRDRV open
                 CheckCasioResult(result);
-//                }
 
                 result = OBReadLibNet.Api.OBRClearBuff();
                 CheckCasioResult(result);
@@ -102,25 +89,12 @@ namespace BarCodeScanner
         }
 
         /// <summary>
-        /// Manually initiate the scan
-        /// </summary>
-        /// <remarks>
-        /// The scanned barcode will be received in the <see cref="ScannedDataEventArgs.Data"/>
-        /// parameter when the <see cref="IBarcodeScanner.Scanned"/> event is fired
-        /// </remarks>
-/*        public void Scan()
-        {
-            throw new NotSupportedException();
-        } */
-
-        /// <summary>
         /// The handle to the window in which notifications are sent (required for certain scanner API's)
         /// </summary>
-        // public IntPtr Handle { get; set; }
         public static IntPtr Handle;
 
         /// <summary>
-        ///     Clean up resources used by the scanner device
+        /// Clean up resources used by the scanner device
         /// </summary>
         public void Dispose()
         {
@@ -135,25 +109,18 @@ namespace BarCodeScanner
                 {
                     case (OBReadLibNet.Def.OBR_NONDT):
                         throw new Exception("[CS01] Error end");
-//                        break;
                     case (OBReadLibNet.Def.OBR_PON):
                         throw new Exception("[CS02] Already open - Перезагрузите сканер кнопкой RESET сзади");
-//                        break;
                     case (OBReadLibNet.Def.OBR_POF):
                         throw new Exception("[CS03] Not open");
-//                        break;
                     case (OBReadLibNet.Def.OBR_PRM):
                         throw new Exception("[CS04] Parameter error");
-//                        break;
                     case (OBReadLibNet.Def.OBR_NOT_DEVICE):
                         throw new Exception("[CS05] OBR Driver(Scanner) device is not available");
-//                        break;
                     case (OBReadLibNet.Def.OBR_NOT_DEVICE_DECODE):
                         throw new Exception("[CS06] OBR Driver(decode) device is not available");
-//                        break;
                     case (OBReadLibNet.Def.OBR_ERROR_HOTKEY):
                         throw new Exception("[CS07] RegisterHotKey error");
-//                        break;
                     default:
                         throw new Exception("[CS08] Unknown error: " + p.ToString("X"));
                 }
@@ -187,12 +154,6 @@ namespace BarCodeScanner
                         if (Scanned != null)
                         {
                             var barcode = Encoding.Default.GetString(buffer, 0, buffer.Length).Trim();
-//                            BarcodeTypes bt = (BarcodeTypes)code;
-//                            var barcodeData = new BarcodeData {Text = barcode, BarcodeType = bt};
-//                            var barcodeData = new BarcodeData { Text = barcode, BarcodeType = DecodeType(code) };
-                            //var barcodeData = new BarcodeData { Text = barcode };
-                            //Scanned.Invoke(this, new ScannedDataEventArgs(new[] {barcodeData}));
-                            //Scanned.Invoke(this, new ScannedDataEventArgs(new[] { barcode }));
                             Scanned.Invoke(this, new ScannedDataEventArgs( barcode ));
                         }
                     }

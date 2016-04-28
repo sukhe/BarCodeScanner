@@ -11,6 +11,9 @@ namespace BarCodeScanner
 {
     public partial class XCodeInfoForm : Form
     {
+        /// <summary>
+        /// Конструктор формы, отображающей полную информацию по штрихкоду
+        /// </summary>
         public XCodeInfoForm()
         {
             InitializeComponent();

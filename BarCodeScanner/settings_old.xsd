@@ -19,16 +19,6 @@
              </xs:complexType>
         </xs:element>
 
-          <xs:element name="CommonSettings" minOccurs="0" maxOccurs="1">
-             <xs:complexType>	
-                <xs:sequence>
-                	<xs:element name="ServerIP" type="xs:string" minOccurs="0" />
-                        <xs:element name="BaseUrl" type="xs:string" minOccurs="0" />
-                        <xs:element name="LogLevel" type="xs:string" minOccurs="0" />
-                </xs:sequence>
-             </xs:complexType>
-        </xs:element>
-
         <xs:element name="Scanners"  minOccurs="0" maxOccurs="unbounded">
           <xs:complexType>
             <xs:sequence>
