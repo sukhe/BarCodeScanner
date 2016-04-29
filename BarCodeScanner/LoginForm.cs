@@ -112,7 +112,7 @@ namespace BarCodeScanner
         /// <summary>
         /// Выход из формы ввода пароля и, соответственно, из программы
         /// </summary>
-        private void buttonClose_Click(object sender, EventArgs e)
+        private void buttonF4_Click(object sender, EventArgs e)
         {
             LoginResult = DialogResult.Abort;
             Close();
@@ -123,9 +123,9 @@ namespace BarCodeScanner
         /// </summary>
         private void LoginForm_KeyDown(object sender, KeyEventArgs e)
         {
-            if ((e.KeyCode == System.Windows.Forms.Keys.F4))
+            if (e.KeyCode == System.Windows.Forms.Keys.F4)
             {
-                buttonClose_Click(this, e);
+                buttonF4_Click(this, e);
             }
         }
 

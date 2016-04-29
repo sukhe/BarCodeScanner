@@ -30,8 +30,8 @@
         {
             this.label1 = new System.Windows.Forms.Label();
             this.textBox1 = new System.Windows.Forms.TextBox();
-            this.buttonClose = new System.Windows.Forms.Button();
-            this.label2 = new System.Windows.Forms.Label();
+            this.buttonF4 = new System.Windows.Forms.Button();
+            this.labelF4 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // label1
@@ -52,29 +52,29 @@
             this.textBox1.TabIndex = 1;
             this.textBox1.TextChanged += new System.EventHandler(this.textBox1_TextChanged);
             // 
-            // buttonClose
+            // buttonF4
             // 
-            this.buttonClose.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            this.buttonF4.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
                         | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonClose.Location = new System.Drawing.Point(0, 270);
-            this.buttonClose.Name = "buttonClose";
-            this.buttonClose.Size = new System.Drawing.Size(240, 24);
-            this.buttonClose.TabIndex = 2;
-            this.buttonClose.Text = "Выход";
-            this.buttonClose.Click += new System.EventHandler(this.buttonClose_Click);
+            this.buttonF4.Location = new System.Drawing.Point(0, 270);
+            this.buttonF4.Name = "buttonF4";
+            this.buttonF4.Size = new System.Drawing.Size(240, 24);
+            this.buttonF4.TabIndex = 2;
+            this.buttonF4.Text = "Выход";
+            this.buttonF4.Click += new System.EventHandler(this.buttonF4_Click);
             // 
-            // label2
+            // labelF4
             // 
-            this.label2.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.label2.BackColor = System.Drawing.Color.Yellow;
-            this.label2.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold);
-            this.label2.ForeColor = System.Drawing.Color.Black;
-            this.label2.Location = new System.Drawing.Point(3, 272);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(35, 20);
-            this.label2.Text = "F4";
-            this.label2.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+            this.labelF4.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.labelF4.BackColor = System.Drawing.Color.Yellow;
+            this.labelF4.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold);
+            this.labelF4.ForeColor = System.Drawing.Color.Black;
+            this.labelF4.Location = new System.Drawing.Point(3, 272);
+            this.labelF4.Name = "labelF4";
+            this.labelF4.Size = new System.Drawing.Size(35, 20);
+            this.labelF4.Text = "F4";
+            this.labelF4.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             // 
             // LoginForm
             // 
@@ -82,8 +82,8 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.AutoScroll = true;
             this.ClientSize = new System.Drawing.Size(240, 294);
-            this.Controls.Add(this.label2);
-            this.Controls.Add(this.buttonClose);
+            this.Controls.Add(this.labelF4);
+            this.Controls.Add(this.buttonF4);
             this.Controls.Add(this.textBox1);
             this.Controls.Add(this.label1);
             this.KeyPreview = true;
@@ -99,7 +99,7 @@
 
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.TextBox textBox1;
-        private System.Windows.Forms.Button buttonClose;
-        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Button buttonF4;
+        private System.Windows.Forms.Label labelF4;
     }
 }

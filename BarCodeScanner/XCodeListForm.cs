@@ -23,11 +23,14 @@ namespace BarCodeScanner
         public XCodeListForm()
         {
             InitializeComponent();
-            label1.Text = MainForm.cargodocs[MainForm.currentdocrow].Partner.Trim() + " " + MainForm.cargodocs[MainForm.currentdocrow].Number.Trim();
+            labelProductName.Text = MainForm.cargodocs[MainForm.currentdocrow].Partner.Trim() + " " + MainForm.cargodocs[MainForm.currentdocrow].Number.Trim();
             MainForm.scanmode = ScanMode.BarCod;
             dataGrid1.Focus();
         }
 
+        /// <summary>
+        /// Действия при загрузке формы
+        /// </summary>
         private void XCodeListForm_Load(object sender, EventArgs e)
         {
             if (MainForm.xcodetable == null)
@@ -42,7 +45,7 @@ namespace BarCodeScanner
         public void ReloadXCodeTable()
         {
             MainForm.xcodetable.Rows.Clear();
-            label1.Text = MainForm.producttable.Rows[ProductListForm.currentproductrow].Field<string>(1);
+            labelProductName.Text = MainForm.producttable.Rows[ProductListForm.currentproductrow].Field<string>(1);
             string pid = MainForm.producttable.Rows[ProductListForm.currentproductrow].Field<string>(0);
             int i = 0;
             foreach (XCode x in MainForm.cargodocs[MainForm.currentdocrow].XCodes)
@@ -53,12 +56,12 @@ namespace BarCodeScanner
                     if (x.DData == "") i++;
                 }
             }
-            label2.Text = MainForm.producttable.Rows[ProductListForm.currentproductrow].Field<string>(2) + "/" + i.ToString();
-            if (i == 0) label2.BackColor = Color.White;
+            labelQuontity.Text = MainForm.producttable.Rows[ProductListForm.currentproductrow].Field<string>(2) + "/" + i.ToString();
+            if (i == 0) labelQuontity.BackColor = Color.White;
             else // определяем, набрано-ли уже нужное кол-во штрихкодов по этому типу продукции и делаем фон соответствующего цвета
                 if (i != Convert.ToInt16(MainForm.producttable.Rows[ProductListForm.currentproductrow].Field<string>(2))) 
-                     label2.BackColor = MainForm.partialColor;
-                else label2.BackColor = MainForm.fullColor;
+                     labelQuontity.BackColor = MainForm.partialColor;
+                else labelQuontity.BackColor = MainForm.fullColor;
             MainForm.xcodetable.AcceptChanges();
         }
 
@@ -94,15 +97,15 @@ namespace BarCodeScanner
 
 
             DataGridTextBoxColumnColored col1 = new DataGridTextBoxColumnColored();
-            col1.Width = 95;
+            col1.Width = 92;
             col1.MappingName = MainForm.xcodetable.Columns[1].ColumnName;
             col1.HeaderText = MainForm.xcodetable.Columns[1].ColumnName;
             col1.NeedBackgroundXCode += new DataGridTextBoxColumnColored.NeedBackgroundEventHandlerXCode(OnBackgroundEventHandlerProductXCode);
             tableStyle.GridColumnStyles.Add(col1);
 
             DataGridTextBoxColumnColored col2 = new DataGridTextBoxColumnColored();
-            if (MainForm.xcodetable.Rows.Count > 12) col2.Width = 131;
-            else col2.Width = 153;
+            if (MainForm.xcodetable.Rows.Count > 12) col2.Width = 132;
+            else col2.Width = 156;
             col2.MappingName = MainForm.xcodetable.Columns[2].ColumnName;
             col2.HeaderText = MainForm.xcodetable.Columns[2].ColumnName;
             col2.NeedBackgroundXCode += new DataGridTextBoxColumnColored.NeedBackgroundEventHandlerXCode(OnBackgroundEventHandlerProductXCode);
@@ -135,7 +138,7 @@ namespace BarCodeScanner
         /// <summary>
         /// Нажата кнопка удаления штрихкода
         /// </summary>
-        private void button1_Click(object sender, EventArgs e)
+        private void buttonF1_Click(object sender, EventArgs e)
         {
             int i = dataGrid1.CurrentRowIndex;
             string barcod = MainForm.xcodetable.Rows[i].Field<string>(0);
@@ -180,7 +183,7 @@ namespace BarCodeScanner
         /// <summary>
         /// Выход из формы
         /// </summary>
-        private void button4_Click(object sender, EventArgs e)
+        private void buttonF4_Click(object sender, EventArgs e)
         {
             MainForm.productlistform.ReloadProductTable();
             Close();
@@ -193,11 +196,11 @@ namespace BarCodeScanner
         {
             if ((e.KeyCode == System.Windows.Forms.Keys.F1))
             {
-                button1_Click(this, e);
+                buttonF1_Click(this, e);
             }
             if ((e.KeyCode == System.Windows.Forms.Keys.F4))
             {
-                button4_Click(this, e);
+                buttonF4_Click(this, e);
             }
             if ((e.KeyCode == System.Windows.Forms.Keys.Enter))
             {

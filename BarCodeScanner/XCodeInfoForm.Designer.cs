@@ -28,8 +28,8 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.label33 = new System.Windows.Forms.Label();
-            this.buttonClose = new System.Windows.Forms.Button();
+            this.labelF4 = new System.Windows.Forms.Label();
+            this.buttonF4 = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
@@ -52,29 +52,29 @@
             this.label20 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
-            // label33
+            // labelF4
             // 
-            this.label33.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.label33.BackColor = System.Drawing.Color.Yellow;
-            this.label33.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold);
-            this.label33.ForeColor = System.Drawing.Color.Black;
-            this.label33.Location = new System.Drawing.Point(3, 272);
-            this.label33.Name = "label33";
-            this.label33.Size = new System.Drawing.Size(35, 20);
-            this.label33.Text = "F4";
-            this.label33.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+            this.labelF4.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.labelF4.BackColor = System.Drawing.Color.Yellow;
+            this.labelF4.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold);
+            this.labelF4.ForeColor = System.Drawing.Color.Black;
+            this.labelF4.Location = new System.Drawing.Point(3, 272);
+            this.labelF4.Name = "labelF4";
+            this.labelF4.Size = new System.Drawing.Size(35, 20);
+            this.labelF4.Text = "F4";
+            this.labelF4.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             // 
-            // buttonClose
+            // buttonF4
             // 
-            this.buttonClose.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            this.buttonF4.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
                         | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonClose.Location = new System.Drawing.Point(0, 270);
-            this.buttonClose.Name = "buttonClose";
-            this.buttonClose.Size = new System.Drawing.Size(240, 24);
-            this.buttonClose.TabIndex = 4;
-            this.buttonClose.Text = "Выход";
-            this.buttonClose.Click += new System.EventHandler(this.buttonClose_Click);
+            this.buttonF4.Location = new System.Drawing.Point(0, 270);
+            this.buttonF4.Name = "buttonF4";
+            this.buttonF4.Size = new System.Drawing.Size(240, 24);
+            this.buttonF4.TabIndex = 4;
+            this.buttonF4.Text = "Выход";
+            this.buttonF4.Click += new System.EventHandler(this.buttonF4_Click);
             // 
             // label1
             // 
@@ -254,8 +254,8 @@
             this.Controls.Add(this.label3);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
-            this.Controls.Add(this.label33);
-            this.Controls.Add(this.buttonClose);
+            this.Controls.Add(this.labelF4);
+            this.Controls.Add(this.buttonF4);
             this.KeyPreview = true;
             this.MinimizeBox = false;
             this.Name = "XCodeInfoForm";
@@ -267,8 +267,8 @@
 
         #endregion
 
-        private System.Windows.Forms.Label label33;
-        private System.Windows.Forms.Button buttonClose;
+        private System.Windows.Forms.Label labelF4;
+        private System.Windows.Forms.Button buttonF4;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label3;

@@ -18,7 +18,7 @@ namespace BarCodeScanner
         public ProductListForm()
         {
             InitializeComponent();
-            label1.Text = "№"+MainForm.cargodocs[MainForm.currentdocrow].Number.Trim() + " / " + MainForm.cargodocs[MainForm.currentdocrow].Partner.Trim();
+            labelNDoc.Text = "№"+MainForm.cargodocs[MainForm.currentdocrow].Number.Trim() + " / " + MainForm.cargodocs[MainForm.currentdocrow].Partner.Trim();
             MainForm.scanmode = ScanMode.BarCod;
             dataGrid1.Focus();
         }
@@ -117,11 +117,11 @@ namespace BarCodeScanner
             MainForm.producttable.AcceptChanges();
             MainForm.cargodocs[MainForm.currentdocrow].Quantity = need.ToString();
             MainForm.cargodocs[MainForm.currentdocrow].ScannedBar = have.ToString();
-            label2.Text = need.ToString() + "/" + have.ToString();
-            if (have == 0) label2.BackColor = Color.White; // меняем цвет фона в зависимости от количества нужных/отсканированных штрихкодов
-            else if (have != need) label2.BackColor = MainForm.partialColor;
-            else label2.BackColor = MainForm.fullColor;
-            label2.Refresh();
+            labelQuontity.Text = need.ToString() + "/" + have.ToString();
+            if (have == 0) labelQuontity.BackColor = Color.White; // меняем цвет фона в зависимости от количества нужных/отсканированных штрихкодов
+            else if (have != need) labelQuontity.BackColor = MainForm.partialColor;
+            else labelQuontity.BackColor = MainForm.fullColor;
+            labelQuontity.Refresh();
         }
 
         /// <summary>
@@ -207,14 +207,14 @@ namespace BarCodeScanner
             }
             if ((e.KeyCode == System.Windows.Forms.Keys.F4))
             {
-                button4_Click(this, e);
+                buttonF4_Click(this, e);
             }
         }
 
         /// <summary>
         /// Выход из формы со списком продукции
         /// </summary>
-        private void button4_Click(object sender, EventArgs e)
+        private void buttonF4_Click(object sender, EventArgs e)
         {
             CargoDoc d = new CargoDoc();
             d = MainForm.cargodocs[MainForm.currentdocrow];

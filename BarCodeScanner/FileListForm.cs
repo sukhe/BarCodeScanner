@@ -13,41 +13,52 @@ namespace BarCodeScanner
 {
     public partial class FileListForm : Form
     {
+
+        /// <summary>
+        /// Таблица со списком XML-файлов, содержащих документы
+        /// </summary>
         private DataTable filetable;
 
+        /// <summary>
+        /// Конструктор для формы со списком XML-файлов, содержащих документы
+        /// </summary>
         public FileListForm()
         {
             InitializeComponent();
             filetable = new DataTable();
-            //if (doclist.Contains(CurrentPath + @"doc\" + docnum + ".xml"))
-//            documentList1.SelectedDirectory = MainForm.CurrentPath+"doc";
         }
 
-
-
-        private void button1_Click(object sender, EventArgs e)
+        /// <summary>
+        /// Удаление файла, на котором стоит курсор
+        /// </summary>
+        private void buttonF1_Click(object sender, EventArgs e)
         {
-//            MessageBox.Show(documentList1.SelectedDirectory.ToString());
             File.Delete(MainForm.CurrentPath + @"doc\" + filetable.Rows[dataGrid1.CurrentRowIndex].Field<string>(0));
             LoadFileTable(false);
         }
 
-        private void button4_Click(object sender, EventArgs e)
+        /// <summary>
+        /// Выход из формы
+        /// </summary>
+        private void buttonF4_Click(object sender, EventArgs e)
         {
             Close();
         }
 
+        /// <summary>
+        /// Обработка нажатия клавиш
+        /// </summary>
         private void FileListForm_KeyDown(object sender, KeyEventArgs e)
         {
             if ((e.KeyCode == System.Windows.Forms.Keys.F1))
             {
-                button1_Click(this, e);
+                buttonF1_Click(this, e);
             }
             if ((e.KeyCode == System.Windows.Forms.Keys.F4))
             {
-                button4_Click(this, e);
+                buttonF4_Click(this, e);
             }
-            if ((e.KeyCode == System.Windows.Forms.Keys.F3))
+            if ((e.KeyCode == System.Windows.Forms.Keys.F3)) // показывает содержимое файла. недокументированная возможность
             {
                 ProcessStartInfo processStartInfo = new ProcessStartInfo();
                 processStartInfo.FileName = @"\FlashDisk\Program Files\Notepad\Notepad.exe";
@@ -61,7 +72,7 @@ namespace BarCodeScanner
                     MessageBox.Show(f.ToString());
                 }                
             }
-            if ((e.KeyCode == System.Windows.Forms.Keys.Enter))
+            if ((e.KeyCode == System.Windows.Forms.Keys.Enter)) //  показывает содержимое файла. недокументированная возможность
             {
                 ProcessStartInfo processStartInfo = new ProcessStartInfo();
                 processStartInfo.FileName = @"\Windows\iexplore.exe";
@@ -77,12 +88,21 @@ namespace BarCodeScanner
             }
         }
 
+        /// <summary>
+        /// Обработка события загрузки формы
+        /// </summary>
         private void FileListForm_Load(object sender, EventArgs e)
         {
             dataGrid1.DataSource = filetable;
             LoadFileTable(true);
         }
 
+        /// <summary>
+        /// Заполнение таблицы списком XML-файлов
+        /// </summary>
+        /// <param name="firstCall">Первый-ли раз вызывается эта функция</param> 
+        /// <remarks>Параметр firstCall нужен для показа сообщения при пустой форме,
+        /// чтобы сообщить - документов нет изначально, или их все просто удалили</remarks>
         private void LoadFileTable(Boolean firstCall)
         {
             MainForm.doclist = Directory.GetFiles(MainForm.CurrentPath + "doc", "*_*_*.xml");
@@ -102,8 +122,6 @@ namespace BarCodeScanner
 
                 DirectoryInfo di = new DirectoryInfo(MainForm.CurrentPath + "doc");
                 FileInfo[] fileinfo = di.GetFiles("*_*_*.xml");
-
-//                filetable.Clear();
 
                 foreach (FileInfo fi in fileinfo)
                 {

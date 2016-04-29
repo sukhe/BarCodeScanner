@@ -30,13 +30,13 @@
         {
             this.dataGrid1 = new System.Windows.Forms.DataGrid();
             this.panel3 = new System.Windows.Forms.Panel();
-            this.label11 = new System.Windows.Forms.Label();
-            this.button1 = new System.Windows.Forms.Button();
-            this.label12 = new System.Windows.Forms.Label();
-            this.button4 = new System.Windows.Forms.Button();
+            this.labelF1 = new System.Windows.Forms.Label();
+            this.buttonF1 = new System.Windows.Forms.Button();
+            this.labelF4 = new System.Windows.Forms.Label();
+            this.buttonF4 = new System.Windows.Forms.Button();
             this.panel1 = new System.Windows.Forms.Panel();
-            this.label2 = new System.Windows.Forms.Label();
-            this.label1 = new System.Windows.Forms.Label();
+            this.labelQuontity = new System.Windows.Forms.Label();
+            this.labelProductName = new System.Windows.Forms.Label();
             this.panel2 = new System.Windows.Forms.Panel();
             this.panel3.SuspendLayout();
             this.panel1.SuspendLayout();
@@ -56,77 +56,77 @@
             // 
             // panel3
             // 
-            this.panel3.Controls.Add(this.label11);
-            this.panel3.Controls.Add(this.button1);
-            this.panel3.Controls.Add(this.label12);
-            this.panel3.Controls.Add(this.button4);
+            this.panel3.Controls.Add(this.labelF1);
+            this.panel3.Controls.Add(this.buttonF1);
+            this.panel3.Controls.Add(this.labelF4);
+            this.panel3.Controls.Add(this.buttonF4);
             this.panel3.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.panel3.Location = new System.Drawing.Point(0, 270);
             this.panel3.Name = "panel3";
             this.panel3.Size = new System.Drawing.Size(240, 24);
             // 
-            // label11
+            // labelF1
             // 
-            this.label11.BackColor = System.Drawing.Color.Red;
-            this.label11.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold);
-            this.label11.ForeColor = System.Drawing.Color.White;
-            this.label11.Location = new System.Drawing.Point(2, 2);
-            this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(35, 20);
-            this.label11.Text = "F1";
-            this.label11.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+            this.labelF1.BackColor = System.Drawing.Color.Red;
+            this.labelF1.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold);
+            this.labelF1.ForeColor = System.Drawing.Color.White;
+            this.labelF1.Location = new System.Drawing.Point(2, 2);
+            this.labelF1.Name = "labelF1";
+            this.labelF1.Size = new System.Drawing.Size(35, 20);
+            this.labelF1.Text = "F1";
+            this.labelF1.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             // 
-            // button1
+            // buttonF1
             // 
-            this.button1.Location = new System.Drawing.Point(0, 0);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(120, 24);
-            this.button1.TabIndex = 12;
-            this.button1.Text = "          Удалить";
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            this.buttonF1.Location = new System.Drawing.Point(0, 0);
+            this.buttonF1.Name = "buttonF1";
+            this.buttonF1.Size = new System.Drawing.Size(120, 24);
+            this.buttonF1.TabIndex = 12;
+            this.buttonF1.Text = "          Удалить";
+            this.buttonF1.Click += new System.EventHandler(this.buttonF1_Click);
             // 
-            // label12
+            // labelF4
             // 
-            this.label12.BackColor = System.Drawing.Color.Yellow;
-            this.label12.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold);
-            this.label12.Location = new System.Drawing.Point(122, 2);
-            this.label12.Name = "label12";
-            this.label12.Size = new System.Drawing.Size(35, 20);
-            this.label12.Text = "F4";
-            this.label12.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+            this.labelF4.BackColor = System.Drawing.Color.Yellow;
+            this.labelF4.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold);
+            this.labelF4.Location = new System.Drawing.Point(122, 2);
+            this.labelF4.Name = "labelF4";
+            this.labelF4.Size = new System.Drawing.Size(35, 20);
+            this.labelF4.Text = "F4";
+            this.labelF4.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             // 
-            // button4
+            // buttonF4
             // 
-            this.button4.Location = new System.Drawing.Point(120, 0);
-            this.button4.Name = "button4";
-            this.button4.Size = new System.Drawing.Size(120, 24);
-            this.button4.TabIndex = 11;
-            this.button4.Text = "          Назад";
-            this.button4.Click += new System.EventHandler(this.button4_Click);
+            this.buttonF4.Location = new System.Drawing.Point(120, 0);
+            this.buttonF4.Name = "buttonF4";
+            this.buttonF4.Size = new System.Drawing.Size(120, 24);
+            this.buttonF4.TabIndex = 11;
+            this.buttonF4.Text = "          Назад";
+            this.buttonF4.Click += new System.EventHandler(this.buttonF4_Click);
             // 
             // panel1
             // 
-            this.panel1.Controls.Add(this.label2);
-            this.panel1.Controls.Add(this.label1);
+            this.panel1.Controls.Add(this.labelQuontity);
+            this.panel1.Controls.Add(this.labelProductName);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Top;
             this.panel1.Location = new System.Drawing.Point(0, 0);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(240, 21);
             // 
-            // label2
+            // labelQuontity
             // 
-            this.label2.Location = new System.Drawing.Point(185, 3);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(51, 16);
-            this.label2.Text = "label2";
-            this.label2.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+            this.labelQuontity.Location = new System.Drawing.Point(185, 3);
+            this.labelQuontity.Name = "labelQuontity";
+            this.labelQuontity.Size = new System.Drawing.Size(51, 16);
+            this.labelQuontity.Text = "labelQuontity";
+            this.labelQuontity.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             // 
-            // label1
+            // labelProductName
             // 
-            this.label1.Location = new System.Drawing.Point(3, 3);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(160, 16);
-            this.label1.Text = "label1";
+            this.labelProductName.Location = new System.Drawing.Point(3, 3);
+            this.labelProductName.Name = "labelProductName";
+            this.labelProductName.Size = new System.Drawing.Size(160, 16);
+            this.labelProductName.Text = "labelProductName";
             // 
             // panel2
             // 
@@ -161,13 +161,13 @@
 
         private System.Windows.Forms.DataGrid dataGrid1;
         private System.Windows.Forms.Panel panel3;
-        private System.Windows.Forms.Label label11;
-        private System.Windows.Forms.Button button1;
-        private System.Windows.Forms.Label label12;
-        private System.Windows.Forms.Button button4;
+        private System.Windows.Forms.Label labelF1;
+        private System.Windows.Forms.Button buttonF1;
+        private System.Windows.Forms.Label labelF4;
+        private System.Windows.Forms.Button buttonF4;
         private System.Windows.Forms.Panel panel1;
-        private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Label labelProductName;
+        private System.Windows.Forms.Label labelQuontity;
         private System.Windows.Forms.Panel panel2;
     }
 }

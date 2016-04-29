@@ -29,10 +29,10 @@
         private void InitializeComponent()
         {
             this.panel1 = new System.Windows.Forms.Panel();
-            this.label5 = new System.Windows.Forms.Label();
-            this.button1 = new System.Windows.Forms.Button();
-            this.label2 = new System.Windows.Forms.Label();
-            this.button4 = new System.Windows.Forms.Button();
+            this.labelF1 = new System.Windows.Forms.Label();
+            this.buttonF1 = new System.Windows.Forms.Button();
+            this.labelF4 = new System.Windows.Forms.Label();
+            this.buttonF4 = new System.Windows.Forms.Button();
             this.panel2 = new System.Windows.Forms.Panel();
             this.dataGrid1 = new System.Windows.Forms.DataGrid();
             this.panel1.SuspendLayout();
@@ -41,53 +41,53 @@
             // 
             // panel1
             // 
-            this.panel1.Controls.Add(this.label5);
-            this.panel1.Controls.Add(this.button1);
-            this.panel1.Controls.Add(this.label2);
-            this.panel1.Controls.Add(this.button4);
+            this.panel1.Controls.Add(this.labelF1);
+            this.panel1.Controls.Add(this.buttonF1);
+            this.panel1.Controls.Add(this.labelF4);
+            this.panel1.Controls.Add(this.buttonF4);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.panel1.Location = new System.Drawing.Point(0, 264);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(240, 30);
             // 
-            // label5
+            // labelF1
             // 
-            this.label5.BackColor = System.Drawing.Color.Red;
-            this.label5.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold);
-            this.label5.ForeColor = System.Drawing.Color.White;
-            this.label5.Location = new System.Drawing.Point(2, 5);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(35, 20);
-            this.label5.Text = "F1";
-            this.label5.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+            this.labelF1.BackColor = System.Drawing.Color.Red;
+            this.labelF1.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold);
+            this.labelF1.ForeColor = System.Drawing.Color.White;
+            this.labelF1.Location = new System.Drawing.Point(2, 5);
+            this.labelF1.Name = "labelF1";
+            this.labelF1.Size = new System.Drawing.Size(35, 20);
+            this.labelF1.Text = "F1";
+            this.labelF1.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             // 
-            // button1
+            // buttonF1
             // 
-            this.button1.Location = new System.Drawing.Point(0, 3);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(120, 24);
-            this.button1.TabIndex = 12;
-            this.button1.Text = "          Удалить";
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            this.buttonF1.Location = new System.Drawing.Point(0, 3);
+            this.buttonF1.Name = "buttonF1";
+            this.buttonF1.Size = new System.Drawing.Size(120, 24);
+            this.buttonF1.TabIndex = 12;
+            this.buttonF1.Text = "          Удалить";
+            this.buttonF1.Click += new System.EventHandler(this.buttonF1_Click);
             // 
-            // label2
+            // labelF4
             // 
-            this.label2.BackColor = System.Drawing.Color.Yellow;
-            this.label2.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold);
-            this.label2.Location = new System.Drawing.Point(123, 5);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(35, 20);
-            this.label2.Text = "F4";
-            this.label2.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+            this.labelF4.BackColor = System.Drawing.Color.Yellow;
+            this.labelF4.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold);
+            this.labelF4.Location = new System.Drawing.Point(123, 5);
+            this.labelF4.Name = "labelF4";
+            this.labelF4.Size = new System.Drawing.Size(35, 20);
+            this.labelF4.Text = "F4";
+            this.labelF4.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             // 
-            // button4
+            // buttonF4
             // 
-            this.button4.Location = new System.Drawing.Point(120, 3);
-            this.button4.Name = "button4";
-            this.button4.Size = new System.Drawing.Size(120, 24);
-            this.button4.TabIndex = 11;
-            this.button4.Text = "          Назад";
-            this.button4.Click += new System.EventHandler(this.button4_Click);
+            this.buttonF4.Location = new System.Drawing.Point(120, 3);
+            this.buttonF4.Name = "buttonF4";
+            this.buttonF4.Size = new System.Drawing.Size(120, 24);
+            this.buttonF4.TabIndex = 11;
+            this.buttonF4.Text = "          Назад";
+            this.buttonF4.Click += new System.EventHandler(this.buttonF4_Click);
             // 
             // panel2
             // 
@@ -129,10 +129,10 @@
         #endregion
 
         private System.Windows.Forms.Panel panel1;
-        private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.Button button1;
-        private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.Button button4;
+        private System.Windows.Forms.Label labelF1;
+        private System.Windows.Forms.Button buttonF1;
+        private System.Windows.Forms.Label labelF4;
+        private System.Windows.Forms.Button buttonF4;
         private System.Windows.Forms.Panel panel2;
         private System.Windows.Forms.DataGrid dataGrid1;
     }

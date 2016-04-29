@@ -88,7 +88,7 @@ namespace BarCodeScanner
         /// <summary>
         /// Загрузка файла настроек
         /// </summary>
-        private void button1_Click(object sender, EventArgs e)
+        private void buttonF1_Click(object sender, EventArgs e)
         {
             if (MainForm.DownloadSettings())
             {
@@ -105,7 +105,7 @@ namespace BarCodeScanner
         /// <summary>
         /// Вызов формы со списком документов
         /// </summary>
-        private void button2_Click(object sender, EventArgs e)
+        private void buttonF2_Click(object sender, EventArgs e)
         {
             FileListForm flf = new FileListForm();
             flf.ShowDialog();
@@ -115,7 +115,7 @@ namespace BarCodeScanner
         /// <summary>
         /// Просмотр лог файла
         /// </summary>
-        private void button3_Click(object sender, EventArgs e)
+        private void buttonF3_Click(object sender, EventArgs e)
         {
             MainForm.LogSave();
             ProcessStartInfo processStartInfo = new ProcessStartInfo();
@@ -135,7 +135,7 @@ namespace BarCodeScanner
         /// <summary>
         /// Выход из сервисного режима
         /// </summary>
-        private void button4_Click(object sender, EventArgs e)
+        private void buttonF4_Click(object sender, EventArgs e)
         {
             MainForm.scanmode = ScanMode.Doc;
             Close();
@@ -144,7 +144,7 @@ namespace BarCodeScanner
         /// <summary>
         /// Удаление лог файла
         /// </summary>
-        private void button5_Click(object sender, EventArgs e)
+        private void buttonCLR_Click(object sender, EventArgs e)
         {
             File.Delete(MainForm.CurrentPath + "log.txt");
             MessageBox.Show("Лог-файл удалён");
@@ -153,7 +153,7 @@ namespace BarCodeScanner
         /// <summary>
         /// Принудительная синхронизация времени с сервером
         /// </summary>
-        private void button6_Click(object sender, EventArgs e)
+        private void buttonDot_Click(object sender, EventArgs e)
         {
             try
             {
@@ -179,7 +179,7 @@ namespace BarCodeScanner
         /// <summary>
         /// Вызов проверки связи с 1С
         /// </summary>
-        private void button7_Click(object sender, EventArgs e)
+        private void button0_Click(object sender, EventArgs e)
         {
             MessageBox.Show(Test1C());
         }
@@ -191,31 +191,31 @@ namespace BarCodeScanner
         {
             if ((e.KeyCode == System.Windows.Forms.Keys.F1))
             {
-                button1_Click(this, e);
+                buttonF1_Click(this, e);
             }
             if ((e.KeyCode == System.Windows.Forms.Keys.F2))
             {
-                button2_Click(this, e);
+                buttonF2_Click(this, e);
             }
             if ((e.KeyCode == System.Windows.Forms.Keys.F3))
             {
-                button3_Click(this, e);
+                buttonF3_Click(this, e);
             }
             if ((e.KeyCode == System.Windows.Forms.Keys.F4))
             {
-                button4_Click(this, e);
+                buttonF4_Click(this, e);
             }
             if ((e.KeyCode == System.Windows.Forms.Keys.Back))
             {
-                button5_Click(this, e);
+                buttonCLR_Click(this, e);
             }
             if (e.KeyCode.GetHashCode() == 190)
             {
-                button6_Click(this, e);
+                buttonDot_Click(this, e);
             }
             if (e.KeyCode == System.Windows.Forms.Keys.D0)
             {
-                button7_Click(this, e);
+                button0_Click(this, e);
             }
 
         }

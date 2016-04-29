@@ -28,35 +28,33 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.buttonRetry = new System.Windows.Forms.Button();
-            this.buttonCancel = new System.Windows.Forms.Button();
+            this.buttonF1 = new System.Windows.Forms.Button();
+            this.buttonF4 = new System.Windows.Forms.Button();
             this.labelText1 = new System.Windows.Forms.Label();
             this.labelF1 = new System.Windows.Forms.Label();
             this.labelF4 = new System.Windows.Forms.Label();
             this.labelText2 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
-            // buttonRetry
+            // buttonF1
             // 
-            this.buttonRetry.DialogResult = System.Windows.Forms.DialogResult.Retry;
-            this.buttonRetry.Location = new System.Drawing.Point(3, 173);
-            this.buttonRetry.Name = "buttonRetry";
-            this.buttonRetry.Size = new System.Drawing.Size(115, 28);
-            this.buttonRetry.TabIndex = 0;
-            this.buttonRetry.Text = "      Retry";
-            this.buttonRetry.Click += new System.EventHandler(this.buttonRetry_Click);
-            this.buttonRetry.KeyDown += new System.Windows.Forms.KeyEventHandler(this.DialogForm_KeyDown);
+            this.buttonF1.DialogResult = System.Windows.Forms.DialogResult.Retry;
+            this.buttonF1.Location = new System.Drawing.Point(3, 173);
+            this.buttonF1.Name = "buttonF1";
+            this.buttonF1.Size = new System.Drawing.Size(115, 28);
+            this.buttonF1.TabIndex = 0;
+            this.buttonF1.Text = "      Retry";
+            this.buttonF1.Click += new System.EventHandler(this.buttonF1_Click);
             // 
-            // buttonCancel
+            // buttonF4
             // 
-            this.buttonCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.buttonCancel.Location = new System.Drawing.Point(124, 173);
-            this.buttonCancel.Name = "buttonCancel";
-            this.buttonCancel.Size = new System.Drawing.Size(113, 28);
-            this.buttonCancel.TabIndex = 1;
-            this.buttonCancel.Text = "      Cancel";
-            this.buttonCancel.Click += new System.EventHandler(this.buttonCancel_Click);
-            this.buttonCancel.KeyDown += new System.Windows.Forms.KeyEventHandler(this.DialogForm_KeyDown);
+            this.buttonF4.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+            this.buttonF4.Location = new System.Drawing.Point(124, 173);
+            this.buttonF4.Name = "buttonF4";
+            this.buttonF4.Size = new System.Drawing.Size(113, 28);
+            this.buttonF4.TabIndex = 1;
+            this.buttonF4.Text = "      Cancel";
+            this.buttonF4.Click += new System.EventHandler(this.buttonF4_Click);
             // 
             // labelText1
             // 
@@ -108,9 +106,10 @@
             this.Controls.Add(this.labelF4);
             this.Controls.Add(this.labelF1);
             this.Controls.Add(this.labelText1);
-            this.Controls.Add(this.buttonCancel);
-            this.Controls.Add(this.buttonRetry);
+            this.Controls.Add(this.buttonF4);
+            this.Controls.Add(this.buttonF1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
+            this.KeyPreview = true;
             this.MinimizeBox = false;
             this.Name = "DialogForm";
             this.Text = "DialogForm";
@@ -121,8 +120,8 @@
 
         #endregion
 
-        private System.Windows.Forms.Button buttonRetry;
-        private System.Windows.Forms.Button buttonCancel;
+        private System.Windows.Forms.Button buttonF1;
+        private System.Windows.Forms.Button buttonF4;
         private System.Windows.Forms.Label labelText1;
         private System.Windows.Forms.Label labelF1;
         private System.Windows.Forms.Label labelF4;

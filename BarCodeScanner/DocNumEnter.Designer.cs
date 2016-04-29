@@ -30,10 +30,10 @@
         {
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
-            this.button1 = new System.Windows.Forms.Button();
-            this.button2 = new System.Windows.Forms.Button();
-            this.label2 = new System.Windows.Forms.Label();
-            this.label3 = new System.Windows.Forms.Label();
+            this.buttonF1 = new System.Windows.Forms.Button();
+            this.buttonF4 = new System.Windows.Forms.Button();
+            this.labelF1 = new System.Windows.Forms.Label();
+            this.labelF4 = new System.Windows.Forms.Label();
             this.dateTimePicker1 = new System.Windows.Forms.DateTimePicker();
             this.label4 = new System.Windows.Forms.Label();
             this.SuspendLayout();
@@ -52,44 +52,44 @@
             this.label1.Size = new System.Drawing.Size(116, 20);
             this.label1.Text = "Номер накладной";
             // 
-            // button1
+            // buttonF1
             // 
-            this.button1.Location = new System.Drawing.Point(0, 270);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(120, 24);
-            this.button1.TabIndex = 2;
-            this.button1.Text = "           Дальше";
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            this.buttonF1.Location = new System.Drawing.Point(0, 270);
+            this.buttonF1.Name = "buttonF1";
+            this.buttonF1.Size = new System.Drawing.Size(120, 24);
+            this.buttonF1.TabIndex = 2;
+            this.buttonF1.Text = "           Дальше";
+            this.buttonF1.Click += new System.EventHandler(this.buttonF1_Click);
             // 
-            // button2
+            // buttonF4
             // 
-            this.button2.Location = new System.Drawing.Point(120, 270);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(120, 24);
-            this.button2.TabIndex = 3;
-            this.button2.Text = "         Назад";
-            this.button2.Click += new System.EventHandler(this.button2_Click);
+            this.buttonF4.Location = new System.Drawing.Point(120, 270);
+            this.buttonF4.Name = "buttonF4";
+            this.buttonF4.Size = new System.Drawing.Size(120, 24);
+            this.buttonF4.TabIndex = 3;
+            this.buttonF4.Text = "         Назад";
+            this.buttonF4.Click += new System.EventHandler(this.buttonF4_Click);
             // 
-            // label2
+            // labelF1
             // 
-            this.label2.BackColor = System.Drawing.Color.Red;
-            this.label2.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold);
-            this.label2.ForeColor = System.Drawing.Color.White;
-            this.label2.Location = new System.Drawing.Point(2, 272);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(35, 20);
-            this.label2.Text = "F1";
-            this.label2.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+            this.labelF1.BackColor = System.Drawing.Color.Red;
+            this.labelF1.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold);
+            this.labelF1.ForeColor = System.Drawing.Color.White;
+            this.labelF1.Location = new System.Drawing.Point(2, 272);
+            this.labelF1.Name = "labelF1";
+            this.labelF1.Size = new System.Drawing.Size(35, 20);
+            this.labelF1.Text = "F1";
+            this.labelF1.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             // 
-            // label3
+            // labelF4
             // 
-            this.label3.BackColor = System.Drawing.Color.Yellow;
-            this.label3.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold);
-            this.label3.Location = new System.Drawing.Point(123, 272);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(35, 20);
-            this.label3.Text = "F4";
-            this.label3.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+            this.labelF4.BackColor = System.Drawing.Color.Yellow;
+            this.labelF4.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold);
+            this.labelF4.Location = new System.Drawing.Point(123, 272);
+            this.labelF4.Name = "labelF4";
+            this.labelF4.Size = new System.Drawing.Size(35, 20);
+            this.labelF4.Text = "F4";
+            this.labelF4.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             // 
             // dateTimePicker1
             // 
@@ -116,10 +116,10 @@
             this.ClientSize = new System.Drawing.Size(240, 294);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.dateTimePicker1);
-            this.Controls.Add(this.label3);
-            this.Controls.Add(this.label2);
-            this.Controls.Add(this.button2);
-            this.Controls.Add(this.button1);
+            this.Controls.Add(this.labelF4);
+            this.Controls.Add(this.labelF1);
+            this.Controls.Add(this.buttonF4);
+            this.Controls.Add(this.buttonF1);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.textBox1);
             this.KeyPreview = true;
@@ -135,10 +135,10 @@
 
         private System.Windows.Forms.TextBox textBox1;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Button button1;
-        private System.Windows.Forms.Button button2;
-        private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Button buttonF1;
+        private System.Windows.Forms.Button buttonF4;
+        private System.Windows.Forms.Label labelF1;
+        private System.Windows.Forms.Label labelF4;
         private System.Windows.Forms.DateTimePicker dateTimePicker1;
         private System.Windows.Forms.Label label4;
     }

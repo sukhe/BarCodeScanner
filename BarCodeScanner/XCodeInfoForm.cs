@@ -47,17 +47,15 @@ namespace BarCodeScanner
             label20.Text = MainForm.cargodocs[MainForm.currentdocrow].Partner.Trim();
         }
 
-        private void buttonClose_Click(object sender, EventArgs e)
+        private void buttonF4_Click(object sender, EventArgs e)
         {
             Close();
         }
 
         private void XCodeInfoForm_KeyDown(object sender, KeyEventArgs e)
         {
-            if ((e.KeyCode == System.Windows.Forms.Keys.F4))
-            {
-                buttonClose_Click(this, e);
-            }
+            if (e.KeyCode == System.Windows.Forms.Keys.F4) 
+                buttonF4_Click(this, e);
         }
 
     }

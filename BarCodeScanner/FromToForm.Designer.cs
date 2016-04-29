@@ -28,88 +28,88 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.label3 = new System.Windows.Forms.Label();
-            this.button4 = new System.Windows.Forms.Button();
-            this.label5 = new System.Windows.Forms.Label();
-            this.button1 = new System.Windows.Forms.Button();
-            this.listBox1 = new System.Windows.Forms.ListBox();
-            this.label22 = new System.Windows.Forms.Label();
-            this.listBox2 = new System.Windows.Forms.ListBox();
-            this.label32 = new System.Windows.Forms.Label();
+            this.labelF4 = new System.Windows.Forms.Label();
+            this.buttonF4 = new System.Windows.Forms.Button();
+            this.labelF1 = new System.Windows.Forms.Label();
+            this.buttonF1 = new System.Windows.Forms.Button();
+            this.listBoxOperation = new System.Windows.Forms.ListBox();
+            this.labelFrom = new System.Windows.Forms.Label();
+            this.listBoxFrom = new System.Windows.Forms.ListBox();
+            this.labelTo = new System.Windows.Forms.Label();
             this.label21 = new System.Windows.Forms.Label();
             this.label31 = new System.Windows.Forms.Label();
             this.label11 = new System.Windows.Forms.Label();
-            this.listBox3 = new System.Windows.Forms.ListBox();
-            this.label12 = new System.Windows.Forms.Label();
+            this.listBoxTo = new System.Windows.Forms.ListBox();
+            this.labelOperation = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
-            // label3
+            // labelF4
             // 
-            this.label3.BackColor = System.Drawing.Color.Yellow;
-            this.label3.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold);
-            this.label3.Location = new System.Drawing.Point(122, 272);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(35, 20);
-            this.label3.Text = "F4";
-            this.label3.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+            this.labelF4.BackColor = System.Drawing.Color.Yellow;
+            this.labelF4.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold);
+            this.labelF4.Location = new System.Drawing.Point(122, 272);
+            this.labelF4.Name = "labelF4";
+            this.labelF4.Size = new System.Drawing.Size(35, 20);
+            this.labelF4.Text = "F4";
+            this.labelF4.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             // 
-            // button4
+            // buttonF4
             // 
-            this.button4.Location = new System.Drawing.Point(120, 270);
-            this.button4.Name = "button4";
-            this.button4.Size = new System.Drawing.Size(120, 24);
-            this.button4.TabIndex = 5;
-            this.button4.Text = " Назад";
-            this.button4.Click += new System.EventHandler(this.button4_Click);
+            this.buttonF4.Location = new System.Drawing.Point(120, 270);
+            this.buttonF4.Name = "buttonF4";
+            this.buttonF4.Size = new System.Drawing.Size(120, 24);
+            this.buttonF4.TabIndex = 5;
+            this.buttonF4.Text = "         Назад";
+            this.buttonF4.Click += new System.EventHandler(this.buttonF4_Click);
             // 
-            // label5
+            // labelF1
             // 
-            this.label5.BackColor = System.Drawing.Color.Red;
-            this.label5.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold);
-            this.label5.ForeColor = System.Drawing.Color.White;
-            this.label5.Location = new System.Drawing.Point(2, 272);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(35, 20);
-            this.label5.Text = "F1";
-            this.label5.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+            this.labelF1.BackColor = System.Drawing.Color.Red;
+            this.labelF1.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold);
+            this.labelF1.ForeColor = System.Drawing.Color.White;
+            this.labelF1.Location = new System.Drawing.Point(2, 272);
+            this.labelF1.Name = "labelF1";
+            this.labelF1.Size = new System.Drawing.Size(35, 20);
+            this.labelF1.Text = "F1";
+            this.labelF1.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             // 
-            // button1
+            // buttonF1
             // 
-            this.button1.Location = new System.Drawing.Point(0, 270);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(120, 24);
-            this.button1.TabIndex = 4;
-            this.button1.Text = "          Дальше";
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            this.buttonF1.Location = new System.Drawing.Point(0, 270);
+            this.buttonF1.Name = "buttonF1";
+            this.buttonF1.Size = new System.Drawing.Size(120, 24);
+            this.buttonF1.TabIndex = 4;
+            this.buttonF1.Text = "          Дальше";
+            this.buttonF1.Click += new System.EventHandler(this.buttonF1_Click);
             // 
-            // listBox1
+            // listBoxOperation
             // 
-            this.listBox1.Location = new System.Drawing.Point(3, 23);
-            this.listBox1.Name = "listBox1";
-            this.listBox1.Size = new System.Drawing.Size(234, 58);
-            this.listBox1.TabIndex = 1;
-            this.listBox1.SelectedIndexChanged += new System.EventHandler(this.listBox1_SelectedIndexChanged);
+            this.listBoxOperation.Location = new System.Drawing.Point(3, 23);
+            this.listBoxOperation.Name = "listBoxOperation";
+            this.listBoxOperation.Size = new System.Drawing.Size(234, 58);
+            this.listBoxOperation.TabIndex = 1;
+            this.listBoxOperation.SelectedIndexChanged += new System.EventHandler(this.listBox1_SelectedIndexChanged);
             // 
-            // label22
+            // labelFrom
             // 
-            this.label22.Location = new System.Drawing.Point(65, 87);
-            this.label22.Name = "label22";
-            this.label22.Size = new System.Drawing.Size(169, 16);
+            this.labelFrom.Location = new System.Drawing.Point(65, 87);
+            this.labelFrom.Name = "labelFrom";
+            this.labelFrom.Size = new System.Drawing.Size(169, 16);
             // 
-            // listBox2
+            // listBoxFrom
             // 
-            this.listBox2.Enabled = false;
-            this.listBox2.Location = new System.Drawing.Point(3, 104);
-            this.listBox2.Name = "listBox2";
-            this.listBox2.Size = new System.Drawing.Size(234, 72);
-            this.listBox2.TabIndex = 2;
-            this.listBox2.SelectedIndexChanged += new System.EventHandler(this.listBox2_SelectedIndexChanged);
+            this.listBoxFrom.Enabled = false;
+            this.listBoxFrom.Location = new System.Drawing.Point(3, 104);
+            this.listBoxFrom.Name = "listBoxFrom";
+            this.listBoxFrom.Size = new System.Drawing.Size(234, 72);
+            this.listBoxFrom.TabIndex = 2;
+            this.listBoxFrom.SelectedIndexChanged += new System.EventHandler(this.listBox2_SelectedIndexChanged);
             // 
-            // label32
+            // labelTo
             // 
-            this.label32.Location = new System.Drawing.Point(65, 178);
-            this.label32.Name = "label32";
-            this.label32.Size = new System.Drawing.Size(169, 16);
+            this.labelTo.Location = new System.Drawing.Point(65, 178);
+            this.labelTo.Name = "labelTo";
+            this.labelTo.Size = new System.Drawing.Size(169, 16);
             // 
             // label21
             // 
@@ -135,20 +135,20 @@
             this.label11.Size = new System.Drawing.Size(68, 16);
             this.label11.Text = "Операция";
             // 
-            // listBox3
+            // listBoxTo
             // 
-            this.listBox3.Enabled = false;
-            this.listBox3.Location = new System.Drawing.Point(3, 195);
-            this.listBox3.Name = "listBox3";
-            this.listBox3.Size = new System.Drawing.Size(234, 72);
-            this.listBox3.TabIndex = 3;
-            this.listBox3.SelectedIndexChanged += new System.EventHandler(this.listBox3_SelectedIndexChanged);
+            this.listBoxTo.Enabled = false;
+            this.listBoxTo.Location = new System.Drawing.Point(3, 195);
+            this.listBoxTo.Name = "listBoxTo";
+            this.listBoxTo.Size = new System.Drawing.Size(234, 72);
+            this.listBoxTo.TabIndex = 3;
+            this.listBoxTo.SelectedIndexChanged += new System.EventHandler(this.listBox3_SelectedIndexChanged);
             // 
-            // label12
+            // labelOperation
             // 
-            this.label12.Location = new System.Drawing.Point(77, 6);
-            this.label12.Name = "label12";
-            this.label12.Size = new System.Drawing.Size(157, 16);
+            this.labelOperation.Location = new System.Drawing.Point(77, 6);
+            this.labelOperation.Name = "labelOperation";
+            this.labelOperation.Size = new System.Drawing.Size(157, 16);
             // 
             // FromToForm
             // 
@@ -156,19 +156,19 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.AutoScroll = true;
             this.ClientSize = new System.Drawing.Size(240, 294);
-            this.Controls.Add(this.label12);
-            this.Controls.Add(this.listBox3);
+            this.Controls.Add(this.labelOperation);
+            this.Controls.Add(this.listBoxTo);
             this.Controls.Add(this.label11);
             this.Controls.Add(this.label31);
             this.Controls.Add(this.label21);
-            this.Controls.Add(this.label32);
-            this.Controls.Add(this.listBox2);
-            this.Controls.Add(this.label22);
-            this.Controls.Add(this.listBox1);
-            this.Controls.Add(this.label5);
-            this.Controls.Add(this.button1);
-            this.Controls.Add(this.label3);
-            this.Controls.Add(this.button4);
+            this.Controls.Add(this.labelTo);
+            this.Controls.Add(this.listBoxFrom);
+            this.Controls.Add(this.labelFrom);
+            this.Controls.Add(this.listBoxOperation);
+            this.Controls.Add(this.labelF1);
+            this.Controls.Add(this.buttonF1);
+            this.Controls.Add(this.labelF4);
+            this.Controls.Add(this.buttonF4);
             this.KeyPreview = true;
             this.MinimizeBox = false;
             this.Name = "FromToForm";
@@ -182,18 +182,18 @@
 
         #endregion
 
-        private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.Button button4;
-        private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.Button button1;
-        private System.Windows.Forms.ListBox listBox1;
-        private System.Windows.Forms.Label label22;
-        private System.Windows.Forms.ListBox listBox2;
-        private System.Windows.Forms.Label label32;
+        private System.Windows.Forms.Label labelF4;
+        private System.Windows.Forms.Button buttonF4;
+        private System.Windows.Forms.Label labelF1;
+        private System.Windows.Forms.Button buttonF1;
+        private System.Windows.Forms.ListBox listBoxOperation;
+        private System.Windows.Forms.Label labelFrom;
+        private System.Windows.Forms.ListBox listBoxFrom;
+        private System.Windows.Forms.Label labelTo;
         private System.Windows.Forms.Label label21;
         private System.Windows.Forms.Label label31;
         private System.Windows.Forms.Label label11;
-        private System.Windows.Forms.ListBox listBox3;
-        private System.Windows.Forms.Label label12;
+        private System.Windows.Forms.ListBox listBoxTo;
+        private System.Windows.Forms.Label labelOperation;
     }
 }

@@ -29,20 +29,20 @@
         private void InitializeComponent()
         {
             this.panel1 = new System.Windows.Forms.Panel();
-            this.label4 = new System.Windows.Forms.Label();
-            this.button7 = new System.Windows.Forms.Button();
-            this.label3 = new System.Windows.Forms.Label();
-            this.button6 = new System.Windows.Forms.Button();
-            this.label2 = new System.Windows.Forms.Label();
-            this.button5 = new System.Windows.Forms.Button();
-            this.label7 = new System.Windows.Forms.Label();
-            this.label6 = new System.Windows.Forms.Label();
-            this.label5 = new System.Windows.Forms.Label();
-            this.button3 = new System.Windows.Forms.Button();
-            this.button2 = new System.Windows.Forms.Button();
-            this.button1 = new System.Windows.Forms.Button();
-            this.label1 = new System.Windows.Forms.Label();
-            this.button4 = new System.Windows.Forms.Button();
+            this.label0 = new System.Windows.Forms.Label();
+            this.button0 = new System.Windows.Forms.Button();
+            this.labelDot = new System.Windows.Forms.Label();
+            this.buttonDot = new System.Windows.Forms.Button();
+            this.labelCLR = new System.Windows.Forms.Label();
+            this.buttonCLR = new System.Windows.Forms.Button();
+            this.labelF3 = new System.Windows.Forms.Label();
+            this.labelF2 = new System.Windows.Forms.Label();
+            this.labelF1 = new System.Windows.Forms.Label();
+            this.buttonF3 = new System.Windows.Forms.Button();
+            this.buttonF2 = new System.Windows.Forms.Button();
+            this.buttonF1 = new System.Windows.Forms.Button();
+            this.labelF4 = new System.Windows.Forms.Label();
+            this.buttonF4 = new System.Windows.Forms.Button();
             this.panel2 = new System.Windows.Forms.Panel();
             this.listBox1 = new System.Windows.Forms.ListBox();
             this.panel1.SuspendLayout();
@@ -51,165 +51,165 @@
             // 
             // panel1
             // 
-            this.panel1.Controls.Add(this.label4);
-            this.panel1.Controls.Add(this.button7);
-            this.panel1.Controls.Add(this.label3);
-            this.panel1.Controls.Add(this.button6);
-            this.panel1.Controls.Add(this.label2);
-            this.panel1.Controls.Add(this.button5);
-            this.panel1.Controls.Add(this.label7);
-            this.panel1.Controls.Add(this.label6);
-            this.panel1.Controls.Add(this.label5);
-            this.panel1.Controls.Add(this.button3);
-            this.panel1.Controls.Add(this.button2);
-            this.panel1.Controls.Add(this.button1);
-            this.panel1.Controls.Add(this.label1);
-            this.panel1.Controls.Add(this.button4);
+            this.panel1.Controls.Add(this.label0);
+            this.panel1.Controls.Add(this.button0);
+            this.panel1.Controls.Add(this.labelDot);
+            this.panel1.Controls.Add(this.buttonDot);
+            this.panel1.Controls.Add(this.labelCLR);
+            this.panel1.Controls.Add(this.buttonCLR);
+            this.panel1.Controls.Add(this.labelF3);
+            this.panel1.Controls.Add(this.labelF2);
+            this.panel1.Controls.Add(this.labelF1);
+            this.panel1.Controls.Add(this.buttonF3);
+            this.panel1.Controls.Add(this.buttonF2);
+            this.panel1.Controls.Add(this.buttonF1);
+            this.panel1.Controls.Add(this.labelF4);
+            this.panel1.Controls.Add(this.buttonF4);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Top;
             this.panel1.Location = new System.Drawing.Point(0, 0);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(240, 170);
             // 
-            // label4
+            // label0
             // 
-            this.label4.BackColor = System.Drawing.Color.Black;
-            this.label4.Font = new System.Drawing.Font("Tahoma", 11F, System.Drawing.FontStyle.Bold);
-            this.label4.ForeColor = System.Drawing.Color.Yellow;
-            this.label4.Location = new System.Drawing.Point(3, 123);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(35, 20);
-            this.label4.Text = "0";
-            this.label4.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+            this.label0.BackColor = System.Drawing.Color.Black;
+            this.label0.Font = new System.Drawing.Font("Tahoma", 11F, System.Drawing.FontStyle.Bold);
+            this.label0.ForeColor = System.Drawing.Color.Yellow;
+            this.label0.Location = new System.Drawing.Point(3, 123);
+            this.label0.Name = "label0";
+            this.label0.Size = new System.Drawing.Size(35, 20);
+            this.label0.Text = "0";
+            this.label0.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             // 
-            // button7
+            // button0
             // 
-            this.button7.Location = new System.Drawing.Point(0, 121);
-            this.button7.Name = "button7";
-            this.button7.Size = new System.Drawing.Size(240, 24);
-            this.button7.TabIndex = 11;
-            this.button7.Text = "       Тест связи с 1С";
-            this.button7.Click += new System.EventHandler(this.button7_Click);
+            this.button0.Location = new System.Drawing.Point(0, 121);
+            this.button0.Name = "button0";
+            this.button0.Size = new System.Drawing.Size(240, 24);
+            this.button0.TabIndex = 11;
+            this.button0.Text = "       Тест связи с 1С";
+            this.button0.Click += new System.EventHandler(this.button0_Click);
             // 
-            // label3
+            // labelDot
             // 
-            this.label3.BackColor = System.Drawing.Color.Black;
-            this.label3.Font = new System.Drawing.Font("Tahoma", 11F, System.Drawing.FontStyle.Bold);
-            this.label3.ForeColor = System.Drawing.Color.White;
-            this.label3.Location = new System.Drawing.Point(3, 99);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(35, 20);
-            this.label3.Text = ".";
-            this.label3.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+            this.labelDot.BackColor = System.Drawing.Color.Black;
+            this.labelDot.Font = new System.Drawing.Font("Tahoma", 11F, System.Drawing.FontStyle.Bold);
+            this.labelDot.ForeColor = System.Drawing.Color.White;
+            this.labelDot.Location = new System.Drawing.Point(3, 99);
+            this.labelDot.Name = "labelDot";
+            this.labelDot.Size = new System.Drawing.Size(35, 20);
+            this.labelDot.Text = ".";
+            this.labelDot.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             // 
-            // button6
+            // buttonDot
             // 
-            this.button6.Location = new System.Drawing.Point(0, 97);
-            this.button6.Name = "button6";
-            this.button6.Size = new System.Drawing.Size(240, 24);
-            this.button6.TabIndex = 8;
-            this.button6.Text = "       Получить время";
-            this.button6.Click += new System.EventHandler(this.button6_Click);
+            this.buttonDot.Location = new System.Drawing.Point(0, 97);
+            this.buttonDot.Name = "buttonDot";
+            this.buttonDot.Size = new System.Drawing.Size(240, 24);
+            this.buttonDot.TabIndex = 8;
+            this.buttonDot.Text = "       Получить время";
+            this.buttonDot.Click += new System.EventHandler(this.buttonDot_Click);
             // 
-            // label2
+            // labelCLR
             // 
-            this.label2.BackColor = System.Drawing.Color.Black;
-            this.label2.Font = new System.Drawing.Font("Tahoma", 11F, System.Drawing.FontStyle.Bold);
-            this.label2.ForeColor = System.Drawing.Color.Yellow;
-            this.label2.Location = new System.Drawing.Point(3, 75);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(35, 20);
-            this.label2.Text = "CLR";
-            this.label2.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+            this.labelCLR.BackColor = System.Drawing.Color.Black;
+            this.labelCLR.Font = new System.Drawing.Font("Tahoma", 11F, System.Drawing.FontStyle.Bold);
+            this.labelCLR.ForeColor = System.Drawing.Color.Yellow;
+            this.labelCLR.Location = new System.Drawing.Point(3, 75);
+            this.labelCLR.Name = "labelCLR";
+            this.labelCLR.Size = new System.Drawing.Size(35, 20);
+            this.labelCLR.Text = "CLR";
+            this.labelCLR.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             // 
-            // button5
+            // buttonCLR
             // 
-            this.button5.Location = new System.Drawing.Point(0, 73);
-            this.button5.Name = "button5";
-            this.button5.Size = new System.Drawing.Size(240, 24);
-            this.button5.TabIndex = 3;
-            this.button5.Text = "      Очистить лог";
-            this.button5.Click += new System.EventHandler(this.button5_Click);
+            this.buttonCLR.Location = new System.Drawing.Point(0, 73);
+            this.buttonCLR.Name = "buttonCLR";
+            this.buttonCLR.Size = new System.Drawing.Size(240, 24);
+            this.buttonCLR.TabIndex = 3;
+            this.buttonCLR.Text = "      Очистить лог";
+            this.buttonCLR.Click += new System.EventHandler(this.buttonCLR_Click);
             // 
-            // label7
+            // labelF3
             // 
-            this.label7.BackColor = System.Drawing.Color.Green;
-            this.label7.Enabled = false;
-            this.label7.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold);
-            this.label7.ForeColor = System.Drawing.Color.White;
-            this.label7.Location = new System.Drawing.Point(3, 51);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(35, 20);
-            this.label7.Text = "F3";
-            this.label7.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+            this.labelF3.BackColor = System.Drawing.Color.Green;
+            this.labelF3.Enabled = false;
+            this.labelF3.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold);
+            this.labelF3.ForeColor = System.Drawing.Color.White;
+            this.labelF3.Location = new System.Drawing.Point(3, 51);
+            this.labelF3.Name = "labelF3";
+            this.labelF3.Size = new System.Drawing.Size(35, 20);
+            this.labelF3.Text = "F3";
+            this.labelF3.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             // 
-            // label6
+            // labelF2
             // 
-            this.label6.BackColor = System.Drawing.Color.Blue;
-            this.label6.Enabled = false;
-            this.label6.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold);
-            this.label6.ForeColor = System.Drawing.Color.White;
-            this.label6.Location = new System.Drawing.Point(3, 27);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(35, 20);
-            this.label6.Text = "F2";
-            this.label6.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+            this.labelF2.BackColor = System.Drawing.Color.Blue;
+            this.labelF2.Enabled = false;
+            this.labelF2.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold);
+            this.labelF2.ForeColor = System.Drawing.Color.White;
+            this.labelF2.Location = new System.Drawing.Point(3, 27);
+            this.labelF2.Name = "labelF2";
+            this.labelF2.Size = new System.Drawing.Size(35, 20);
+            this.labelF2.Text = "F2";
+            this.labelF2.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             // 
-            // label5
+            // labelF1
             // 
-            this.label5.BackColor = System.Drawing.Color.Red;
-            this.label5.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold);
-            this.label5.ForeColor = System.Drawing.Color.White;
-            this.label5.Location = new System.Drawing.Point(3, 3);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(35, 20);
-            this.label5.Text = "F1";
-            this.label5.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+            this.labelF1.BackColor = System.Drawing.Color.Red;
+            this.labelF1.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold);
+            this.labelF1.ForeColor = System.Drawing.Color.White;
+            this.labelF1.Location = new System.Drawing.Point(3, 3);
+            this.labelF1.Name = "labelF1";
+            this.labelF1.Size = new System.Drawing.Size(35, 20);
+            this.labelF1.Text = "F1";
+            this.labelF1.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             // 
-            // button3
+            // buttonF3
             // 
-            this.button3.Location = new System.Drawing.Point(0, 49);
-            this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(240, 24);
-            this.button3.TabIndex = 2;
-            this.button3.Text = "        Посмотреть лог";
-            this.button3.Click += new System.EventHandler(this.button3_Click);
+            this.buttonF3.Location = new System.Drawing.Point(0, 49);
+            this.buttonF3.Name = "buttonF3";
+            this.buttonF3.Size = new System.Drawing.Size(240, 24);
+            this.buttonF3.TabIndex = 2;
+            this.buttonF3.Text = "        Посмотреть лог";
+            this.buttonF3.Click += new System.EventHandler(this.buttonF3_Click);
             // 
-            // button2
+            // buttonF2
             // 
-            this.button2.Location = new System.Drawing.Point(0, 25);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(240, 24);
-            this.button2.TabIndex = 1;
-            this.button2.Text = "      Список документов";
-            this.button2.Click += new System.EventHandler(this.button2_Click);
+            this.buttonF2.Location = new System.Drawing.Point(0, 25);
+            this.buttonF2.Name = "buttonF2";
+            this.buttonF2.Size = new System.Drawing.Size(240, 24);
+            this.buttonF2.TabIndex = 1;
+            this.buttonF2.Text = "      Список документов";
+            this.buttonF2.Click += new System.EventHandler(this.buttonF2_Click);
             // 
-            // button1
+            // buttonF1
             // 
-            this.button1.Location = new System.Drawing.Point(0, 1);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(240, 24);
-            this.button1.TabIndex = 0;
-            this.button1.Text = "           Заново получить настройки";
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            this.buttonF1.Location = new System.Drawing.Point(0, 1);
+            this.buttonF1.Name = "buttonF1";
+            this.buttonF1.Size = new System.Drawing.Size(240, 24);
+            this.buttonF1.TabIndex = 0;
+            this.buttonF1.Text = "           Заново получить настройки";
+            this.buttonF1.Click += new System.EventHandler(this.buttonF1_Click);
             // 
-            // label1
+            // labelF4
             // 
-            this.label1.BackColor = System.Drawing.Color.Yellow;
-            this.label1.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold);
-            this.label1.Location = new System.Drawing.Point(3, 147);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(35, 20);
-            this.label1.Text = "F4";
-            this.label1.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+            this.labelF4.BackColor = System.Drawing.Color.Yellow;
+            this.labelF4.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold);
+            this.labelF4.Location = new System.Drawing.Point(3, 147);
+            this.labelF4.Name = "labelF4";
+            this.labelF4.Size = new System.Drawing.Size(35, 20);
+            this.labelF4.Text = "F4";
+            this.labelF4.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             // 
-            // button4
+            // buttonF4
             // 
-            this.button4.Location = new System.Drawing.Point(0, 145);
-            this.button4.Name = "button4";
-            this.button4.Size = new System.Drawing.Size(240, 24);
-            this.button4.TabIndex = 4;
-            this.button4.Text = "      Назад";
-            this.button4.Click += new System.EventHandler(this.button4_Click);
+            this.buttonF4.Location = new System.Drawing.Point(0, 145);
+            this.buttonF4.Name = "buttonF4";
+            this.buttonF4.Size = new System.Drawing.Size(240, 24);
+            this.buttonF4.TabIndex = 4;
+            this.buttonF4.Text = "      Назад";
+            this.buttonF4.Click += new System.EventHandler(this.buttonF4_Click);
             // 
             // panel2
             // 
@@ -249,21 +249,21 @@
         #endregion
 
         private System.Windows.Forms.Panel panel1;
-        private System.Windows.Forms.Label label7;
-        private System.Windows.Forms.Label label6;
-        private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.Button button3;
-        private System.Windows.Forms.Button button2;
-        private System.Windows.Forms.Button button1;
-        private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Button button4;
+        private System.Windows.Forms.Label labelF3;
+        private System.Windows.Forms.Label labelF2;
+        private System.Windows.Forms.Label labelF1;
+        private System.Windows.Forms.Button buttonF3;
+        private System.Windows.Forms.Button buttonF2;
+        private System.Windows.Forms.Button buttonF1;
+        private System.Windows.Forms.Label labelF4;
+        private System.Windows.Forms.Button buttonF4;
         private System.Windows.Forms.Panel panel2;
         private System.Windows.Forms.ListBox listBox1;
-        private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.Button button5;
-        private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.Button button6;
-        private System.Windows.Forms.Button button7;
-        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.Label labelCLR;
+        private System.Windows.Forms.Button buttonCLR;
+        private System.Windows.Forms.Label labelDot;
+        private System.Windows.Forms.Button buttonDot;
+        private System.Windows.Forms.Button button0;
+        private System.Windows.Forms.Label label0;
     }
 }

@@ -29,13 +29,13 @@
         private void InitializeComponent()
         {
             this.panel1 = new System.Windows.Forms.Panel();
-            this.label2 = new System.Windows.Forms.Label();
-            this.label1 = new System.Windows.Forms.Label();
+            this.labelQuontity = new System.Windows.Forms.Label();
+            this.labelNDoc = new System.Windows.Forms.Label();
             this.panel2 = new System.Windows.Forms.Panel();
             this.dataGrid1 = new System.Windows.Forms.DataGrid();
             this.panel3 = new System.Windows.Forms.Panel();
             this.labelF4 = new System.Windows.Forms.Label();
-            this.button4 = new System.Windows.Forms.Button();
+            this.buttonF4 = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             this.panel3.SuspendLayout();
@@ -43,29 +43,29 @@
             // 
             // panel1
             // 
-            this.panel1.Controls.Add(this.label2);
-            this.panel1.Controls.Add(this.label1);
+            this.panel1.Controls.Add(this.labelQuontity);
+            this.panel1.Controls.Add(this.labelNDoc);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Top;
             this.panel1.Location = new System.Drawing.Point(0, 0);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(240, 21);
             // 
-            // label2
+            // labelQuontity
             // 
-            this.label2.BackColor = System.Drawing.Color.White;
-            this.label2.Location = new System.Drawing.Point(185, 3);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(51, 16);
-            this.label2.Text = "label2";
-            this.label2.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+            this.labelQuontity.BackColor = System.Drawing.Color.White;
+            this.labelQuontity.Location = new System.Drawing.Point(185, 3);
+            this.labelQuontity.Name = "labelQuontity";
+            this.labelQuontity.Size = new System.Drawing.Size(51, 16);
+            this.labelQuontity.Text = "labelQuontity";
+            this.labelQuontity.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             // 
-            // label1
+            // labelNDoc
             // 
-            this.label1.BackColor = System.Drawing.Color.White;
-            this.label1.Location = new System.Drawing.Point(3, 3);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(160, 16);
-            this.label1.Text = "label1";
+            this.labelNDoc.BackColor = System.Drawing.Color.White;
+            this.labelNDoc.Location = new System.Drawing.Point(3, 3);
+            this.labelNDoc.Name = "labelNDoc";
+            this.labelNDoc.Size = new System.Drawing.Size(160, 16);
+            this.labelNDoc.Text = "labelNDoc";
             // 
             // panel2
             // 
@@ -90,7 +90,7 @@
             // panel3
             // 
             this.panel3.Controls.Add(this.labelF4);
-            this.panel3.Controls.Add(this.button4);
+            this.panel3.Controls.Add(this.buttonF4);
             this.panel3.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.panel3.Location = new System.Drawing.Point(0, 270);
             this.panel3.Name = "panel3";
@@ -106,14 +106,14 @@
             this.labelF4.Text = "F4";
             this.labelF4.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             // 
-            // button4
+            // buttonF4
             // 
-            this.button4.Location = new System.Drawing.Point(0, 0);
-            this.button4.Name = "button4";
-            this.button4.Size = new System.Drawing.Size(240, 24);
-            this.button4.TabIndex = 6;
-            this.button4.Text = "  Назад";
-            this.button4.Click += new System.EventHandler(this.button4_Click);
+            this.buttonF4.Location = new System.Drawing.Point(0, 0);
+            this.buttonF4.Name = "buttonF4";
+            this.buttonF4.Size = new System.Drawing.Size(240, 24);
+            this.buttonF4.TabIndex = 6;
+            this.buttonF4.Text = "  Назад";
+            this.buttonF4.Click += new System.EventHandler(this.buttonF4_Click);
             // 
             // ProductListForm
             // 
@@ -139,12 +139,12 @@
         #endregion
 
         private System.Windows.Forms.Panel panel1;
-        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label labelNDoc;
         private System.Windows.Forms.Panel panel2;
         private System.Windows.Forms.DataGrid dataGrid1;
         private System.Windows.Forms.Panel panel3;
-        private System.Windows.Forms.Button button4;
+        private System.Windows.Forms.Button buttonF4;
         private System.Windows.Forms.Label labelF4;
-        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Label labelQuontity;
     }
 }

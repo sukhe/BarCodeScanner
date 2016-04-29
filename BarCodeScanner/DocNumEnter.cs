@@ -11,71 +11,78 @@ namespace BarCodeScanner
 {
     public partial class DocNumEnter : Form
     {
-//        Boolean flag;
 
+        /// <summary>
+        /// Конструктор для формы, на которой вручную вводится номер загружаемого документа
+        /// </summary>
         public DocNumEnter()
         {
             InitializeComponent();
-//            flag = false;
         }
 
+        /// <summary>
+        /// Обработка нажатия клавиш
+        /// </summary>
         private void DocNumEnter_KeyDown(object sender, KeyEventArgs e)
         {
             
-            if ((e.KeyCode == System.Windows.Forms.Keys.F1) &&
-                 dateTimePicker1.Focused)
-            {
-                this.Owner.Tag = textBox1.Text.Trim() + " " + dateTimePicker1.Value.Year.ToString() +
-                                 MainForm.AddZeroIfNeed(dateTimePicker1.Value.Month) + MainForm.AddZeroIfNeed(dateTimePicker1.Value.Day);
-                Close();
+            if ((
+                e.KeyCode == System.Windows.Forms.Keys.F1 ||
+                e.KeyCode == System.Windows.Forms.Keys.Enter
+                ) && dateTimePicker1.Focused
+                )
+            {   
+                buttonF1_Click(this, e);
             }
 
             if (( 
-                  (e.KeyCode == System.Windows.Forms.Keys.Enter) ||
-                  (e.KeyCode == System.Windows.Forms.Keys.F1)
-                ) && textBox1.Focused )
+                e.KeyCode == System.Windows.Forms.Keys.F1 ||
+                e.KeyCode == System.Windows.Forms.Keys.Enter
+                ) && textBox1.Focused 
+                )
             {
                 dateTimePicker1.Focus();
-//                flag = true;
             }
 
-/*            if ((e.KeyCode != System.Windows.Forms.Keys.F1) && (flag))
+            if (e.KeyCode == System.Windows.Forms.Keys.F4)
             {
-                flag = false;
-            }
-
-            if ((
-                  (e.KeyCode == System.Windows.Forms.Keys.F1)
-                ) && (!flag) && dateTimePicker1.Focused)*/
-
-            if ((e.KeyCode == System.Windows.Forms.Keys.F4))
-            {
-                this.Controls.Remove(dateTimePicker1);
-                dateTimePicker1.Dispose();
-                button2_Click(this, e);
+                buttonF4_Click(this, e);
             }
 
         }
 
+        /// <summary>
+        /// При получении фокуса полем ввода данных - меняем подпись у 1-й кнопки
+        /// </summary>
         private void dateTimePicker1_GotFocus(object sender, EventArgs e)
         {
-            button1.Text = "           Принять";
+            buttonF1.Text = "           Принять";
         }
 
-        private void button2_Click(object sender, EventArgs e)
+        /// <summary>
+        /// Выходим из формы без сохранения введённых данных
+        /// </summary>
+        private void buttonF4_Click(object sender, EventArgs e)
         {
             this.Owner.Tag = "";
+            this.Controls.Remove(dateTimePicker1);
+            dateTimePicker1.Dispose();
             Close();
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        /// <summary>
+        /// Делаем ход дальше - на следующее поле ввода
+        /// </summary>
+        private void buttonF1_Click(object sender, EventArgs e)
         {
-            if (textBox1.Focused) dateTimePicker1.Focus();
-        }
-
-        private void dateTimePicker1_DropDown(object sender, System.EventArgs e)
-        {
-            MessageBox.Show("Hello!");
+            if (buttonF1.Text != "           Принять") dateTimePicker1.Focus();
+            else
+            {   // введённые данные записываем в Tag родительской формы
+                this.Owner.Tag = textBox1.Text.Trim() + " " + dateTimePicker1.Value.Year.ToString() +
+                                 MainForm.AddZeroIfNeed(dateTimePicker1.Value.Month) +
+                                 MainForm.AddZeroIfNeed(dateTimePicker1.Value.Day);
+                Close();
+            };
         }
 
     }

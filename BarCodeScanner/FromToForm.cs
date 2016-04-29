@@ -11,7 +11,6 @@ namespace BarCodeScanner
 {
     public partial class FromToForm : Form
     {
-//        private List<ListBox> list = new List<ListBox>();
 
         /// <summary>
         /// Конструктор для формы, на которой вводится направление перемещения продукции
@@ -19,15 +18,12 @@ namespace BarCodeScanner
         public FromToForm()
         {
             InitializeComponent();
-/*            list.Add(listBox1); // список типов операций (отрузка, приход, перемещение)
-            list.Add(listBox2); // список "откуда"
-            list.Add(listBox3); // список "куда"*/
         }
 
         /// <summary>
         /// Перейти к следующему списку, запомнив выбор в списке текущем
         /// </summary>
-        private void button1_Click(object sender, EventArgs e)
+        private void buttonF1_Click(object sender, EventArgs e)
         {
             NextList();
         }
@@ -35,7 +31,7 @@ namespace BarCodeScanner
         /// <summary>
         /// Закрыть форму без сохранения сделанного выбора
         /// </summary>
-        private void button4_Click(object sender, EventArgs e)
+        private void buttonF4_Click(object sender, EventArgs e)
         {
             Close();
         }
@@ -45,24 +41,16 @@ namespace BarCodeScanner
         /// </summary>
         private void FromToForm_KeyDown(object sender, KeyEventArgs e)
         {
-            if ((e.KeyCode == System.Windows.Forms.Keys.F1) ||
-                (e.KeyCode == System.Windows.Forms.Keys.Enter) ||
-                (e.KeyCode == System.Windows.Forms.Keys.Right))
+            if ( e.KeyCode == System.Windows.Forms.Keys.F1 ||
+                 e.KeyCode == System.Windows.Forms.Keys.Enter ||
+                 e.KeyCode == System.Windows.Forms.Keys.Right)
             {
-                button1_Click(this, e);
+                buttonF1_Click(this, e);
             }
-            if ((e.KeyCode == System.Windows.Forms.Keys.F4))
+            if (e.KeyCode == System.Windows.Forms.Keys.F4)
             {
-                button4_Click(this, e);
+                buttonF4_Click(this, e);
             }
-/*            if ((e.KeyCode == System.Windows.Forms.Keys.Enter))
-            {
-                NextList();
-            } 
-            if ((e.KeyCode == System.Windows.Forms.Keys.Right))
-            {
-                NextList();
-            } */
         }
 
         /// <summary>
@@ -70,7 +58,7 @@ namespace BarCodeScanner
         /// </summary>
         private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
-            label12.Text = listBox1.SelectedItem.ToString();
+            labelOperation.Text = listBoxOperation.SelectedItem.ToString();
         }
 
         /// <summary>
@@ -78,7 +66,7 @@ namespace BarCodeScanner
         /// </summary>
         private void listBox2_SelectedIndexChanged(object sender, EventArgs e)
         {
-            label22.Text = listBox2.SelectedItem.ToString();
+            labelFrom.Text = listBoxFrom.SelectedItem.ToString();
         }
 
         /// <summary>
@@ -86,35 +74,34 @@ namespace BarCodeScanner
         /// </summary>
         private void listBox3_SelectedIndexChanged(object sender, EventArgs e)
         {
-            label32.Text = listBox3.SelectedItem.ToString();
+            labelTo.Text = listBoxTo.SelectedItem.ToString();
         }
 
         /// <summary>
-        /// Загрузить форму и сформировать первый список для выбора
+        /// Загрузить форму и сформировать первый список (список операций) для выбора
         /// </summary>
         private void FromToForm_Load(object sender, EventArgs e)
         {
             foreach (Transfer t in MainForm.settings.Transfers)
             {
-                listBox1.Items.Add(t.Name);
+                listBoxOperation.Items.Add(t.Name);
             }
-            listBox1.Focus();
-            if (listBox1.Items.Count == 0)
+            listBoxOperation.Focus();
+            if (listBoxOperation.Items.Count == 0)
             {
                 MainForm.LogShow("[FTF.Load.1] Ошибка файла настроек: нет доступных операций");
                 Close();
             }
             else
-                listBox1.SelectedIndex = 0;
+                listBoxOperation.SelectedIndex = 0;
         }
 
         /// <summary>
-        /// Выбор текущего значения и переход к следующему списку
+        /// Выбор значения в текущем списке и переход к следующему списку
         /// </summary>
         /// <remarks>
         /// Переход по спискам - только последовательный. Каждый выбор в текущем списке 
-        /// отсекает неподходящие варианты в следующих списках, 
-        /// чтобы кладовщик не мог выбрать бессмысленные варианты. 
+        /// отсекает неподходящие варианты в следующих списках, чтобы кладовщик не мог выбрать бессмысленные варианты. 
         /// 
         /// Пример бессмысленного варианта:
         /// Тип операции - "Приход на склад", откуда - "Контрагент", куда - "Конвейер №2"
@@ -127,62 +114,62 @@ namespace BarCodeScanner
         private void NextList()
         {
             string[] s;
-            if (listBox1.Focused)
+            if (listBoxOperation.Visible)
             {
-                listBox2.Enabled = true; // второй список станет доступен только когда сделан выбор в первом
+                listBoxFrom.Enabled = true; // второй список станет доступен только когда сделан выбор в первом
 
-                s = MainForm.settings.Transfers[listBox1.SelectedIndex].From.Split(','); // заполняем список
+                s = MainForm.settings.Transfers[listBoxOperation.SelectedIndex].From.Split(','); // заполняем список
                 foreach (string t in s)
                 {
                     foreach (Location n in MainForm.settings.Locations)
                     {
                         if (n.LID == t)
                         {
-                            listBox2.Items.Add(n.Name);
+                            listBoxFrom.Items.Add(n.Name);
                         }
                     }
                 }
 
-                if (listBox2.Items.Count == 0)
+                if (listBoxFrom.Items.Count == 0)
                 {
                     MainForm.LogShow("[FTF.Load.2] Ошибка файла настроек: нет списка \"Откуда\"");
                     Close();
                 }
                 else
                 {
-                    listBox2.Focus();
-                    listBox2.SelectedIndex = 0;
-                    listBox1.Visible = false; // после того, как появился второй список, первый скрываем
+                    listBoxFrom.Focus();
+                    listBoxFrom.SelectedIndex = 0;
+                    listBoxOperation.Visible = false; // после того, как появился второй список, первый скрываем
                 }
             }
-            else if (listBox2.Focused)
+            else if (listBoxFrom.Visible && !listBoxOperation.Visible)
             {
-                listBox3.Enabled = true;
-                s = MainForm.settings.Transfers[listBox1.SelectedIndex].To.Split(',');
+                listBoxTo.Enabled = true;
+                s = MainForm.settings.Transfers[listBoxOperation.SelectedIndex].To.Split(',');
                 foreach (string t in s)
                 {
                     foreach (Location n in MainForm.settings.Locations)
                     {
                         if (n.LID == t)
                         {
-                            listBox3.Items.Add(n.Name);
+                            listBoxTo.Items.Add(n.Name);
                         }
                     }
                 }
 
-                if (listBox3.Items.Count == 0)
+                if (listBoxTo.Items.Count == 0)
                 {
                     MainForm.LogShow("[FTF.Load.3] Ошибка файла настроек: нет списка \"Куда\"");
                     Close();
                 }
                 else
                 {
-                    listBox3.Focus();
-                    listBox3.SelectedIndex = 0;
-                    listBox2.Visible = false;
+                    listBoxTo.Focus();
+                    listBoxTo.SelectedIndex = 0;
+                    listBoxFrom.Visible = false; // показываем список 3, скрываем список номер 2, список 1 уже скрыт
                 }
             }
-            else if (listBox3.Focused) // все три списка пройдены - пора выходить
+            else if (!listBoxOperation.Visible && !listBoxFrom.Visible) // все три списка пройдены - пора выходить
             {
                 this.Tag = "Save";
                 Close();
@@ -194,23 +181,22 @@ namespace BarCodeScanner
         /// </summary>
         private void FromToForm_Closing(object sender, CancelEventArgs e)
         {
-            // закрываемся из третьего списка по нажатию F1, Enter или Right
-            if (listBox2.Visible == false && listBox1.Visible == false && this.Tag=="Save") 
+            if (this.Tag != null) // закрываемся из третьего списка по нажатию F1, Enter или Right
             {
                 foreach (Location n in MainForm.settings.Locations)
                 {
-                    if (n.Name == label22.Text)
+                    if (n.Name == labelFrom.Text)
                     {
-                        Config.transferFrom = label22.Text;
-                        Config.transferFromLid = n.LID;
+                        Config.transferFrom = labelFrom.Text; // текстовое описание, показываемое на экране
+                        Config.transferFromLid = n.LID;     // цифровой код (location id), записываемый в файл
                     }
                 }
 
                 foreach (Location n in MainForm.settings.Locations)
                 {
-                    if (n.Name == label32.Text)
+                    if (n.Name == labelTo.Text)
                     {
-                        Config.transferTo = label32.Text;
+                        Config.transferTo = labelTo.Text;
                         Config.transferToLid = n.LID;
                     }
                 }

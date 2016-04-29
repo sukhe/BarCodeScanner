@@ -19,7 +19,13 @@ using System.Runtime.InteropServices;
 
 namespace BarCodeScanner
 {
-
+    /// <summary>
+    /// Класс основной формы приложения. 
+    /// </summary>
+    /// <remarks>
+    /// Эта форма показывает список имеющихся в сканере отгрузочных документов, позволяет принимать с сервера новые документы и
+    /// отправлять обратно документы с отсканированными штрихкодами. 
+    /// </remarks>
     public partial class MainForm : Form
     {
 
@@ -473,7 +479,7 @@ namespace BarCodeScanner
                             if (Convert.ToInt16(xgood) == xall)
                                 MessageBox.Show("Отправлено " + xgood + " штрихкодов по документу №" + cargodocs[currentdocrow].Number.Trim());
                             else
-                                MessageBox.Show("Отправлено " + xgood + " штрихкодов по документу №" + cargodocs[currentdocrow].Number.Trim() + "(с удалёнными - " + xall.ToString() + ")");
+                                MessageBox.Show("Отправлено " + xgood + " штрихкодов по документу №" + cargodocs[currentdocrow].Number.Trim() + " (с удалёнными - " + xall.ToString() + ")");
                             try
                             {
                                 // после подтверждения передачи, документ на сканере удаляется
@@ -712,7 +718,6 @@ namespace BarCodeScanner
             return sb;
         }
 
-
         /// <summary>
         /// Копирование данных из одного потока в другой (у .Net 3.5 Compact Framework нет встроенных средств копирования потоков)
         /// </summary>
@@ -742,75 +747,30 @@ namespace BarCodeScanner
                 HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
                 request.Method = "POST";
                 request.Timeout = 30000;
-                //request.ContentType = "application/xml;charset=utf-8";
                 request.ContentType = "application/zip;charset=utf-8";
-                //request.Proxy = GlobalProxySelection.GetEmptyWebProxy();
                 GlobalProxySelection.Select = new WebProxy("http://" + Config.serverIp.ToString() + ":80");
-
                 request.AutomaticDecompression = DecompressionMethods.GZip;
-                //request.SendChunked = false;
-                //request.AllowWriteStreamBuffering = false;
-                //request.TransferEncoding = "gzip";
 
-                //                string docid = url.Substring(url.IndexOf("/CargoDocZip/")+13);
-
-                //CargoDoc cargodoc = CargoDoc.LoadFromFile(@"D:\WORK\CASIO\RestClient\72_20160408_03.xml");
-                //                string postData = docid+cargodoc.Serialize();
                 string postData = cargodocs[currentdocrow].Serialize();
                 byte[] byteArray = Encoding.UTF8.GetBytes(postData);
-
-
-                //                using (FileStream fs = File.OpenWrite(CurrentPath + @"doc\_" + cargodocs[currentdocrow].Number.ToString() + ".xml"))
-                //                {
-                //                    Byte[] info = new UTF8Encoding(true).GetBytes();
-                //                    fs.Write(byteArray, 0, byteArray.Length);
-                //                }
-
-                //request.ContentLength = byteArray.Length;
-                //Stream dataStream = request.GetRequestStream();
-
-                //              вот эти 4 строчки вместо последующих двух - посылка зипованного документа
                 request.Headers.Add("Content-Encoding", "gzip");
 
-
-                //dataStream.Position = 0;
                 MemoryStream ms = new MemoryStream();
                 MemoryStream ms2 = new MemoryStream();
 
-                /*                using (FileStream fileStream = File.Open(@"D:\WORK\CASIO\RestClient\62_20160401_03.gz", FileMode.Create))
-                                { */
-
-/*                using (GZipStream zipStream = new GZipStream(ms, CompressionMode.Compress))
-                {
-                    byte[] buffer = Encoding.UTF8.GetBytes(postData);
-                    zipStream.Write(buffer, 0, buffer.Length);
-                    ms.Position = 0;
-                    CopyStream(ms, ms2);
-                }*/
-
-
-//public static byte[] Compress(byte[] raw)
-//    {
-	using (MemoryStream memory = new MemoryStream())
-	{
-	    using (GZipStream gzip = new GZipStream(memory, CompressionMode.Compress, true))
-	    {
-		    gzip.Write(byteArray, 0, byteArray.Length);
-	    }
-        CopyStream(memory, ms2);
-//	    return memory.ToArray();
-	}
-//    }
-
-
-
-// >> unzip test
+            	using (MemoryStream memory = new MemoryStream())
+	            {
+	                using (GZipStream gzip = new GZipStream(memory, CompressionMode.Compress, true))
+	                {
+		                gzip.Write(byteArray, 0, byteArray.Length);
+	                }
+                    CopyStream(memory, ms2);
+	            }
 
                 ms2.Position = 0;
                 byte[] byteArray2 = ms2.GetBuffer();
                 request.ContentLength = byteArray2.Length;
                 Stream dataStream = request.GetRequestStream();
-
                 dataStream.Write(byteArray2, 0, byteArray2.Length);
                 dataStream.Close();
 
@@ -856,7 +816,6 @@ namespace BarCodeScanner
                 sb = ex.Message.ToString();
             }
             return sb;
-
         }
 
         # endregion
@@ -920,8 +879,8 @@ namespace BarCodeScanner
             tableStyle.GridColumnStyles.Add(col1);
 
             DataGridTextBoxColumnColored col2 = new DataGridTextBoxColumnColored();
-            if (MainForm.cargodocs.Count > 9) 
-              col2.Width = 236;
+            if (MainForm.cargodocs.Count > 10) 
+              col2.Width = 232;
             else 
               col2.Width = 252;
             col2.MappingName = doctable.Columns[2].ColumnName;
@@ -1059,23 +1018,23 @@ namespace BarCodeScanner
             }
             if ((e.KeyCode == System.Windows.Forms.Keys.F1))
             {
-                button1_Click(this, e);
+                buttonF1_Click(this, e);
                 serviceKeySequence = 0;
             }
             if ((e.KeyCode == System.Windows.Forms.Keys.F2))
             {
-                panel3_Click(this, e);
+                panelF2_Click(this, e);
                 serviceKeySequence = 0;
             }
 
             if ((e.KeyCode == System.Windows.Forms.Keys.F3))
             {
-                button3_Click(this, e);
+                buttonF3_Click(this, e);
                 serviceKeySequence = 0;
             } 
             if ((e.KeyCode == System.Windows.Forms.Keys.F4))
             {
-                button4_Click(this, e);
+                buttonF4_Click(this, e);
                 serviceKeySequence = 0;
             }
 
@@ -1105,23 +1064,24 @@ namespace BarCodeScanner
             {
                 SoftReset();
             }
-
+            dataGrid1.Focus();
         }
 
         /// <summary>
         /// Выгрузка документов из сканера на сервер
         /// </summary>
-        private void button1_Click(object sender, EventArgs e)
+        private void buttonF1_Click(object sender, EventArgs e)
         {
             MainForm.scanmode = ScanMode.Nothing;
             UploadXML();
             MainForm.scanmode = ScanMode.Doc;
+            dataGrid1.Focus();
         }
 
         /// <summary>
         /// Выбор направления перемещения продукции
         /// </summary>
-        private void panel3_Click(object sender, EventArgs e)
+        private void panelF2_Click(object sender, EventArgs e)
         {
             MainForm.scanmode = ScanMode.Nothing;
             FromToForm f = new FromToForm();
@@ -1129,12 +1089,33 @@ namespace BarCodeScanner
             MainForm.scanmode = ScanMode.Doc;
             labelFrom.Text = Config.transferFrom;
             labelTo.Text = Config.transferTo;
+            dataGrid1.Focus();
+        }
+
+        /// <summary>
+        /// Вызывает форму для ручного ввода номера документа
+        /// </summary>
+        private void buttonF3_Click(object sender, EventArgs e)
+        {
+            MainForm.scanmode = ScanMode.Nothing;
+            serviceKeySequence = 0;
+            DocNumEnter doc = new DocNumEnter();
+            doc.Owner = this;
+            this.Tag = "";
+            doc.ShowDialog();
+            MainForm.scanmode = ScanMode.Doc;
+            if (this.Tag.ToString() != "")
+            {
+                BarCodeProcessing(this.Tag.ToString());
+                this.Tag = "";
+            }
+            dataGrid1.Focus();
         }
        
         /// <summary>
         /// Выход из программы
         /// </summary>
-        private void button4_Click(object sender, EventArgs e)
+        private void buttonF4_Click(object sender, EventArgs e)
         {
             Close();
         }
@@ -1656,25 +1637,6 @@ namespace BarCodeScanner
         }
 
         /// <summary>
-        /// Вызывает форму для ручного ввода номера документа
-        /// </summary>
-        private void button3_Click(object sender, EventArgs e)
-        {
-            MainForm.scanmode = ScanMode.Nothing;
-            serviceKeySequence = 0;
-            DocNumEnter doc = new DocNumEnter();
-            doc.Owner = this;
-            this.Tag = "";
-            doc.ShowDialog();
-            MainForm.scanmode = ScanMode.Doc;
-            if (this.Tag.ToString() != "")
-            {
-                BarCodeProcessing(this.Tag.ToString());
-                this.Tag = "";
-            }
-        }
-
-        /// <summary>
         /// Перезагрузка сканера (Reset)
         /// </summary>
         public static void SoftReset()
@@ -1686,42 +1648,3 @@ namespace BarCodeScanner
 
     }
 }
-
-/*
-.
-if ((e.KeyCode == System.Windows.Forms.Keys.Decimal) && (serviceKeySequence == 0))
-RButton | MButton | Back | ShiftKey | Space | F17  = 2+4+8+16+32+128
-e.KeyCode.ToString()	"Back, Menu, LMenu"	string = 8+18+164
-e.KeyCode.GetHashCode()	190	int
-
-System.Windows.Forms.Keys.Decimal = 110
-
-
-1
-e.KeyCode.GetHashCode()	49	int
-e.KeyCode.ToString()	"D1"	string
-
-
-Fn
-e.KeyCode.ToString()	"227"	string
-e.KeyCode.GetHashCode()	227	int
-
-
-Fn+A
-e.KeyCode.GetHashCode()	16	int
-e.KeyCode.ToString()	"ShiftKey"	string
-
-A
-e.KeyCode.ToString()	"228"	string
-e.KeyCode.GetHashCode()	228	int
-
-
-
-CLR
-e.KeyCode.GetHashCode()	8	int
-e.KeyCode.ToString()	"Back"	string
-
-Fn+CLR
-e.KeyCode.ToString()	"Escape"	string
-e.KeyCode.GetHashCode()	27	int
-*/
