@@ -11,6 +11,13 @@ using System.Diagnostics;
 
 namespace BarCodeScanner
 {
+
+    /// <summary>
+    /// Список XML-файлов, содержащих загруженные на сканер отгрузочные документы
+    /// </summary>
+    /// <remarks>
+    /// Позволяет посмотреть список файлов, их содержимое, удалить ненужные файлы (ВНИМАНИЕ! Данные пропадут!)
+    /// </remarks>
     public partial class FileListForm : Form
     {
 
@@ -38,6 +45,42 @@ namespace BarCodeScanner
         }
 
         /// <summary>
+        /// Просмотр файла, на котором стоит курсор, в InternetExplorer-e (с форматированием и подсветкой синтаксиса)
+        /// </summary>
+        private void buttonF2_Click(object sender, EventArgs e)
+        {
+            ProcessStartInfo processStartInfo = new ProcessStartInfo();
+            processStartInfo.FileName = @"\Windows\iexplore.exe";
+            processStartInfo.Arguments = MainForm.CurrentPath + @"doc\" + filetable.Rows[dataGrid1.CurrentRowIndex].Field<string>(0);
+            try
+            {
+                Process.Start(processStartInfo);
+            }
+            catch (Exception f)
+            {
+                MessageBox.Show(f.ToString());
+            }
+        }
+
+        /// <summary>
+        /// Просмотр файла, на котором стоит курсор, в Notepad-e (просто текст без форматирования)
+        /// </summary>
+        private void buttonF3_Click(object sender, EventArgs e)
+        {
+            ProcessStartInfo processStartInfo = new ProcessStartInfo();
+            processStartInfo.FileName = @"\FlashDisk\Program Files\Notepad\Notepad.exe";
+            processStartInfo.Arguments = MainForm.CurrentPath + @"doc\" + filetable.Rows[dataGrid1.CurrentRowIndex].Field<string>(0);
+            try
+            {
+                Process.Start(processStartInfo);
+            }
+            catch (Exception f)
+            {
+                MessageBox.Show(f.ToString());
+            }                
+        }
+
+        /// <summary>
         /// Выход из формы
         /// </summary>
         private void buttonF4_Click(object sender, EventArgs e)
@@ -54,37 +97,17 @@ namespace BarCodeScanner
             {
                 buttonF1_Click(this, e);
             }
+            if ((e.KeyCode == System.Windows.Forms.Keys.F2))
+            {
+                buttonF2_Click(this, e);
+            }
+            if ((e.KeyCode == System.Windows.Forms.Keys.F3))
+            {
+                buttonF3_Click(this, e);
+            }
             if ((e.KeyCode == System.Windows.Forms.Keys.F4))
             {
                 buttonF4_Click(this, e);
-            }
-            if ((e.KeyCode == System.Windows.Forms.Keys.F3)) // показывает содержимое файла. недокументированная возможность
-            {
-                ProcessStartInfo processStartInfo = new ProcessStartInfo();
-                processStartInfo.FileName = @"\FlashDisk\Program Files\Notepad\Notepad.exe";
-                processStartInfo.Arguments = MainForm.CurrentPath + @"doc\" + filetable.Rows[dataGrid1.CurrentRowIndex].Field<string>(0);
-                try
-                {
-                    Process.Start(processStartInfo);
-                }
-                catch (Exception f)
-                {
-                    MessageBox.Show(f.ToString());
-                }                
-            }
-            if ((e.KeyCode == System.Windows.Forms.Keys.Enter)) //  показывает содержимое файла. недокументированная возможность
-            {
-                ProcessStartInfo processStartInfo = new ProcessStartInfo();
-                processStartInfo.FileName = @"\Windows\iexplore.exe";
-                processStartInfo.Arguments = MainForm.CurrentPath + @"doc\" + filetable.Rows[dataGrid1.CurrentRowIndex].Field<string>(0);
-                try
-                {
-                    Process.Start(processStartInfo);
-                }
-                catch (Exception f)
-                {
-                    MessageBox.Show(f.ToString());
-                }
             }
         }
 
@@ -159,6 +182,5 @@ namespace BarCodeScanner
                 else MessageBox.Show("Все документы удалены");
             }
         }
-
     }
 }

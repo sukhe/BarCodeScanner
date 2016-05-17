@@ -9,6 +9,13 @@ using System.Windows.Forms;
 
 namespace BarCodeScanner
 {
+    /// <summary>
+    /// Форма "откуда-куда"
+    /// </summary>
+    /// <remarks>
+    /// Позволяет выбрать тип операции, а также откуда и куда перемещается изделие. 
+    /// Такой выбор нужно обязательно сделать перед сканированием штрихкодов
+    /// </remarks>
     public partial class FromToForm : Form
     {
 

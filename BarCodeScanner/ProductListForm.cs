@@ -10,6 +10,12 @@ using System.Windows.Forms;
 namespace BarCodeScanner
 {
 
+    /// <summary>
+    /// Список продукции текущего документа
+    /// </summary>
+    /// <remarks>
+    /// Показывает тип и количество отгружаемой продукции, а также сколько штрихкодов уже отсканировано.
+    /// </remarks>
     public partial class ProductListForm : Form
     {
 

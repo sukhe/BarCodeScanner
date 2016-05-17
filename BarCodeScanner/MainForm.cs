@@ -20,11 +20,11 @@ using System.Runtime.InteropServices;
 namespace BarCodeScanner
 {
     /// <summary>
-    /// Класс основной формы приложения. 
+    /// Основная форма приложения 
     /// </summary>
     /// <remarks>
     /// Эта форма показывает список имеющихся в сканере отгрузочных документов, позволяет принимать с сервера новые документы и
-    /// отправлять обратно документы с отсканированными штрихкодами. 
+    /// отправлять обратно документы с отсканированными штрихкодами
     /// </remarks>
     public partial class MainForm : Form
     {
@@ -55,7 +55,7 @@ namespace BarCodeScanner
         /// </summary>
         public static string CurrentPath;
         /// <summary>
-        /// Класс для низкоуровнего сканирования штрихкодов, запускаемый в отдельном потоке
+        /// Класс для низкоуровнего сканирования штрихкодов, экземпляр которого запускается в отдельном потоке
         /// </summary>
         CasioScanner cs;
         /// <summary>
@@ -245,7 +245,7 @@ namespace BarCodeScanner
         {
             foreach (OpenNETCF.Net.NetworkInformation.NetworkInterface ni in OpenNETCF.Net.NetworkInformation.NetworkInterface.GetAllNetworkInterfaces())
             {
-                if (ni.Description == "SDIO86861")
+                if (ni.Description == "SDIO86861") // у сканера несколько сетевых интерфейсов. выбираем нужный
                 {
                     Config.scannerMac = ni.GetPhysicalAddress().ToString();
                     Config.scannerIp = ni.CurrentIpAddress.ToString();

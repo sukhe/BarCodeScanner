@@ -9,6 +9,13 @@ using System.Windows.Forms;
 
 namespace BarCodeScanner
 {
+
+    /// <summary>
+    /// Диалоговая форма
+    /// </summary>
+    /// <remarks>
+    /// Эта форма показывает текст вопроса и кнопки с ответами, возвращая в вызывающую форму сделанный пользователем выбор
+    /// </remarks>
     public partial class DialogForm : Form
     {
         /// <summary>

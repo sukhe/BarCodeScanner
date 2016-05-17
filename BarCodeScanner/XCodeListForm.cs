@@ -9,6 +9,10 @@ using System.Windows.Forms;
 
 namespace BarCodeScanner
 {
+
+    /// <summary>
+    /// Список отсканированных штрихкодов по заданному типу продукции текущего документа
+    /// </summary>
     public partial class XCodeListForm : Form
     {
 

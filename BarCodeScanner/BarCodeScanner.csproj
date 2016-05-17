@@ -218,45 +218,21 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="CargoDocs.xsc">
-      <DependentUpon>CargoDocs.xsd</DependentUpon>
-    </None>
     <None Include="CargoDocs.xsd">
       <Generator>MSDataSetGenerator</Generator>
       <LastGenOutput>CargoDocs.Designer.cs</LastGenOutput>
       <SubType>
       </SubType>
     </None>
-    <None Include="CargoDocs.xss">
-      <DependentUpon>CargoDocs.xsd</DependentUpon>
-    </None>
-    <None Include="ClassDiagram1.cd" />
-    <None Include="ClassDiagram2.cd" />
-    <None Include="customtime.xsc">
-      <DependentUpon>customtime.xsd</DependentUpon>
-    </None>
     <None Include="customtime.xsd">
       <Generator>MSDataSetGenerator</Generator>
       <LastGenOutput>customtime.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
     </None>
-    <None Include="customtime.xss">
-      <DependentUpon>customtime.xsd</DependentUpon>
-    </None>
-    <None Include="Properties\DataSources\CargoDoc.datasource" />
-    <None Include="protocol.xsc">
-      <DependentUpon>protocol.xsd</DependentUpon>
-    </None>
     <None Include="protocol.xsd">
       <Generator>MSDataSetGenerator</Generator>
       <LastGenOutput>protocol.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
-    </None>
-    <None Include="protocol.xss">
-      <DependentUpon>protocol.xsd</DependentUpon>
-    </None>
-    <None Include="settings.xsc">
-      <DependentUpon>settings.xsd</DependentUpon>
     </None>
     <None Include="settings.xsd">
       <SubType>
@@ -264,12 +240,9 @@
       <Generator>MSDataSetGenerator</Generator>
       <LastGenOutput>settings.Designer.cs</LastGenOutput>
     </None>
-    <None Include="settings.xss">
-      <DependentUpon>settings.xsd</DependentUpon>
-    </None>
   </ItemGroup>
   <ItemGroup>
-    <None Include="ClassDiagram3.cd" />
+    <None Include="ClassDiagram1.cd" />
     <None Include="Resources\Icon1.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CompactFramework.CSharp.targets" />

@@ -12,6 +12,12 @@ using Microsoft.WindowsMobile.Status;
 
 namespace BarCodeScanner
 {
+    /// <summary>
+    /// Сервисная форма для техперсонала
+    /// </summary>
+    /// <remarks>
+    /// Позволяет протестировать состояние сети, доступность серверов, посмотреть логи и т.п.
+    /// </remarks>
     public partial class ServiceForm : Form
     {
 

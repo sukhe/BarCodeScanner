@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 // атрибутов. Отредактируйте значения этих атрибутов, чтобы изменить
 // общие сведения об этой сборке.
 [assembly: AssemblyTitle("BarCodeScanner")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("Сканирование штрихкодов выпускаемой продукции на терминале сбора данных Casio IT-800R-15")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("JSC Greta, Druzhkivka, Ukraine")]
 [assembly: AssemblyProduct("BarCodeScanner")]

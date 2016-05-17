@@ -9,6 +9,13 @@ using System.Windows.Forms;
 
 namespace BarCodeScanner
 {
+
+    /// <summary>
+    /// Полная информация по штрихкоду
+    /// </summary>
+    /// <remarks>
+    /// Кто сканировал, когда, тип продукции, номер заказа, контрагент и пр.
+    /// </remarks>
     public partial class XCodeInfoForm : Form
     {
         /// <summary>

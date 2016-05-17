@@ -11,6 +11,13 @@ using System.IO;
 
 namespace BarCodeScanner
 {
+
+    /// <summary>
+    /// Форма ввода пароля
+    /// </summary>
+    /// <remarks>
+    /// Пароль состоит из 6-ти цифр. Кроме пароля возможен ввод двух специальных комбинаций: ..11.. и .1111.
+    /// </remarks>
     public partial class LoginForm : Form
     {
 
@@ -128,21 +135,6 @@ namespace BarCodeScanner
                 buttonF4_Click(this, e);
             }
         }
-
-        /// <summary>
-        /// Обработка нажатия клавиш в поле ввода
-        /// </summary>
-/*        private void textBox1_KeyDown(object sender, KeyEventArgs e)
-        {
-            if ((e.KeyCode == System.Windows.Forms.Keys.F3))
-            {
-                buttonClose_Click(this, e);
-            }
-            if ((e.KeyCode == System.Windows.Forms.Keys.F4))
-            {
-                buttonClose_Click(this, e);
-            }
-        }*/
 
     }
 }
