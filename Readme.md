@@ -112,7 +112,12 @@
 
 Перед сканированием штрихкодов должно быть выбрано направление перемещения/отгрузки продукции - откуда и куда.
 
-<img src="./Screenshots/06.FromTo1.jpg" alt="Ввод параментров 'Откуда-куда'" width="240px">
+
+<img src="./Screenshots/06.FromTo1.jpg" alt="Ввод параметров 'Откуда-куда'" width="240px" />
+
+<img src="./Screenshots/06.FromTo1.jpg" alt="Ввод параметров 'Откуда-куда'" width=240px />
+
+<img src="./Screenshots/06.FromTo1.jpg" width=240 />
 
 
 ![Ввод параментров "Откуда-куда"](./Screenshots/06.FromTo1.jpg =240x320)
