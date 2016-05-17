@@ -3,23 +3,19 @@
   <Users>
     <User>
       <FIO>Рыкуш И.В.</FIO>
-      <Pwd>181072</Pwd>
+      <Pwd>280372</Pwd>
     </User>
     <User>
       <FIO>Миненкова О.В.</FIO>
-      <Pwd>775319</Pwd>
+      <Pwd>768329</Pwd>
     </User>
     <User>
-      <FIO>ДеминВН</FIO>
-      <Pwd>111111</Pwd>
-    </User>
-    <User>
-      <FIO>СухоносОВ</FIO>
-      <Pwd>222222</Pwd>
+      <FIO>Демин В.Н.</FIO>
+      <Pwd>340522</Pwd>
     </User>
     <User>
       <FIO>Исенко Е.В.</FIO>
-      <Pwd>120485</Pwd>
+      <Pwd>820719</Pwd>
     </User>
   </Users>
   <Scanners>
@@ -66,4 +62,9 @@
       <To>1</To>
     </Transfer>
   </Transfers>
+  <CommonSettings>
+    <ServerIP>192.168.10.213</ServerIP>
+    <BaseUrl>/CargoDocService.svc</BaseUrl>
+    <LogLevel>1</LogLevel>
+  </CommonSettings>
 </Settings>

@@ -1569,8 +1569,8 @@ namespace BarCodeScanner
             input = ss.Replace("&gt;", ">");
             ss = input.Replace("\t", "");
             input = ss.Replace("\n", "");
-            ss = input.Substring(0,input.Length-9);
-            input = ss.Substring(ss.IndexOf(">")+1);
+            /*ss = input.Substring(0,input.Length-9);
+            input = ss.Substring(ss.IndexOf(">")+1); */
             return input;
         }
 
