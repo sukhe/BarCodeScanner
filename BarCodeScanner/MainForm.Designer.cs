@@ -48,6 +48,7 @@
             this.labelFrom = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
             this.labelF2 = new System.Windows.Forms.Label();
+            this.timer2 = new System.Windows.Forms.Timer();
             this.panel1.SuspendLayout();
             this.panelTrigger.SuspendLayout();
             this.panelF2.SuspendLayout();
@@ -240,6 +241,12 @@
             this.labelF2.Text = "F2";
             this.labelF2.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             // 
+            // timer2
+            // 
+            this.timer2.Enabled = true;
+            this.timer2.Interval = 600000;
+            this.timer2.Tick += new System.EventHandler(this.timer2_Tick);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
@@ -287,6 +294,7 @@
         private System.Windows.Forms.Label labelFrom;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Label labelF2;
+        private System.Windows.Forms.Timer timer2;
     }
 }
 

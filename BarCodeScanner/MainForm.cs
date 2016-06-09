@@ -133,7 +133,15 @@ namespace BarCodeScanner
 
                 cs = new CasioScanner();
                 cs.Scanned += OnScan;
-                cs.Open();
+                try
+                {
+                    cs.Open();
+                }
+                catch
+                {
+                    LogShow("Программа зависла. Перегрузите сканер кнопкой Reset сзади");
+                    Close();
+                }
                 addBarCode = new AddScan(BarCodeProcessing);
                 dataGrid1.Focus();
             }
@@ -1120,6 +1128,15 @@ namespace BarCodeScanner
             Close();
         }
 
+        public static void SaveData()
+        {
+            CargoDoc d = new CargoDoc();
+            d = cargodocs[currentdocrow];
+            string n = d.Number.Trim();
+            string t = ConvertToYYYYMMDD(d.Data);
+            d.SaveToFile(CurrentPath + @"doc\" + n + "_" + t + "_" + Config.scannerNumber.ToString() + ".xml");
+        }
+
         #endregion
 
         # region Scan - обработка событий сканирования штрихкодов
@@ -1634,6 +1651,14 @@ namespace BarCodeScanner
                     MessageBox.Show("Низкий заряд батареи. Поставьте сканер на подзарядку.", "Внимание!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button1);
                 };
             }
+        }
+
+        /// <summary>
+        /// Раз в 10 минут вызывается из таймера и сохраняет отсканированные штрихкоды.
+        /// </summary>
+        private void timer2_Tick(object sender, EventArgs e)
+        {
+            if (MainForm.scanmode == ScanMode.BarCod) SaveData();
         }
 
         /// <summary>

@@ -222,11 +222,7 @@ namespace BarCodeScanner
         /// </summary>
         private void buttonF4_Click(object sender, EventArgs e)
         {
-            CargoDoc d = new CargoDoc();
-            d = MainForm.cargodocs[MainForm.currentdocrow];
-            string n = d.Number.Trim();
-            string t = MainForm.ConvertToYYYYMMDD(d.Data);
-            d.SaveToFile(MainForm.CurrentPath + @"doc\"+ n + "_" + t + "_" + Config.scannerNumber.ToString() + ".xml");
+            MainForm.SaveData();
             MainForm.scanmode = ScanMode.Doc;
             Close();
         }
