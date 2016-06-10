@@ -222,6 +222,7 @@ namespace BarCodeScanner
         /// </summary>
         private void buttonF4_Click(object sender, EventArgs e)
         {
+            MainForm.dataNeedSave = true;
             MainForm.SaveData();
             MainForm.scanmode = ScanMode.Doc;
             Close();

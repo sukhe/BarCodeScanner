@@ -115,6 +115,11 @@ namespace BarCodeScanner
         /// Счётчик последовательности нажатия клавиш для входа в сервисный режим
         /// </summary>
         private int serviceKeySequence;
+        /// <summary>
+        /// Признак наличия изменений в данных (сбрасывается при сохранении файла со штрихкодами)
+        /// </summary>
+        public static Boolean dataNeedSave;
+
 
         # endregion
 
@@ -165,6 +170,7 @@ namespace BarCodeScanner
                     CreateScreenTable();
                 }
                 MainForm.scanmode = ScanMode.Doc;
+                dataNeedSave = false;
 
                 Log("Start " + Config.userName + " " + Config.scannerNumber);
 
@@ -1130,11 +1136,15 @@ namespace BarCodeScanner
 
         public static void SaveData()
         {
-            CargoDoc d = new CargoDoc();
-            d = cargodocs[currentdocrow];
-            string n = d.Number.Trim();
-            string t = ConvertToYYYYMMDD(d.Data);
-            d.SaveToFile(CurrentPath + @"doc\" + n + "_" + t + "_" + Config.scannerNumber.ToString() + ".xml");
+            if (dataNeedSave)
+            {
+                CargoDoc d = new CargoDoc();
+                d = cargodocs[currentdocrow];
+                string n = d.Number.Trim();
+                string t = ConvertToYYYYMMDD(d.Data);
+                d.SaveToFile(CurrentPath + @"doc\" + n + "_" + t + "_" + Config.scannerNumber.ToString() + ".xml");
+                dataNeedSave = false;
+            }
         }
 
         #endregion
@@ -1210,6 +1220,8 @@ namespace BarCodeScanner
                             x.ScanFrom = Config.transferFromLid;
                             x.ScanTo = Config.transferToLid;
                             x.ScannerID = Config.scannerNumber;
+
+                            dataNeedSave = true;
 
                             var xl = new List<XCode>();
                             xl.AddRange(MainForm.cargodocs[MainForm.currentdocrow].XCodes);
@@ -1655,6 +1667,9 @@ namespace BarCodeScanner
 
         /// <summary>
         /// Раз в 10 минут вызывается из таймера и сохраняет отсканированные штрихкоды.
+        /// Сохраняет только тогда, когда программа находится в режиме, позволяющем сканировать штрихкоды.
+        /// При выходе из этого режима отсканированные штрихкоды сохраняются принудительно, так что нет необходимости
+        /// в сохранении данных по таймеру.
         /// </summary>
         private void timer2_Tick(object sender, EventArgs e)
         {

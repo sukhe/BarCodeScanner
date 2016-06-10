@@ -168,6 +168,7 @@ namespace BarCodeScanner
 
                     x.DData = MainForm.ConvertToFullDataTime(System.DateTime.Now.ToString()); // время удаления и фамилия удалившего
                     x.DFIO = Config.userName;
+                    MainForm.dataNeedSave = true;
 
                     if (MainForm.xcodelistform != null && MainForm.xcodelistform.Visible)
                     {
